@@ -1,0 +1,12 @@
+{
+  "name": "DevLights",
+  "displayName": "DevLights",
+  "expo": {
+    "name": "DevLights",
+    "slug": "DevLights",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
