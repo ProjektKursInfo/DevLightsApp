@@ -1,8 +1,7 @@
 import * as React from "react";
-import { Component } from "react";
 import { ScrollView } from "react-native";
 import { Title } from "react-native-paper";
-import Card from "./Cards/Card";
+import Card from "../Card/Card";
 
 export interface HomeProps {}
 

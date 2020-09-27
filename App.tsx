@@ -1,22 +1,14 @@
-import React, { useState } from "react";
-import { Button, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import Navigation from "./components/Navigation/Navigation";
-
+import SafeAreaView from "./components/SafeAreaView";
 
 export default function App() {
-  
   return (
-    <SafeAreaView style={{width: '100%', height: '100%'}}>
-    <Navigation></Navigation>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <Navigation></Navigation>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
