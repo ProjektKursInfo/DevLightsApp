@@ -6,6 +6,8 @@ import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItemList,
+  useTheme,
+  Theme,
 } from "@react-navigation/drawer";
 
 import { createStackNavigator } from "@react-navigation/stack";
@@ -15,17 +17,28 @@ import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import { View, Text } from "react-native";
 import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import theme from "../theme";
 export interface NavigationProps {}
+
+declare global {
+  namespace ReactNativePaper {
+    interface ThemeColors {
+      secondary: string;
+    }
+    interface Theme {
+      spacing: Function;
+    }
+  }
+}
 
 export default function Navigation(props: NavigationProps) {
   const Drawer = createDrawerNavigator();
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={theme}>
       <Drawer.Navigator
         initialRouteName="home"
         drawerStyle={{}}
-        sceneContainerStyle={{ backgroundColor: "#fff" }}
-        drawerContent={(props) => <DrawerContent {...props} />}
+        drawerContent={(contentProps) => <DrawerContent {...contentProps} />}
       >
         <Drawer.Screen
           component={HomeStack}
@@ -37,25 +50,17 @@ export default function Navigation(props: NavigationProps) {
   );
 }
 function DrawerContent(props: DrawerContentComponentProps) {
-  const [icon, setIcon] = React.useState("lightbulb");
-  const toggleBulb = () => {
-    if (icon == "lightbulb") {
-      setIcon("lightbulb-outline");
-    } else {
-      setIcon("lightbulb");
-    }
-  };
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView style={{ backgroundColor: "#2f2f2f" }} {...props}>
       <View style={{ margin: 15 }}>
         <List.Item
           title={"DevLights"}
           description={"Control and Setup your Smart Lightsss"}
-          left={(props) => (
+          left={(iconProps) => (
             <IconButton
-              {...props}
-              onPress={toggleBulb}
-              icon={icon}
+              {...iconProps}
+              color={theme.colors.primary}
+              icon={"lightbulb"}
               style={{ alignSelf: "center" }}
             ></IconButton>
           )}
