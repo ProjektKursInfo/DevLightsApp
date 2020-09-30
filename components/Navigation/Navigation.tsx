@@ -1,35 +1,19 @@
-import * as React from "react";
-
-import { IconButton, List } from "react-native-paper";
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItemList,
-  useTheme,
-  Theme,
 } from "@react-navigation/drawer";
-
-import { createStackNavigator } from "@react-navigation/stack";
-import Home from "../Home/Home";
 import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import * as React from "react";
+import { View } from "react-native";
+import { IconButton, List } from "react-native-paper";
 import HeaderIcon from "../HeaderIcon/HeaderIcon";
-import { View, Text } from "react-native";
-import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import Home from "../Home";
 import theme from "../theme";
-export interface NavigationProps {}
 
-declare global {
-  namespace ReactNativePaper {
-    interface ThemeColors {
-      secondary: string;
-    }
-    interface Theme {
-      spacing: Function;
-    }
-  }
-}
+export interface NavigationProps {}
 
 export default function Navigation(props: NavigationProps) {
   const Drawer = createDrawerNavigator();

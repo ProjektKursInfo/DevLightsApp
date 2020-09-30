@@ -29,6 +29,7 @@ build/
 .gradle
 local.properties
 *.iml
+*.hprof
 
 # node.js
 #
@@ -61,3 +62,4 @@ buck-out/
 # Expo
 .expo/*
 web-build/
+

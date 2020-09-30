@@ -1,5 +1,16 @@
 import { DarkTheme } from "react-native-paper";
 
+declare global {
+  namespace ReactNativePaper {
+    interface ThemeColors {
+      secondary: string;
+    }
+    interface Theme {
+      spacing: Function;
+    }
+  }
+}
+
 const theme = {
   ...DarkTheme,
   dark: true,
