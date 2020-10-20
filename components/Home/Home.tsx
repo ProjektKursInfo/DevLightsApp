@@ -6,7 +6,7 @@ import { StatusBar } from "react-native";
 
 export interface HomeProps {}
 
-function Home(props: HomeProps) {
+export default function Home(props: HomeProps) {
   const theme = useTheme();
 
   return (
@@ -17,12 +17,12 @@ function Home(props: HomeProps) {
       />
       <ScrollView contentContainerStyle={{ alignItems: "center" }}>
         <Title>Welcome in the DevLights App</Title>
-        <Card colors={["#ff0"]} ip={"1.1.1.1"}></Card>
+        <Card name={"Moin"} colors={["#ff0"]} ip={"1.1.1.1"}></Card>
         <Card setup colors={["#fb6340", "#fbb140"]} ip={"1.1.1.1"}></Card>
         <Card colors={["#00f", "#ff00bb"]} ip={"1.1.1.1"}></Card>
       </ScrollView>
     </>
   );
 }
-
-export default Home;
+/* 
+export default Home; */

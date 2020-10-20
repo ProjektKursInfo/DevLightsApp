@@ -5,13 +5,18 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from "@react-navigation/stack";
 import * as React from "react";
 import { View } from "react-native";
 import { IconButton, List } from "react-native-paper";
 import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import Home from "../Home";
+import LightScreen from "../LightScreens/LightScreen";
 import theme from "../theme";
+import { default as MaterialIcon } from "react-native-vector-icons/MaterialCommunityIcons";
 
 export interface NavigationProps {}
 
@@ -66,6 +71,23 @@ function HomeStack() {
           title: "Home",
           headerLeft: () => <HeaderIcon></HeaderIcon>,
         }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="light"
+        options={({ route }) => ({
+          headerBackImage: () => (
+            <MaterialIcon size={24} color="#fff" name="close"></MaterialIcon>
+          ),
+          headerBackTitleVisible: false,
+          title: route.params
+            ? route.params.name
+              ? route.params.name
+              : route.params.ip
+            : "Name not found",
+          gestureEnabled: true,
+          ...TransitionPresets.ModalSlideFromBottomIOS,
+        })}
+        component={LightScreen}
       ></Stack.Screen>
     </Stack.Navigator>
   );

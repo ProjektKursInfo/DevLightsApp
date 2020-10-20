@@ -1,18 +1,19 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faPlug, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
 import {
   GestureResponderEvent,
   StyleSheet,
   TouchableOpacity,
-  ViewStyle,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { Card as PaperCard, Headline, useTheme } from "react-native-paper";
+import { Headline, useTheme } from "react-native-paper";
 import { Theme } from "react-native-paper/lib/typescript/src/types";
 import getContrastTextColor from "../textContrast/";
-
+/*  */
 export interface CardProps {
   setup?: boolean;
   ip: string;
@@ -43,28 +44,38 @@ export default function Card(props: CardProps): JSX.Element {
     },
   });
 
+  const navigation = useNavigation();
+  const onPress: VoidFunction = () => {
+    console.log("pressed");
+    navigation.navigate("light", {
+      ip: props.ip,
+      name: props.name ? props.name : undefined,
+    });
+  };
   return (
-    <LinearGradient
-      style={styles.card}
-      colors={[colors[0], colors[1] ?? colors[0]]}
-      start={[0, 1]}
-      end={[1, 0]}
-    >
-      <Headline style={styles.headline}>{props.name ?? props.ip}</Headline>
-      {props.setup ? (
-        <ActionIcon
-          onClick={() => {}}
-          icon={faPowerOff}
-          color={getContrastTextColor(colors[1] ?? colors[0])}
-        />
-      ) : (
-        <ActionIcon
-          onClick={() => {}}
-          icon={faPlug}
-          color={getContrastTextColor(colors[1] ?? colors[0])}
-        />
-      )}
-    </LinearGradient>
+    <TouchableWithoutFeedback onPress={onPress}>
+      <LinearGradient
+        style={styles.card}
+        colors={[colors[0], colors[1] ?? colors[0]]}
+        start={[0, 1]}
+        end={[1, 0]}
+      >
+        <Headline style={styles.headline}>{props.name ?? props.ip}</Headline>
+        {props.setup ? (
+          <ActionIcon
+            onClick={onPress}
+            icon={faPowerOff}
+            color={getContrastTextColor(colors[1] ?? colors[0])}
+          />
+        ) : (
+          <ActionIcon
+            onClick={onPress}
+            icon={faPlug}
+            color={getContrastTextColor(colors[1] ?? colors[0])}
+          />
+        )}
+      </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 export interface ActionIconProps {

@@ -1,8 +1,5 @@
-import * as React from "react";
-import { Component } from "react";
-import { faHamburger } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
+import * as React from "react";
 import { IconButton, useTheme } from "react-native-paper";
 
 export default function HeaderIcon() {
