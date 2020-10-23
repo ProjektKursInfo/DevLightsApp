@@ -4,19 +4,20 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, RouteProp } from "@react-navigation/native";
 import {
   createStackNavigator,
+  StackNavigationProp,
   TransitionPresets,
 } from "@react-navigation/stack";
 import * as React from "react";
 import { View } from "react-native";
 import { IconButton, List } from "react-native-paper";
+import ColorPicker from "../ColorPicker/ColorPicker";
 import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import Home from "../Home";
 import LightScreen from "../LightScreens/LightScreen";
 import theme from "../theme";
-import { default as MaterialIcon } from "react-native-vector-icons/MaterialCommunityIcons";
 
 export interface NavigationProps {}
 
@@ -59,8 +60,41 @@ function DrawerContent(props: DrawerContentComponentProps) {
     </DrawerContentScrollView>
   );
 }
+
+export type HomeStackParamList = {
+  home: undefined;
+  light: {
+    name: string;
+    id: string;
+    pattern: string;
+    colors: string[];
+    count: number;
+  };
+  color_modal: { colors: string[]; id: string; pattern: string };
+};
+
+export type LightScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  "light"
+>;
+export type HomeScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  "home"
+>;
+export type ColorModalScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  "color_modal"
+>;
+
+export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
+export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
+export type ColorModalScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  "color_modal"
+>;
+
 function HomeStack() {
-  const Stack = createStackNavigator();
+  const Stack = createStackNavigator<HomeStackParamList>();
 
   return (
     <Stack.Navigator>
@@ -75,19 +109,19 @@ function HomeStack() {
       <Stack.Screen
         name="light"
         options={({ route }) => ({
-          headerBackImage: () => (
-            <MaterialIcon size={24} color="#fff" name="close"></MaterialIcon>
-          ),
           headerBackTitleVisible: false,
-          title: route.params
-            ? route.params.name
-              ? route.params.name
-              : route.params.ip
-            : "Name not found",
+          headerTitle: "",
           gestureEnabled: true,
-          ...TransitionPresets.ModalSlideFromBottomIOS,
+          ...TransitionPresets.SlideFromRightIOS,
         })}
         component={LightScreen}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="color_modal"
+        options={{
+          headerTitle: "Color Picker",
+        }}
+        component={ColorPicker}
       ></Stack.Screen>
     </Stack.Navigator>
   );

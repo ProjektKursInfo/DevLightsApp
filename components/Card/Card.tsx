@@ -1,3 +1,4 @@
+import { types } from "@babel/core";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faPlug, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -12,13 +13,15 @@ import {
 } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
 import { Theme } from "react-native-paper/lib/typescript/src/types";
-import getContrastTextColor from "../textContrast/";
-/*  */
+import getContrastTextColor from "../textContrast";
+
 export interface CardProps {
   setup?: boolean;
-  ip: string;
-  name?: string;
+  name: string;
   colors: string[];
+  id: string;
+  count: number;
+  pattern: string;
   style?: object;
 }
 
@@ -27,7 +30,7 @@ export interface CardState {}
 export default function Card(props: CardProps): JSX.Element {
   const theme: Theme = useTheme();
   const colors = props.colors;
-  const styles: StyleSheet = StyleSheet.create({
+  const styles = StyleSheet.create({
     card: {
       borderRadius: theme.roundness * 2,
       width: "80%",
@@ -45,13 +48,18 @@ export default function Card(props: CardProps): JSX.Element {
   });
 
   const navigation = useNavigation();
-  const onPress: VoidFunction = () => {
-    console.log("pressed");
+  const onPress = (): void => {
     navigation.navigate("light", {
-      ip: props.ip,
       name: props.name ? props.name : undefined,
+      id: props.id,
+      pattern: props.pattern,
+      colors: colors,
+      count: props.count,
     });
   };
+
+  // #FF00FF
+  //
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <LinearGradient
@@ -60,7 +68,9 @@ export default function Card(props: CardProps): JSX.Element {
         start={[0, 1]}
         end={[1, 0]}
       >
-        <Headline style={styles.headline}>{props.name ?? props.ip}</Headline>
+        <Headline style={styles.headline}>
+          {props.name ?? "Name not avaible"}
+        </Headline>
         {props.setup ? (
           <ActionIcon
             onClick={onPress}

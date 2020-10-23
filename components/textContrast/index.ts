@@ -1,17 +1,18 @@
-export function getHexNumber(number, double) {
+export function getHexNumber(number: string, double?: boolean) {
   if (double) {
     number += number;
   }
   return parseInt(number, 16);
 }
-export function parseRGB(rgb) {
-  let arr = rgb.split(",");
+export function parseRGB(rgb: string) {
+  let arr: string[]= rgb.split(",");
+  
   arr.map((c, i) => {
     arr[i] = arr[i].replace(/\D/g, "");
   });
   return { r: arr[0], g: arr[1], b: arr[2] };
 }
-export function getRGBFromHex(hex) {
+export function getRGBFromHex(hex: string) {
   let r, g, b;
   if (hex.length == 9) {
     hex = hex.substring(0, 7);
@@ -32,7 +33,7 @@ export function getRGBFromHex(hex) {
 export function getGreyScale(rgb) {
   return 0.3 * rgb.r + 0.59 * rgb.g + 0.11 * rgb.b;
 }
-export function contrastBlack(color) {
+export function contrastBlack(color: string) {
   let scale;
   if (
     /^(rgba?)?\(([01]?\d\d?|2[0-4]\d|25[0-5]),\s*([01]?\d\d?|2[0-4]\d|25[0-5]),\s*([01]?\d\d?|2[0-4]\d|25[0-5])(?:,\s*([01]?\d\d?|2[0-4]\d|25[0-5]))?\)$/.test(
