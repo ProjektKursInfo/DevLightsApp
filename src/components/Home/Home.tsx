@@ -1,11 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import * as React from "react";
-import { RefreshControl, ScrollView, StatusBar } from "react-native";
+import { RefreshControl, ScrollView, StatusBar, Text } from "react-native";
 import { Title, useTheme } from "react-native-paper";
 import { Light } from "../../interfaces";
-import Card from "../Card/Card";
+import Card from "../Card";
 
-export interface HomeProps {}
+export interface HomeProps { }
 
 export default function Home(props: HomeProps) {
   const theme = useTheme();
@@ -23,8 +23,7 @@ export default function Home(props: HomeProps) {
     axios
       .get(`http://${ip}/settings`)
       .then((response: AxiosResponse) => {
-        console.log(response.data[0]);
-        setLights(response.data);
+        setLights(response.data.object);
       })
       .catch((err: unknown) => {
         console.log(err);
@@ -32,6 +31,7 @@ export default function Home(props: HomeProps) {
     if (refreshing) setRefresh(false);
   };
   const { colors } = useTheme();
+  console.log(lights);
   return (
     <>
       <StatusBar
@@ -51,6 +51,7 @@ export default function Home(props: HomeProps) {
       >
         <Title>Welcome in the DevLights App</Title>
         <Card
+
           light={{
             name: "Timo",
             count: 20,
@@ -59,15 +60,16 @@ export default function Home(props: HomeProps) {
           }}
         ></Card>
         {
-          /* lights.length > 0 ? */ lights.map((light) => {
+          lights.length > 0 ? lights.map((light) => {
+            console.log(light);
             return <Card light={light}></Card>;
-          }) /* : (
-          <Text> There aren't any lights in your network</Text>
-        ) */
+          }) : (
+              <Text> There are no lights in your network</Text>
+            )
         }
       </ScrollView>
     </>
   );
 }
-/* 
+/*
 export default Home; */

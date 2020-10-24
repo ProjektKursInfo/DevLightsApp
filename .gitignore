@@ -40,7 +40,7 @@ yarn-error.log
 # BUCK
 buck-out/
 \.buckd/
-*.keystore
+#*.keystore foro no fine should be ignored when every one has the file
 
 # fastlane
 #

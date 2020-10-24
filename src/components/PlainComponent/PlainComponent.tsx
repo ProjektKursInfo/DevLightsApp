@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import * as React from "react";
+import { StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 
 export interface PlainComponentProps {
@@ -20,13 +21,15 @@ export default function PlainComponent(
       pattern: props.pattern,
     });
   };
-  console.log("moin");
-  console.log(props.colors[0]);
+
+  const styles = StyleSheet.create({
+    button: { width: "70%", alignSelf: "center", marginTop: 20 }
+  })
   return (
     <>
       <Button
         mode="contained"
-        style={{ width: "70%", alignSelf: "center", marginTop: 20 }}
+        style={styles.button}
         onPress={onPress}
         color={props.colors[0].toString()}
       >

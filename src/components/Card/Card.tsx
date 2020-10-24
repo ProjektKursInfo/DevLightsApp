@@ -1,14 +1,10 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faPlug, faPowerOff } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
 import {
-  GestureResponderEvent,
   StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
+
+  TouchableWithoutFeedback
 } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
 import { Theme } from "react-native-paper/lib/typescript/src/types";
@@ -40,6 +36,7 @@ export default function Card(props: CardProps): JSX.Element {
 
   const navigation = useNavigation();
   const onPress = (): void => {
+    console.log("highh")
     navigation.navigate("light", {
       name: props.light.name ? props.light.name : undefined,
       id: props.light.uuid,

@@ -2,38 +2,45 @@ import { faCheck, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import * as React from "react";
 import {
-  TextInput as Input,
+  StyleSheet, TextInput as Input,
   TextInputProps,
-  View,
-  StyleSheet,
+  View
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useTheme } from "react-native-paper";
+import theme from "../theme";
 
 export interface ChangeableTextProps extends TextInputProps {
   onSave: () => void;
+  style: any,
 }
 
 export default function ChangeableText(props: ChangeableTextProps) {
   const { colors } = useTheme();
-  const { onSave, ...rest } = props;
+  const { onSave, style, ...rest } = props;
 
   const [editable, setEditable] = React.useState<boolean>(false);
+
   const inputRef = React.useRef<Input>(null);
+
+  React.useEffect(() => {
+    editable ? inputRef?.current?.focus() : undefined;
+  }, [editable])
+
   const handleSave = (): void => {
+    //TODO remove underline on button press
     props.onSave();
     setEditable(false);
   };
   const handleEdit = (): void => {
-    console.log(inputRef.current);
     setEditable(true);
-    inputRef?.current?.focus();
   };
   const styles = StyleSheet.create({
     container: {
       justifyContent: "center",
       alignItems: "center",
       flexDirection: "row",
+      ...style
     },
     icon: {
       marginLeft: 10,
@@ -47,6 +54,7 @@ export default function ChangeableText(props: ChangeableTextProps) {
   return (
     <View style={styles.container}>
       <Input
+        selectionColor={theme.colors.primary + "77"}
         editable={editable}
         onSubmitEditing={handleSave}
         ref={inputRef}

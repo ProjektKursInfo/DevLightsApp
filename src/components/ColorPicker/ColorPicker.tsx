@@ -1,13 +1,11 @@
-import * as React from "react";
-import { Component } from "react";
-import { View } from "react-native";
-import { Button, Text } from "react-native-paper";
-import HsvColorPicker from "react-native-hsv-color-picker";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Axios, { AxiosResponse } from "axios";
-import { useRoute } from "@react-navigation/native";
+import * as React from "react";
+import { View } from "react-native";
+import HsvColorPicker from "react-native-hsv-color-picker";
+import { Button, Text } from "react-native-paper";
 import tinycolor, { ColorFormats } from "tinycolor2";
 import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
-import { count } from "console";
 
 export default function ColorPicker() {
   const [h, setH] = React.useState<number>(0);
@@ -40,18 +38,17 @@ export default function ColorPicker() {
     setHex(color);
   };
 
+  const navigation = useNavigation();
+
   const onSubmit = (): void => {
     Axios.patch(`http://${ip}/colors/${route.params.id}`, {
       colors: [hex],
       pattern: route.params.pattern,
     })
       .then((res: AxiosResponse) => {
-        /* console.log(res.data); */
+        navigation.goBack();
       })
-      .catch((err: unknown) => {
-        /* console.log(err); */
-      });
-  };
+  }
 
   // settings/count/id
 
