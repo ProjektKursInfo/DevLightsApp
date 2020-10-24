@@ -50,18 +50,17 @@ export default function Home(props: HomeProps) {
         contentContainerStyle={{ alignItems: "center" }}
       >
         <Title>Welcome in the DevLights App</Title>
+        <Card
+          light={{
+            name: "Timo",
+            count: 20,
+            uuid: "10.10",
+            leds: { colors: ["#0f0"], pattern: "plain" },
+          }}
+        ></Card>
         {
           /* lights.length > 0 ? */ lights.map((light) => {
-            return (
-              <Card
-                pattern={light.leds.pattern}
-                key={light.uuid}
-                id={light.uuid}
-                name={light.name}
-                colors={light.leds.colors}
-                count={light.count}
-              ></Card>
-            );
+            return <Card light={light}></Card>;
           }) /* : (
           <Text> There aren't any lights in your network</Text>
         ) */

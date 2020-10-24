@@ -45,7 +45,7 @@ function DrawerContent(props: DrawerContentComponentProps) {
       <View style={{ margin: 15 }}>
         <List.Item
           title={"DevLights"}
-          description={"Control and Setup your Smart Lightsss"}
+          description={"Control and Setup your Smart Lights"}
           left={(iconProps) => (
             <IconButton
               {...iconProps}

@@ -13,7 +13,6 @@ export default function LightScreen() {
   const { colors } = useTheme();
   const [name, setName] = React.useState<string>(route.params.name);
   const [pattern, setPattern] = React.useState<string>(route.params.pattern);
-  const [editable, setEditable] = React.useState<boolean>(false);
   const [count, setCount] = React.useState<string>(
     route.params.count.toString()
   );
@@ -24,17 +23,7 @@ export default function LightScreen() {
     setName(value);
   };
 
-  const onEditPress = (): void => {
-    console.log("press");
-    setEditable(true);
-  };
-
   const onSave = (): void => {
-    setEditable(false);
-    saveName();
-  };
-
-  const saveName = (): void => {
     if (name != route.params.name) {
       Axios.patch(`http://${ip}/settings/${id}`, {
         name: name,
@@ -72,9 +61,7 @@ export default function LightScreen() {
       <ChangeableText
         value={name}
         onChangeText={(value) => onChange(value)}
-        editable={editable}
         onSave={onSave}
-        onEditPress={onEditPress}
       ></ChangeableText>
       <View style={{ marginTop: 40 }}>
         <DropDownPicker
