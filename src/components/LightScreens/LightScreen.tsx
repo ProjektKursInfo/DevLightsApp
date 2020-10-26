@@ -7,6 +7,7 @@ import { Divider, Text, useTheme } from "react-native-paper";
 import ChangeableText from "../ChangeableText";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
+import { useStore } from "react-redux";
 
 export default function LightScreen() {
   const route = useRoute<LightScreenRouteProp>();
@@ -16,7 +17,8 @@ export default function LightScreen() {
   const [count, setCount] = React.useState<string>(
     route.params.count.toString()
   );
-  const id = route.params.id;
+  const store = useStore();
+  const id: string = route.params.id;
 
   const onChange = (value: string) => {
     console.log(value);
@@ -29,6 +31,11 @@ export default function LightScreen() {
         name: name,
       })
         .then((res) => {
+          store.dispatch({
+            type: "EDIT_LIGHT_NAME",
+            id: id,
+            name: name,
+          });
           console.log(res);
         })
         .catch((err) => {
@@ -45,10 +52,15 @@ export default function LightScreen() {
     let isNum: boolean = /^\d+$/.test(count);
 
     if (isNum) {
-      Axios.patch(`http://${ip}/settings/count/${route.params.id}`, {
+      Axios.patch(`http://${ip}/settings/count/${id}`, {
         count: parseInt(count),
       })
         .then((res: AxiosResponse) => {
+          store.dispatch({
+            type: "EDIT_LED_COUNT",
+            id: id,
+            count: parseInt(count),
+          });
           console.log(res);
         })
         .catch((err: unknown) => {
@@ -66,30 +78,30 @@ export default function LightScreen() {
       justifyContent: "space-between",
       marginTop: theme.spacing(4),
       marginLeft: theme.spacing(8),
-      marginRight: theme.spacing(5)
+      marginRight: theme.spacing(5),
     },
     divider: {
       backgroundColor: theme.colors.text + "aa",
-      marginVertical: 15
+      marginVertical: 15,
     },
     selectContainer: {
       marginLeft: theme.spacing(8),
-      marginRight: theme.spacing(5)
+      marginRight: theme.spacing(5),
     },
     selectLabel: {
-      marginLeft: 5
+      marginLeft: 5,
     },
     select: {
       marginLeft: 0,
       backgroundColor: "#393939",
-      borderColor: "transparent"
+      borderColor: "transparent",
     },
     selectDropdown: {
       marginLeft: 0,
       backgroundColor: "#4f4f4f",
-      borderColor: "transparent"
-    }
-  })
+      borderColor: "transparent",
+    },
+  });
   return (
     <View style={styles.container}>
       <ChangeableText
@@ -99,9 +111,7 @@ export default function LightScreen() {
         style={{ marginBottom: theme.spacing(5) }}
       ></ChangeableText>
 
-      <View
-        style={styles.numberContainer}
-      >
+      <View style={styles.numberContainer}>
         <Text
           style={{
             flex: 3,
@@ -158,10 +168,9 @@ export default function LightScreen() {
             id={route.params.id}
           ></PlainComponent>
         ) : (
-            <Text>Not implemented yet!</Text>
-          )}
+          <Text>Not implemented yet!</Text>
+        )}
       </View>
-
     </View>
   );
 }

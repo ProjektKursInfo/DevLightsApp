@@ -4,6 +4,7 @@ import * as React from "react";
 import { View } from "react-native";
 import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text } from "react-native-paper";
+import { useStore } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
 import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
 
@@ -11,6 +12,7 @@ export default function ColorPicker() {
   const [h, setH] = React.useState<number>(0);
   const [s, setS] = React.useState<number>(0);
   const [v, setV] = React.useState<number>(1);
+  const store = useStore();
   const [hex, setHex] = React.useState<string>("");
 
   const route = useRoute<ColorModalScreenRouteProp>();
@@ -41,14 +43,19 @@ export default function ColorPicker() {
   const navigation = useNavigation();
 
   const onSubmit = (): void => {
-    Axios.patch(`http://${ip}/colors/${route.params.id}`, {
+    Axios.patch(`http://${ip}/settings/colors/${route.params.id}`, {
       colors: [hex],
       pattern: route.params.pattern,
-    })
-      .then((res: AxiosResponse) => {
-        navigation.goBack();
-      })
-  }
+    }).then((res: AxiosResponse) => {
+      console.log(res.data);
+      store.dispatch({
+        type: "EDIT_LIGHT_COLOR",
+        id: route.params.id,
+        colors: [hex],
+      });
+      navigation.goBack();
+    });
+  };
 
   // settings/count/id
 

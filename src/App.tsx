@@ -6,6 +6,8 @@ import SafeAreaView from "./components/SafeAreaView";
 import { Provider as PaperProvider } from "react-native-paper";
 import theme from "./components/theme";
 import { getIpAddressesForHostname } from "react-native-dns-lookup";
+import { Provider } from "react-redux";
+import store from "./store";
 
 async function getIp() {
   let ip = "";
@@ -22,12 +24,14 @@ export default function App() {
   getIp();
 
   return (
-    <PaperProvider theme={theme}>
-      <SafeAreaProvider>
-        <SafeAreaView>
-          <Navigation></Navigation>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </PaperProvider>
+    <Provider store={store}>
+      <PaperProvider theme={theme}>
+        <SafeAreaProvider>
+          <SafeAreaView>
+            <Navigation></Navigation>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </Provider>
   );
 }

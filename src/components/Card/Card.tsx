@@ -1,11 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
-import {
-  StyleSheet,
-
-  TouchableWithoutFeedback
-} from "react-native";
+import { StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
 import { Theme } from "react-native-paper/lib/typescript/src/types";
 import { Light } from "../../interfaces";
@@ -36,7 +32,6 @@ export default function Card(props: CardProps): JSX.Element {
 
   const navigation = useNavigation();
   const onPress = (): void => {
-    console.log("highh")
     navigation.navigate("light", {
       name: props.light.name ? props.light.name : undefined,
       id: props.light.uuid,

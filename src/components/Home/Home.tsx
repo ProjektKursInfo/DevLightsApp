@@ -2,28 +2,33 @@ import axios, { AxiosResponse } from "axios";
 import * as React from "react";
 import { RefreshControl, ScrollView, StatusBar, Text } from "react-native";
 import { Title, useTheme } from "react-native-paper";
+import { useStore } from "react-redux";
 import { Light } from "../../interfaces";
 import Card from "../Card";
 
-export interface HomeProps { }
+export interface HomeProps {}
 
 export default function Home(props: HomeProps) {
   const theme = useTheme();
+  const store = useStore();
 
-  const [lights, setLights] = React.useState<Light[]>([]);
+  const lights: Light[] = store.getState().lights;
   const [refresh, setRefresh] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     console.log("effect");
     getLights();
   }, []);
-
   const getLights = (refreshing: boolean = false): void => {
     if (refreshing) setRefresh(refreshing);
     axios
       .get(`http://${ip}/settings`)
       .then((response: AxiosResponse) => {
-        setLights(response.data.object);
+        store.dispatch({
+          type: "SET_ALL_LIGHTS",
+          lights: response.data.object,
+        });
+        /* props.setAllLights(response.data.object); */
       })
       .catch((err: unknown) => {
         console.log(err);
@@ -31,7 +36,6 @@ export default function Home(props: HomeProps) {
     if (refreshing) setRefresh(false);
   };
   const { colors } = useTheme();
-  console.log(lights);
   return (
     <>
       <StatusBar
@@ -51,7 +55,6 @@ export default function Home(props: HomeProps) {
       >
         <Title>Welcome in the DevLights App</Title>
         <Card
-
           light={{
             name: "Timo",
             count: 20,
@@ -59,17 +62,14 @@ export default function Home(props: HomeProps) {
             leds: { colors: ["#0f0"], pattern: "plain" },
           }}
         ></Card>
-        {
-          lights.length > 0 ? lights.map((light) => {
-            console.log(light);
-            return <Card light={light}></Card>;
-          }) : (
-              <Text> There are no lights in your network</Text>
-            )
-        }
+        {lights.length > 0 ? (
+          lights.map((light: Light) => {
+            return <Card key={light.uuid} light={light}></Card>;
+          })
+        ) : (
+          <Text> There are no lights in your network</Text>
+        )}
       </ScrollView>
     </>
   );
 }
-/*
-export default Home; */
