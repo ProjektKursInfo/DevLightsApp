@@ -54,14 +54,6 @@ export default function Home(props: HomeProps) {
         contentContainerStyle={{ alignItems: "center" }}
       >
         <Title>Welcome in the DevLights App</Title>
-        <Card
-          light={{
-            name: "Timo",
-            count: 20,
-            uuid: "10.10",
-            leds: { colors: ["#0f0"], pattern: "plain" },
-          }}
-        ></Card>
         {lights.length > 0 ? (
           lights.map((light: Light) => {
             return <Card key={light.uuid} light={light}></Card>;

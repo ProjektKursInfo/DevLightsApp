@@ -1,18 +1,18 @@
-import "react-native-gesture-handler";
 import React from "react";
+import { getIpAddressesForHostname } from "react-native-dns-lookup";
+import "react-native-gesture-handler";
+import { Provider as PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
 import Navigation from "./components/Navigation/Navigation";
 import SafeAreaView from "./components/SafeAreaView";
-import { Provider as PaperProvider } from "react-native-paper";
 import theme from "./components/theme";
-import { getIpAddressesForHostname } from "react-native-dns-lookup";
-import { Provider } from "react-redux";
 import store from "./store";
 
 async function getIp() {
   let ip = "";
 
-  await getIpAddressesForHostname("TimoLaptop").then((res) => {
+  await getIpAddressesForHostname("devlight").then((res) => {
     /* console.log(res[0]); */
     ip = res[0];
   });
