@@ -8,18 +8,18 @@ import {
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useTheme } from "react-native-paper";
-import theme from "../theme";
 
 export interface ChangeableTextProps extends TextInputProps {
-  onSave: () => void;
+  onSave: (text: string) => void;
   style: any,
 }
 
-export default function ChangeableText(props: ChangeableTextProps) {
+export default function ChangeableText(props: ChangeableTextProps): JSX.Element {
   const { colors } = useTheme();
-  const { onSave, style, ...rest } = props;
+  const { onSave, style, value, ...rest } = props;
 
   const [editable, setEditable] = React.useState<boolean>(false);
+  const [text, setText] = React.useState<string>(value ?? "");
 
   const inputRef = React.useRef<Input>(null);
 
@@ -29,7 +29,7 @@ export default function ChangeableText(props: ChangeableTextProps) {
 
   const handleSave = (): void => {
     //TODO remove underline on button press
-    props.onSave();
+    props.onSave(text);
     setEditable(false);
   };
   const handleEdit = (): void => {
@@ -48,18 +48,21 @@ export default function ChangeableText(props: ChangeableTextProps) {
     input: {
       color: colors.text,
       fontSize: 40,
-      fontWeight: "bold",
+      fontWeight: "600",
+      fontFamily: "TitilliumWeb-Bold"
     },
   });
   return (
     <View style={styles.container}>
       <Input
-        selectionColor={theme.colors.primary + "77"}
+        selectionColor={colors.primary + "77"}
         editable={editable}
         onSubmitEditing={handleSave}
+        onChangeText={setText}
         ref={inputRef}
         textAlign={"center"}
         style={styles.input}
+        value={text}
         {...rest}
       ></Input>
       <TouchableOpacity onPress={editable ? handleSave : handleEdit}>

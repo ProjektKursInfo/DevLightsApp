@@ -1,15 +1,14 @@
-import { Action } from "redux";
 import { Light } from "../../interfaces";
 import {
-  ADD_LIGHT,
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,
   EDIT_LIGHT_NAME,
-  SET_ALL_LIGHTS,
+
+  SET_ALL_LIGHTS
 } from "../actions/types";
 import defaultstate from "../defaultstate";
 
-function lights(state = defaultstate, action: any) {
+function lights(state = defaultstate.lights, action: any) {
   let lights: Light[];
   let light: Light;
   let index: number;

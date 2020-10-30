@@ -1,63 +1,49 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios, { AxiosResponse } from "axios";
+import Axios from "axios";
 import * as React from "react";
 import { View } from "react-native";
 import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text } from "react-native-paper";
-import { useStore } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
+import { Leds, Light } from "../../interfaces";
+import { Store } from "../../store";
+import { EDIT_LIGHT_COLOR } from "../../store/actions/types";
+import { ledsEquality } from "../../utils";
 import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
 
-export default function ColorPicker() {
-  const [h, setH] = React.useState<number>(0);
-  const [s, setS] = React.useState<number>(0);
-  const [v, setV] = React.useState<number>(1);
-  const store = useStore();
-  const [hex, setHex] = React.useState<string>("");
+export default function ColorPicker(): JSX.Element {
 
   const route = useRoute<ColorModalScreenRouteProp>();
-  React.useEffect(() => {
-    setHex(route.params.colors[0]);
-    const hsv: ColorFormats.HSVA = tinycolor(route.params.colors[0]).toHsv();
-    setH(hsv.h);
-    setS(hsv.s);
-    setV(hsv.v);
-  }, []);
+  const leds = useSelector((state: Store) => state.lights.find((l: Light) => l.uuid === route.params.id)?.leds as Leds, ledsEquality)
+  const [hsv, setHsv] = React.useState<ColorFormats.HSV>(tinycolor(leds.colors[0]).toHsv());
+  const [hex, setHex] = React.useState<string>(leds.colors[0]);
 
-  const onSatValPickerChange = ({ saturation, value }): void => {
-    setS(saturation);
-    setV(value);
-    getHex();
-  };
-
-  const onHuePickerChange = ({ hue }): void => {
-    setH(hue);
-    getHex();
-  };
-
-  const getHex = (): void => {
-    const color = tinycolor.fromRatio({ h: h, s: s, v: v }).toHexString();
-    setHex(color);
-  };
-
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  const onHueChange = ({ hue }: { hue: number }) => {
+    setHsv({ ...hsv, h: hue })
+    setHex(tinycolor.fromRatio({ ...hsv, h: hue }).toHexString())
+  }
+
+  const onSatValChange = ({ saturation, value }: { saturation: number, value: number }) => {
+    setHsv({ ...hsv, s: saturation, v: value })
+    setHex(tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString())
+  }
   const onSubmit = (): void => {
-    Axios.patch(`http://${ip}/settings/colors/${route.params.id}`, {
+    Axios.patch(`http://${ip}/colors/${route.params.id}`, {
       colors: [hex],
-      pattern: route.params.pattern,
-    }).then((res: AxiosResponse) => {
-      console.log(res.data);
-      store.dispatch({
-        type: "EDIT_LIGHT_COLOR",
+      pattern: leds.pattern,
+    }).then(() => {
+      dispatch({
+        type: EDIT_LIGHT_COLOR,
         id: route.params.id,
         colors: [hex],
       });
       navigation.goBack();
     });
   };
-
-  // settings/count/id
 
   return (
     <View
@@ -69,22 +55,22 @@ export default function ColorPicker() {
       }}
     >
       <HsvColorPicker
-        huePickerHue={h}
-        onHuePickerDragMove={onHuePickerChange}
-        onHuePickerPress={onHuePickerChange}
-        satValPickerHue={h}
-        satValPickerSaturation={s}
-        satValPickerValue={v}
-        satValPickerSize={270}
+        huePickerHue={hsv.h}
         huePickerSliderSize={30}
+        satValPickerHue={hsv.h}
+        satValPickerSaturation={hsv.s}
+        satValPickerValue={hsv.v}
+        satValPickerSize={270}
         satValPickerSliderSize={30}
-        onSatValPickerDragMove={onSatValPickerChange}
-        onSatValPickerPress={onSatValPickerChange}
+        onHuePickerDragMove={onHueChange}
+        onHuePickerPress={onHueChange}
+        onSatValPickerDragMove={onSatValChange}
+        onSatValPickerPress={onSatValChange}
       />
       <Text>Current color: {hex}</Text>
       <Button
         style={{ marginTop: 20 }}
-        color={hex != "" ? hex : route.params.colors[0]}
+        color={hex != "" ? hex : leds.colors[0]}
         onPress={onSubmit}
         mode="contained"
       >

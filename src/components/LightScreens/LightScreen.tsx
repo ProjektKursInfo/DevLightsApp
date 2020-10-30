@@ -1,73 +1,57 @@
 import { useRoute } from "@react-navigation/native";
-import Axios, { AxiosResponse } from "axios";
+import Axios from "axios";
 import * as React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { Light } from "../../interfaces";
+import { Store } from "../../store";
+import { EDIT_LIGHT_NAME } from "../../store/actions/types";
 import ChangeableText from "../ChangeableText";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
-import { useStore } from "react-redux";
 
-export default function LightScreen() {
+export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const theme = useTheme();
-  const [name, setName] = React.useState<string>(route.params.name);
-  const [pattern, setPattern] = React.useState<string>(route.params.pattern);
-  const [count, setCount] = React.useState<string>(
-    route.params.count.toString()
-  );
-  const store = useStore();
-  const id: string = route.params.id;
+  const light: Light = useSelector((state: Store) => state.lights.find((light: Light) => light.uuid === route.params.id)) as Light
 
-  const onChange = (value: string) => {
-    console.log(value);
-    setName(value);
-  };
+  const dispatch = useDispatch();
 
-  const onSave = (): void => {
-    if (name != route.params.name) {
-      Axios.patch(`http://${ip}/settings/${id}`, {
-        name: name,
-      })
-        .then((res) => {
-          store.dispatch({
-            type: "EDIT_LIGHT_NAME",
-            id: id,
-            name: name,
-          });
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
+  const changeName = (name: string) => {
+    Axios.patch(`http://${ip}/settings/${light.uuid}`, {
+      name: name
+    })
+      .then(() => {
+        dispatch({
+          type: EDIT_LIGHT_NAME,
+          id: light.uuid,
+          name: name,
         });
-    }
-  };
 
-  //NAME
-  // PATTERN PICKER
-  // PLAIN ? One Button for one color
-  // GRADIENT ? Two Buttons for two colors
-  const changeNumber = () => {
-    let isNum: boolean = /^\d+$/.test(count);
-
-    if (isNum) {
-      Axios.patch(`http://${ip}/settings/count/${id}`, {
-        count: parseInt(count),
       })
-        .then((res: AxiosResponse) => {
-          store.dispatch({
-            type: "EDIT_LED_COUNT",
-            id: id,
-            count: parseInt(count),
-          });
-          console.log(res);
-        })
-        .catch((err: unknown) => {
-          console.log(err);
+  }
+
+  const changeNumber = (count: string) => {
+    if (!/^\d+$/.test(count)) return;
+    Axios.patch(`http://${ip}/settings/count/${light.uuid}`, {
+      count: parseInt(count),
+    })
+      .then(() => {
+        dispatch({
+          type: "EDIT_LED_COUNT",
+          id: light.uuid,
+          count: parseInt(count),
         });
-    }
+
+      })
   };
+
+  const changePattern = (pattern: string) => {
+    //change pattern 
+    //TODO does nothing till implemented on server
+  }
 
   const styles = StyleSheet.create({
     container: {
@@ -105,9 +89,8 @@ export default function LightScreen() {
   return (
     <View style={styles.container}>
       <ChangeableText
-        value={name}
-        onChangeText={(value) => onChange(value)}
-        onSave={onSave}
+        value={light.name}
+        onSave={changeName}
         style={{ marginBottom: theme.spacing(5) }}
       ></ChangeableText>
 
@@ -123,16 +106,16 @@ export default function LightScreen() {
         </Text>
         <TextInput
           keyboardType={"number-pad"}
-          onChangeText={(val) => setCount(val)}
-          onSubmitEditing={() => changeNumber()}
+          onSubmitEditing={({ nativeEvent: { text } }) => changeNumber(text)}
           textAlign={"right"}
           style={{
             flex: 2,
             color: theme.colors.text,
             fontSize: 20,
-            fontWeight: "bold",
+            fontFamily: "TitilliumWeb-Bold",
+            fontWeight: "600",
           }}
-          value={count}
+          defaultValue={light.count.toString()}
         ></TextInput>
       </View>
       <View style={styles.selectContainer}>
@@ -142,34 +125,36 @@ export default function LightScreen() {
             {
               label: "Single Color",
               value: "plain",
-            },
-            { label: "Gradient", value: "gradient" },
+            }/* ,
+            { label: "Gradient", value: "gradient" }, */
           ]}
-          defaultValue={route.params.pattern}
+          defaultValue={light.leds.pattern}
           containerStyle={{ height: 45 }}
           arrowColor={theme.colors.text}
           arrowSize={26}
           style={styles.select}
           dropDownStyle={styles.selectDropdown}
-          labelStyle={{ color: theme.colors.text, fontSize: 20 }}
+          labelStyle={{ color: theme.colors.text, fontSize: 20, fontFamily: "TitilliumWeb-Regular", fontWeight: "normal" }}
           itemStyle={{
             justifyContent: "flex-start",
           }}
-          onChangeItem={(item) => setPattern(item.value)}
+
+
+          onChangeItem={(item) => changePattern(item.value)}
         ></DropDownPicker>
       </View>
 
       <Divider style={styles.divider} />
       <View style={{ zIndex: 1 }}>
-        {pattern === "plain" ? (
+        {light.leds.pattern === "plain" ? (
           <PlainComponent
-            colors={route.params.colors}
-            pattern={route.params.pattern}
-            id={route.params.id}
+            colors={light.leds.colors}
+            pattern={light.leds.pattern}
+            id={light.uuid}
           ></PlainComponent>
         ) : (
-          <Text>Not implemented yet!</Text>
-        )}
+            <Text>Not implemented yet!</Text>
+          )}
       </View>
     </View>
   );

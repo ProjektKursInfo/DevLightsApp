@@ -7,7 +7,7 @@ import {
   DrawerContentScrollView,
   DrawerItemList
 } from "@react-navigation/drawer";
-import { NavigationContainer, RouteProp, useTheme } from "@react-navigation/native";
+import { NavigationContainer, RouteProp } from "@react-navigation/native";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
@@ -16,23 +16,18 @@ import {
 } from "@react-navigation/stack";
 import * as React from "react";
 import { Pressable, View } from "react-native";
-import { IconButton, List } from "react-native-paper";
+import { IconButton, List, useTheme } from "react-native-paper";
 import ColorPicker from "../ColorPicker/ColorPicker";
 import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import Home from "../Home";
 import LightScreen from "../LightScreens/LightScreen";
-import theme from "../theme";
 
 export type HomeStackParamList = {
   home: undefined;
   light: {
-    name: string;
     id: string;
-    pattern: string;
-    colors: string[];
-    count: number;
   };
-  color_modal: { colors: string[]; id: string; pattern: string };
+  color_modal: { id: string };
 };
 
 export type LightScreenNavigationProp = StackNavigationProp<
@@ -57,12 +52,13 @@ export type ColorModalScreenRouteProp = RouteProp<
 
 
 export default function Navigation() {
+  const theme = useTheme();
   const Drawer = createDrawerNavigator();
   return (
     <NavigationContainer theme={theme}>
       <Drawer.Navigator
+
         initialRouteName="home"
-        drawerStyle={{}}
         drawerContent={(contentProps) => <DrawerContent {...contentProps} />}
       >
         <Drawer.Screen
@@ -75,6 +71,7 @@ export default function Navigation() {
   );
 }
 function DrawerContent(props: DrawerContentComponentProps) {
+  const theme = useTheme();
   return (
     <DrawerContentScrollView style={{ backgroundColor: "#2f2f2f" }} {...props}>
       <View style={{ margin: 15 }}>
@@ -91,8 +88,8 @@ function DrawerContent(props: DrawerContentComponentProps) {
           )}
         ></List.Item>
       </View>
-      <DrawerItemList {...props} />
-    </DrawerContentScrollView>
+      <DrawerItemList labelStyle={{ fontFamily: "TitilliumWeb-Regular" }} {...props} />
+    </DrawerContentScrollView >
   );
 }
 
@@ -105,12 +102,13 @@ function HomeStack() {
         component={Home}
         options={{
           title: "Home",
+          headerTitle: "",
           headerLeft: () => <HeaderIcon></HeaderIcon>,
         }}
       ></Stack.Screen>
       <Stack.Screen
         name="light"
-        options={({ route }) => ({
+        options={() => ({
           headerBackTitleVisible: false,
           headerLeft: (props: StackHeaderLeftButtonProps) => <BackIcon icon={faChevronLeft} {...props} />,
 
@@ -138,7 +136,7 @@ function BackIcon(props: StackHeaderLeftButtonProps & { icon: IconProp }) {
   const { colors } = useTheme();
   return (
     <Pressable onPress={props.onPress}>
-      <FontAwesomeIcon style={{ marginLeft: 20, marginTop: 10 }} color={colors.text} size={30} icon={props.icon}></FontAwesomeIcon>
+      <FontAwesomeIcon style={{ marginLeft: 20, marginTop: 10 }} color={colors.accent} size={30} icon={props.icon}></FontAwesomeIcon>
     </Pressable>
   )
 }

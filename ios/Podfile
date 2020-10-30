@@ -19,6 +19,8 @@ target 'DevLights' do
 
   pod 'RNCPicker', :path => '../node_modules/@react-native-community/picker'
 
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+
   post_install do |installer|
     flipper_post_install(installer)
   end

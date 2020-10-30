@@ -1,22 +1,23 @@
 import axios, { AxiosResponse } from "axios";
+import Lottie from "lottie-react-native";
 import * as React from "react";
-import { RefreshControl, ScrollView, StatusBar, Text } from "react-native";
-import { Title, useTheme } from "react-native-paper";
-import { useStore } from "react-redux";
+import { RefreshControl, ScrollView, StatusBar, StyleSheet } from "react-native";
+import { Text, Title, useTheme } from "react-native-paper";
+import { useSelector, useStore } from "react-redux";
 import { Light } from "../../interfaces";
+import { Store } from "../../store";
 import Card from "../Card";
+export interface HomeProps { }
 
-export interface HomeProps {}
-
-export default function Home(props: HomeProps) {
+export default function Home(props: HomeProps): JSX.Element {
   const theme = useTheme();
   const store = useStore();
-
-  const lights: Light[] = store.getState().lights;
+  const lights: Light[] = useSelector((state: Store) => state.lights)
   const [refresh, setRefresh] = React.useState<boolean>(false);
 
-  React.useEffect(() => {
-    console.log("effect");
+
+  React.useEffect(() => {/* 
+    console.log("effect"); */
     getLights();
   }, []);
   const getLights = (refreshing: boolean = false): void => {
@@ -28,20 +29,26 @@ export default function Home(props: HomeProps) {
           type: "SET_ALL_LIGHTS",
           lights: response.data.object,
         });
-        /* props.setAllLights(response.data.object); */
       })
       .catch((err: unknown) => {
-        console.log(err);
       });
     if (refreshing) setRefresh(false);
   };
   const { colors } = useTheme();
+  const styles = StyleSheet.create({
+    title: {
+      paddingTop: 30,
+      marginBottom: 10,
+      fontSize: 40
+    }
+  })
   return (
     <>
       <StatusBar
         backgroundColor={theme.colors.background}
         barStyle="light-content"
       />
+
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -53,14 +60,17 @@ export default function Home(props: HomeProps) {
         }
         contentContainerStyle={{ alignItems: "center" }}
       >
-        <Title>Welcome in the DevLights App</Title>
+        <Title style={styles.title}>Lights</Title>
         {lights.length > 0 ? (
           lights.map((light: Light) => {
             return <Card key={light.uuid} light={light}></Card>;
           })
         ) : (
-          <Text> There are no lights in your network</Text>
-        )}
+            <>
+              <Lottie duration={4000} autoPlay hardwareAccelerationAndroid loop={false} autoSize source={require("../../../assets/animations/bulb.json")}></Lottie>
+              <Text style={{ textAlign: "center", fontSize: 16 }}> Sorry! We couldn't find any lights in your Network. {"\n"} Plug some in and they will appear here.</Text>
+            </>
+          )}
       </ScrollView>
     </>
   );

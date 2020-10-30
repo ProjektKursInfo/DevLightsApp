@@ -33,11 +33,7 @@ export default function Card(props: CardProps): JSX.Element {
   const navigation = useNavigation();
   const onPress = (): void => {
     navigation.navigate("light", {
-      name: props.light.name ? props.light.name : undefined,
       id: props.light.uuid,
-      pattern: props.light.leds.pattern,
-      colors: colors,
-      count: props.light.count,
     });
   };
 

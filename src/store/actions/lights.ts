@@ -1,9 +1,7 @@
 import { Light } from "../../interfaces";
 import {
-  EDIT_LIGHT_NAME,
-  SET_ALL_LIGHTS,
-  EDIT_LIGHT_COLOR,
-  EDIT_LED_COUNT,
+  EDIT_LED_COUNT, EDIT_LIGHT_COLOR, EDIT_LIGHT_NAME,
+  SET_ALL_LIGHTS
 } from "./types";
 
 export function setAllLights(lights: Light[]) {

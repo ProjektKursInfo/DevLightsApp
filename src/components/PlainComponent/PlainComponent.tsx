@@ -1,7 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
+import { isEqual } from "lodash";
 import * as React from "react";
 import { StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
+import { useSelector } from "react-redux";
+import { Leds, Light } from "../../interfaces";
+import { Store } from "../../store";
 
 export interface PlainComponentProps {
   colors: string[];
@@ -16,12 +20,11 @@ export default function PlainComponent(
 
   const onPress = () => {
     navigation.navigate("color_modal", {
-      colors: props.colors,
       id: props.id,
-      pattern: props.pattern,
     });
   };
 
+  const leds: Leds = useSelector((state: Store) => { console.log("selector"); return state.lights.find((l: Light) => l.uuid === props.id)?.leds as Leds }, (left: Leds, right: Leds) => !isEqual(left.colors, right.colors)) as Leds
   const styles = StyleSheet.create({
     button: { width: "70%", alignSelf: "center", marginTop: 20 }
   })
@@ -31,9 +34,9 @@ export default function PlainComponent(
         mode="contained"
         style={styles.button}
         onPress={onPress}
-        color={props.colors[0].toString()}
+        color={leds.colors[0]}
       >
-        {props.colors[0].toString()}
+        {leds.colors[0]}
       </Button>
     </>
   );
