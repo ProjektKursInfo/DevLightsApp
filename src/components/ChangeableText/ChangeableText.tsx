@@ -2,7 +2,8 @@ import { faCheck, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import * as React from "react";
 import {
-  StyleSheet, TextInput as Input,
+  StyleSheet,
+  TextInput as Input,
   TextInputProps,
   View
 } from "react-native";
@@ -11,7 +12,7 @@ import { useTheme } from "react-native-paper";
 
 export interface ChangeableTextProps extends TextInputProps {
   onSave: (text: string) => void;
-  style: any,
+  style: any;
 }
 
 export default function ChangeableText(props: ChangeableTextProps): JSX.Element {
@@ -24,12 +25,12 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
   const inputRef = React.useRef<Input>(null);
 
   React.useEffect(() => {
-    editable ? inputRef?.current?.focus() : undefined;
-  }, [editable])
+    if (editable) inputRef?.current?.focus();
+  }, [editable]);
 
   const handleSave = (): void => {
-    //TODO remove underline on button press
-    props.onSave(text);
+    // TODO remove underline on button press
+    onSave(text);
     setEditable(false);
   };
   const handleEdit = (): void => {
@@ -40,7 +41,7 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
       justifyContent: "center",
       alignItems: "center",
       flexDirection: "row",
-      ...style
+      ...style,
     },
     icon: {
       marginLeft: 10,
@@ -49,29 +50,29 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
       color: colors.text,
       fontSize: 40,
       fontWeight: "600",
-      fontFamily: "TitilliumWeb-Bold"
+      fontFamily: "TitilliumWeb-Bold",
     },
   });
   return (
     <View style={styles.container}>
       <Input
-        selectionColor={colors.primary + "77"}
+        selectionColor={`${colors.primary}"77"`}
         editable={editable}
         onSubmitEditing={handleSave}
         onChangeText={setText}
         ref={inputRef}
-        textAlign={"center"}
+        textAlign="center"
         style={styles.input}
         value={text}
         {...rest}
-      ></Input>
+      />
       <TouchableOpacity onPress={editable ? handleSave : handleEdit}>
         <FontAwesomeIcon
           icon={editable ? faCheck : faPen}
           color={colors.text}
           size={18}
           style={styles.icon}
-        ></FontAwesomeIcon>
+        />
       </TouchableOpacity>
     </View>
   );

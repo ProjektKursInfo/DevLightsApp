@@ -13,7 +13,8 @@ export interface CardProps {
 
 export default function Card(props: CardProps): JSX.Element {
   const theme: Theme = useTheme();
-  const colors = props.light.leds.colors;
+  const { light } = props;
+  const { colors } = light.leds;
   const styles = StyleSheet.create({
     card: {
       borderRadius: theme.roundness * 2,
@@ -46,7 +47,7 @@ export default function Card(props: CardProps): JSX.Element {
         end={[1, 0]}
       >
         <Headline style={styles.headline}>
-          {props.light.name ?? "Name not avaible"}
+          {light.name ?? "Name not avaible"}
         </Headline>
       </LinearGradient>
     </TouchableWithoutFeedback>
