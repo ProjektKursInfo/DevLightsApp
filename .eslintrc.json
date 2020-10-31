@@ -29,7 +29,13 @@
         "prettier/prettier": "off",
         "require-jsdoc": "off",
         "react/jsx-props-no-spreading": "warn",
-        "comma-dangle": [
+        "no-plusplus": "off",
+        "no-empty": [
+            "error",{
+                "allowEmptyCatch": true
+            }
+        ],
+        "@typescript-eslint/comma-dangle": [
             "error",
             {
                 "imports": "never",
@@ -45,7 +51,7 @@
                 "packageDir": "./node_modules"
             }
         ],
-        "indent": [
+        "@typescript-eslint/indent": [
             "error",
             2
         ],
@@ -57,7 +63,7 @@
             "error",
             "double"
         ],
-        "semi": [
+        "@typescript-eslint/semi": [
             "error",
             "always"
         ]

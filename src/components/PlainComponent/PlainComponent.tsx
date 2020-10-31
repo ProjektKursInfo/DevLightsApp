@@ -13,9 +13,7 @@ export interface PlainComponentProps {
   pattern: string;
 }
 
-export default function PlainComponent(
-  props: PlainComponentProps
-): JSX.Element {
+export default function PlainComponent(props: PlainComponentProps): JSX.Element {
   const navigation = useNavigation();
 
   const onPress = () => {
@@ -24,10 +22,17 @@ export default function PlainComponent(
     });
   };
 
-  const leds: Leds = useSelector((state: Store) => { console.log("selector"); return state.lights.find((l: Light) => l.uuid === props.id)?.leds as Leds }, (left: Leds, right: Leds) => !isEqual(left.colors, right.colors)) as Leds
+  const leds: Leds = useSelector(
+    (state: Store) => state.lights.find((l: Light) => l.uuid === props.id)?.leds as Leds,
+    (left: Leds, right: Leds) => !isEqual(left.colors, right.colors),
+  );
   const styles = StyleSheet.create({
-    button: { width: "70%", alignSelf: "center", marginTop: 20 }
-  })
+    button: {
+      width: "70%",
+      alignSelf: "center",
+      marginTop: 20,
+    },
+  });
   return (
     <>
       <Button

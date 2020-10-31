@@ -2,17 +2,20 @@ import { faCheck, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import * as React from "react";
 import {
+  StyleProp,
   StyleSheet,
   TextInput as Input,
   TextInputProps,
-  View
+  TextStyle,
+  View,
+  ViewStyle
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useTheme } from "react-native-paper";
 
 export interface ChangeableTextProps extends TextInputProps {
   onSave: (text: string) => void;
-  style: any;
+  style: StyleProp<TextStyle> | StyleProp<ViewStyle>;
 }
 
 export default function ChangeableText(props: ChangeableTextProps): JSX.Element {
@@ -37,12 +40,11 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
     setEditable(true);
   };
   const styles = StyleSheet.create({
-    container: {
+    container: StyleSheet.flatten([{
       justifyContent: "center",
       alignItems: "center",
       flexDirection: "row",
-      ...style,
-    },
+    }, style]),
     icon: {
       marginLeft: 10,
     },

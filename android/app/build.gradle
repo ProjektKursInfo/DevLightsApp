@@ -207,6 +207,7 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
     addUnimodulesDependencies()
+     
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

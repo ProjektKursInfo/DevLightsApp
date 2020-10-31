@@ -8,7 +8,10 @@ import {
 } from "../actions/types";
 import defaultstate from "../defaultstate";
 
-function lights(state = defaultstate.lights, action: any) {
+function lightsReducer(
+  state = defaultstate.lights,
+  action: {type: string, [key: string]: any},
+) {
   let lights: Light[];
   let light: Light;
   let index: number;
@@ -18,21 +21,21 @@ function lights(state = defaultstate.lights, action: any) {
       return lights;
     case EDIT_LIGHT_NAME:
       lights = [...state];
-      index = lights.findIndex((l) => (l.uuid = action.id));
+      index = lights.findIndex((l: Light) => (l.uuid === action.id));
       light = lights[index];
       light.name = action.name;
       lights[index] = light;
       return lights;
     case EDIT_LIGHT_COLOR:
       lights = [...state];
-      index = lights.findIndex((l) => (l.uuid = action.id));
+      index = lights.findIndex((l: Light) => (l.uuid === action.id));
       light = lights[index];
       light.leds.colors = action.colors;
       lights[index] = light;
       return lights;
     case EDIT_LED_COUNT:
       lights = [...state];
-      index = lights.findIndex((l) => (l.uuid = action.id));
+      index = lights.findIndex((l: Light) => (l.uuid === action.id));
       light = lights[index];
       light.count = action.count;
       lights[index] = light;
@@ -41,4 +44,4 @@ function lights(state = defaultstate.lights, action: any) {
       return state;
   }
 }
-export default lights;
+export default lightsReducer;

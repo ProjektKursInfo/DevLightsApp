@@ -15,12 +15,12 @@ import {
   TransitionPresets
 } from "@react-navigation/stack";
 import * as React from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, View, StyleSheet } from "react-native";
 import { IconButton, List, useTheme } from "react-native-paper";
-import ColorPicker from "../ColorPicker/ColorPicker";
+import ColorPicker from "../ColorPicker";
 import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import Home from "../Home";
-import LightScreen from "../LightScreens/LightScreen";
+import LightScreen from "../LightScreens";
 
 export type HomeStackParamList = {
   home: undefined;
@@ -30,66 +30,64 @@ export type HomeStackParamList = {
   color_modal: { id: string };
 };
 
-export type LightScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "light"
->;
-export type HomeScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "home"
->;
-export type ColorModalScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "color_modal"
->;
+export type LightScreenNavigationProp = StackNavigationProp<HomeStackParamList, "light">;
+export type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, "home">;
+export type ColorModalScreenNavigationProp = StackNavigationProp<HomeStackParamList, "color_modal">;
 
 export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
 export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
-export type ColorModalScreenRouteProp = RouteProp<
-  HomeStackParamList,
-  "color_modal"
->;
+export type ColorModalScreenRouteProp = RouteProp<HomeStackParamList, "color_modal">;
 
-
-export default function Navigation() {
-  const theme = useTheme();
-  const Drawer = createDrawerNavigator();
-  return (
-    <NavigationContainer theme={theme}>
-      <Drawer.Navigator
-
-        initialRouteName="home"
-        drawerContent={(contentProps) => <DrawerContent {...contentProps} />}
-      >
-        <Drawer.Screen
-          component={HomeStack}
-          options={{ title: "Home" }}
-          name="home"
-        ></Drawer.Screen>
-      </Drawer.Navigator>
-    </NavigationContainer>
-  );
-}
 function DrawerContent(props: DrawerContentComponentProps) {
   const theme = useTheme();
+  const styles = StyleSheet.create({
+    scrollview: {
+      backgroundColor: "#2f2f2f",
+    },
+    container: {
+      margin: 15,
+    },
+    icon: {
+      alignSelf: "center",
+    },
+    list: {
+      fontFamily: "TitilliumWeb-Regular",
+    },
+  });
   return (
-    <DrawerContentScrollView style={{ backgroundColor: "#2f2f2f" }} {...props}>
-      <View style={{ margin: 15 }}>
+    <DrawerContentScrollView style={styles.scrollview} {...props}>
+      <View style={styles.container}>
         <List.Item
-          title={"DevLights"}
-          description={"Control and Setup your Smart Lights"}
+          title="DevLights"
+          description="Controland Setup your Smart Lights"
           left={(iconProps) => (
             <IconButton
               {...iconProps}
               color={theme.colors.primary}
-              icon={"lightbulb"}
-              style={{ alignSelf: "center" }}
-            ></IconButton>
+              icon="lightbulb"
+              style={styles.icon}
+            />
           )}
-        ></List.Item>
+        />
       </View>
-      <DrawerItemList labelStyle={{ fontFamily: "TitilliumWeb-Regular" }} {...props} />
-    </DrawerContentScrollView >
+      <DrawerItemList labelStyle={styles.list} {...props} />
+    </DrawerContentScrollView>
+  );
+}
+
+function BackIcon(props: StackHeaderLeftButtonProps & { icon: IconProp }) : JSX.Element {
+  const { colors } = useTheme();
+  const { onPress, icon } = props;
+  const styles = StyleSheet.create({
+    icon: {
+      marginLeft: 20,
+      marginTop: 10,
+    },
+  });
+  return (
+    <Pressable onPress={onPress}>
+      <FontAwesomeIcon style={styles.icon} color={colors.accent} size={30} icon={icon} />
+    </Pressable>
   );
 }
 
@@ -103,40 +101,53 @@ function HomeStack() {
         options={{
           title: "Home",
           headerTitle: "",
-          headerLeft: () => <HeaderIcon></HeaderIcon>,
+          headerLeft: () => <HeaderIcon />,
         }}
-      ></Stack.Screen>
+      />
       <Stack.Screen
         name="light"
         options={() => ({
           headerBackTitleVisible: false,
-          headerLeft: (props: StackHeaderLeftButtonProps) => <BackIcon icon={faChevronLeft} {...props} />,
+          headerLeft: (props: StackHeaderLeftButtonProps) => (
+            <BackIcon icon={faChevronLeft} {...props} />
+          ),
 
           headerTitle: "",
           gestureEnabled: true,
           ...TransitionPresets.SlideFromRightIOS,
-          gestureResponseDistance: 200
+          gestureResponseDistance: 200,
         })}
         component={LightScreen}
-      ></Stack.Screen>
+      />
       <Stack.Screen
         name="color_modal"
         options={{
-          headerLeft: (props: StackHeaderLeftButtonProps) => <BackIcon icon={faTimes} {...props}></BackIcon>,
+          headerLeft: (props: StackHeaderLeftButtonProps) => (
+            <BackIcon icon={faTimes} {...props} />
+          ),
           headerTitle: "",
         }}
         component={ColorPicker}
-      ></Stack.Screen>
+      />
     </Stack.Navigator>
   );
 }
 
-function BackIcon(props: StackHeaderLeftButtonProps & { icon: IconProp }) {
-
-  const { colors } = useTheme();
+export default function Navigation(): JSX.Element {
+  const theme = useTheme();
+  const Drawer = createDrawerNavigator();
   return (
-    <Pressable onPress={props.onPress}>
-      <FontAwesomeIcon style={{ marginLeft: 20, marginTop: 10 }} color={colors.accent} size={30} icon={props.icon}></FontAwesomeIcon>
-    </Pressable>
-  )
+    <NavigationContainer theme={theme}>
+      <Drawer.Navigator
+        initialRouteName="home"
+        drawerContent={(contentProps) => <DrawerContent {...contentProps} />}
+      >
+        <Drawer.Screen
+          component={HomeStack}
+          options={{ title: "Home" }}
+          name="home"
+        />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
 }
