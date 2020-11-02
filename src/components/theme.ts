@@ -47,6 +47,7 @@ const loadFonts = async () => {
   });
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const theme = async () => {
   await loadFonts();
   return {

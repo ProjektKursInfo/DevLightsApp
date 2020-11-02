@@ -11,6 +11,10 @@ import SafeAreaView from "./components/SafeAreaView";
 import themeFunction from "./components/theme";
 import store from "./store";
 
+declare global {
+  let ip : string;
+}
+
 const getIp = async (): Promise<string> => {
   let ips: string[] = [];
   try {
@@ -28,15 +32,16 @@ const getIp = async (): Promise<string> => {
       } catch {}
     }
   }
+  return "192.168.178.38";
   throw new Error("Can't get IP of devlight");
 };
 
 export default function App() : JSX.Element {
   const [hasIp, setHasIp] = React.useState<boolean>(false);
-  const [theme, setTheme] = React.useState();
+  const [theme, setTheme] = React.useState<unknown>();
   React.useEffect(() => {
-    getIp().then((ip) => {
-      global.ip = ip;
+    getIp().then((res) => {
+      ip = res;
       setHasIp(true);
     });
     themeFunction().then((t) => {

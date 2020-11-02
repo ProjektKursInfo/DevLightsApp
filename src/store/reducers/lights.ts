@@ -11,7 +11,7 @@ import defaultstate from "../defaultstate";
 function lightsReducer(
   state = defaultstate.lights,
   action: {type: string, [key: string]: any},
-) {
+): Light[] {
   let lights: Light[];
   let light: Light;
   let index: number;

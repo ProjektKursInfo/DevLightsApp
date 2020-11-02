@@ -32,7 +32,6 @@ export default function Home(): JSX.Element {
         });
       })
       .catch((err: unknown) => {
-        console.log(err);
         setError(true);
       });
     if (refreshing) setRefresh(false);

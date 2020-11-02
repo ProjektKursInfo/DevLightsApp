@@ -18,7 +18,6 @@ export default function LightScreen(): JSX.Element {
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.uuid === route.params.id),
   ) as Light;
- 
   const dispatch = useDispatch();
 
   const changeName = (name: string) => {
@@ -48,6 +47,7 @@ export default function LightScreen(): JSX.Element {
       });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePattern = (pattern: string) => {
     // change pattern
     // TODO does nothing till implemented on server
