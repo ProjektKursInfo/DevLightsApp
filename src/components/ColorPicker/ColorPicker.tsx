@@ -34,7 +34,7 @@ export default function ColorPicker(): JSX.Element {
     setHex(tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString());
   };
   const onSubmit = (): void => {
-    Axios.patch(`http://${ip}/colors/${route.params.id}`, {
+    Axios.patch(`http://devlight/colors/${route.params.id}`, {
       colors: [hex],
       pattern: leds.pattern,
     }).then(() => {

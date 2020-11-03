@@ -24,14 +24,16 @@ export default function Home(): JSX.Element {
     if (refreshing) setRefresh(refreshing);
     setError(false);
     axios
-      .get(`http://${ip}/settings`)
+      .get("http://devlight/settings")
       .then((response: AxiosResponse) => {
+        console.log(response);
         store.dispatch({
           type: SET_ALL_LIGHTS,
           lights: response.data.object,
         });
       })
-      .catch((err: unknown) => {
+      .catch((err) => {
+        console.log(err.toJson());
         setError(true);
       });
     if (refreshing) setRefresh(false);
@@ -54,6 +56,7 @@ export default function Home(): JSX.Element {
       fontSize: 16,
     },
   });
+  console.log("home render");
   return (
     <>
       <StatusBar
@@ -62,20 +65,21 @@ export default function Home(): JSX.Element {
       />
 
       <ScrollView
-        refreshControl={(
-          <RefreshControl
-            refreshing={refresh}
-            onRefresh={() => getLights(true)}
-            tintColor={colors.accent}
-            colors={[colors.primary, colors.accent]}
-          />
-        )}
+        refreshControl={
+          (
+            <RefreshControl
+              refreshing={refresh}
+              onRefresh={() => getLights(true)}
+              tintColor={colors.accent}
+              colors={[colors.primary, colors.accent]}
+            />
+          )
+        }
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>
         {lights.length > 0 && !error ? (
-          lights.map((light: Light) => (
-            <Card key={light.uuid} light={light} />))
+          lights.map((light: Light) => <Card key={light.uuid} light={light} />)
         ) : (
           <>
             <Lottie
@@ -88,9 +92,9 @@ export default function Home(): JSX.Element {
               source={require("../../../assets/animations/bulb.json")}
             />
             <Text style={styles.error_text}>
-              {ip
-                ? "Sorry! We couldn't find any lights in your Network. \n Plug some in and they will appear here."
-                : "Sorry! We couldn't find the Server in your Network. \n Please check wether your server is connect to your local network or not"}
+              Sorry! We couldn't find any lights in your Network.
+              {"\n"}
+              Plug some in and they will appear here.
             </Text>
           </>
         )}

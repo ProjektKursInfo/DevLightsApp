@@ -21,7 +21,7 @@ export default function LightScreen(): JSX.Element {
   const dispatch = useDispatch();
 
   const changeName = (name: string) => {
-    Axios.patch(`http://${ip}/settings/${light.uuid}`, {
+    Axios.patch(`http://devlight/settings/${light.uuid}`, {
       name,
     })
       .then(() => {
@@ -35,7 +35,7 @@ export default function LightScreen(): JSX.Element {
 
   const changeNumber = (count: string) => {
     if (!/^\d+$/.test(count)) return;
-    Axios.patch(`http://${ip}/settings/count/${light.uuid}`, {
+    Axios.patch(`http://devlight/settings/count/${light.uuid}`, {
       count: parseInt(count, 10),
     })
       .then(() => {
@@ -163,8 +163,8 @@ export default function LightScreen(): JSX.Element {
             id={light.uuid}
           />
         ) : (
-          <Text>Not implemented yet!</Text>
-        )}
+            <Text>Not implemented yet!</Text>
+          )}
       </View>
     </View>
   );

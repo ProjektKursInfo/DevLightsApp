@@ -58,7 +58,7 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
   return (
     <View style={styles.container}>
       <Input
-        selectionColor={`${colors.primary}"77"`}
+        selectionColor={`${colors.primary}77`}
         editable={editable}
         onSubmitEditing={handleSave}
         onChangeText={setText}
