@@ -31,6 +31,7 @@ local.properties
 *.iml
 *.hprof
 
+
 # node.js
 #
 node_modules/
@@ -63,3 +64,4 @@ buck-out/
 .expo/*
 web-build/
 
+.eslintrc.json.save

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
@@ -24,16 +24,14 @@ export default function Home(): JSX.Element {
     if (refreshing) setRefresh(refreshing);
     setError(false);
     axios
-      .get("http://devlight/settings")
+      .get("http://devlight/")
       .then((response: AxiosResponse) => {
-        console.log(response);
         store.dispatch({
           type: SET_ALL_LIGHTS,
           lights: response.data.object,
         });
       })
-      .catch((err) => {
-        console.log(err.toJson());
+      .catch(() => {
         setError(true);
       });
     if (refreshing) setRefresh(false);
@@ -56,7 +54,6 @@ export default function Home(): JSX.Element {
       fontSize: 16,
     },
   });
-  console.log("home render");
   return (
     <>
       <StatusBar
@@ -92,7 +89,7 @@ export default function Home(): JSX.Element {
               source={require("../../../assets/animations/bulb.json")}
             />
             <Text style={styles.error_text}>
-              Sorry! We couldn't find any lights in your Network.
+              Sorry! We couldn`t find any lights in your Network.
               {"\n"}
               Plug some in and they will appear here.
             </Text>

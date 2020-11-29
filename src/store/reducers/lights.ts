@@ -4,7 +4,8 @@ import {
   EDIT_LIGHT_COLOR,
   EDIT_LIGHT_NAME,
 
-  SET_ALL_LIGHTS
+  SET_ALL_LIGHTS,
+  SET_LIGHT_STATUS
 } from "../actions/types";
 import defaultstate from "../defaultstate";
 
@@ -39,6 +40,14 @@ function lightsReducer(
       light = lights[index];
       light.count = action.count;
       lights[index] = light;
+      return lights;
+    case SET_LIGHT_STATUS:
+      lights = [...state];
+      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      light = lights[index];
+      light.isOn = action.isOn;
+      lights[index] = light;
+      console.log(light);
       return lights;
     default:
       return state;

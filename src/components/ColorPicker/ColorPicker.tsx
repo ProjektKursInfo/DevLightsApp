@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios from "axios";
+import Axios, { AxiosError } from "axios";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import HsvColorPicker from "react-native-hsv-color-picker";
@@ -34,7 +34,7 @@ export default function ColorPicker(): JSX.Element {
     setHex(tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString());
   };
   const onSubmit = (): void => {
-    Axios.patch(`http://devlight/colors/${route.params.id}`, {
+    Axios.patch(`http://devlight/${route.params.id}/color`, {
       colors: [hex],
       pattern: leds.pattern,
     }).then(() => {

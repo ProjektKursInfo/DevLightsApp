@@ -1,7 +1,10 @@
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
+import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
-import { StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { GestureResponderEvent, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
 import { Theme } from "react-native-paper/lib/typescript/src/types";
 import { Light } from "../../interfaces";
@@ -22,6 +25,7 @@ export default function Card(props: CardProps): JSX.Element {
       height: 120,
       marginTop: 10,
       elevation: 20,
+      zIndex: 1,
     },
     headline: {
       position: "absolute",
@@ -37,9 +41,8 @@ export default function Card(props: CardProps): JSX.Element {
       id: props.light.uuid,
     });
   };
-
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableWithoutFeedback style={{zIndex: 1}} onPress={onPress}>
       <LinearGradient
         style={styles.card}
         colors={[colors[0], colors[1] ?? colors[0]]}
@@ -53,28 +56,8 @@ export default function Card(props: CardProps): JSX.Element {
     </TouchableWithoutFeedback>
   );
 }
-/* export interface ActionIconProps {
+export interface ActionIconProps {
   icon: IconProp;
   color: string;
   onClick(e: GestureResponderEvent): void;
 }
-function ActionIcon(props: ActionIconProps) {
-  const style = StyleSheet.create({
-    icon: {
-      position: "absolute",
-      right: 16,
-      top: 16,
-    },
-  });
-  return (
-    <TouchableOpacity onPress={props.onClick}>
-      <FontAwesomeIcon
-        style={style.icon}
-        color={props.color}
-        icon={props.icon}
-        size={36}
-      />
-    </TouchableOpacity>
-  );
-}
- */

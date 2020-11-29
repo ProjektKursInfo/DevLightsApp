@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo-google-fonts/titillium-web": "^0.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-regular-svg-icons": "^5.15.1",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-native-fontawesome": "^0.2.5",
     "@react-native-community/masked-view": "^0.1.10",

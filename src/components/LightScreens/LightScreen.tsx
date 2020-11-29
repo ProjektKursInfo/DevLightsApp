@@ -21,7 +21,7 @@ export default function LightScreen(): JSX.Element {
   const dispatch = useDispatch();
 
   const changeName = (name: string) => {
-    Axios.patch(`http://devlight/settings/${light.uuid}`, {
+    Axios.patch(`http://devlight/${light.uuid}`, {
       name,
     })
       .then(() => {
@@ -35,7 +35,7 @@ export default function LightScreen(): JSX.Element {
 
   const changeNumber = (count: string) => {
     if (!/^\d+$/.test(count)) return;
-    Axios.patch(`http://devlight/settings/count/${light.uuid}`, {
+    Axios.patch(`http://devlight/count/${light.uuid}`, {
       count: parseInt(count, 10),
     })
       .then(() => {
@@ -127,7 +127,7 @@ export default function LightScreen(): JSX.Element {
         <TextInput
           keyboardType="number-pad"
           onSubmitEditing={({ nativeEvent: { text } }) => changeNumber(text)}
-          textAlign={"right"}
+          textAlign="right"
           style={styles.textinput}
           defaultValue={light.count.toString()}
         />
@@ -163,8 +163,8 @@ export default function LightScreen(): JSX.Element {
             id={light.uuid}
           />
         ) : (
-            <Text>Not implemented yet!</Text>
-          )}
+          <Text>Not implemented yet!</Text>
+        )}
       </View>
     </View>
   );

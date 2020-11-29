@@ -2,3 +2,4 @@ export const SET_ALL_LIGHTS = "SET_ALL_LIGHTS";
 export const EDIT_LIGHT_NAME = "EDIT_LIGHT_NAME";
 export const EDIT_LIGHT_COLOR = "EDIT_LIGHT_COLOR";
 export const EDIT_LED_COUNT = "EDIT_LED_COUNT";
+export const SET_LIGHT_STATUS = "SET_LIGHT_STATUS";

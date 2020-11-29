@@ -4,5 +4,6 @@ export default interface Light {
   name: string,
   uuid: string,
   leds: Leds,
-  count: number
+  count: number,
+  isOn: boolean
 }
