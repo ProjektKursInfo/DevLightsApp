@@ -108,6 +108,7 @@ export default function LightScreen(): JSX.Element {
     },
     dropdownContainer: {
       height: 45,
+      zIndex: 10,
     },
   });
   return (
@@ -158,6 +159,7 @@ export default function LightScreen(): JSX.Element {
       <View>
         {light.leds.pattern === "plain" ? (
           <PlainComponent
+            style={styles.color}
             colors={light.leds.colors}
             pattern={light.leds.pattern}
             id={light.uuid}

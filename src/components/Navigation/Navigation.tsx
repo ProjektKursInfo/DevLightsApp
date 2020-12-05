@@ -1,26 +1,37 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faChevronLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faStar,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerItemList
+  DrawerItemList,
 } from "@react-navigation/drawer";
-import { NavigationContainer, RouteProp } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  RouteProp,
+  useNavigation,
+} from "@react-navigation/native";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
   StackNavigationProp,
-  TransitionPresets
+  TransitionPresets,
 } from "@react-navigation/stack";
 import * as React from "react";
-import { Pressable, View, StyleSheet } from "react-native";
+import { Pressable, View, StyleSheet, AsyncStorage } from "react-native";
 import { IconButton, List, useTheme } from "react-native-paper";
+import { useDispatch, useStore } from "react-redux";
 import ColorPicker from "../ColorPicker";
+import Favourite from "../Favourite";
 import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import Home from "../Home";
 import LightScreen from "../LightScreens";
+import theme from "../theme";
 
 export type HomeStackParamList = {
   home: undefined;
@@ -28,15 +39,37 @@ export type HomeStackParamList = {
     id: string;
   };
   color_modal: { id: string };
+  favourite: undefined;
 };
 
-export type LightScreenNavigationProp = StackNavigationProp<HomeStackParamList, "light">;
-export type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, "home">;
-export type ColorModalScreenNavigationProp = StackNavigationProp<HomeStackParamList, "color_modal">;
+export type LightScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  "light"
+>;
+export type HomeScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  "home"
+>;
+export type ColorModalScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  "color_modal"
+>;
+
+export type FavouriteScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  "favourite"
+>;
 
 export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
 export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
-export type ColorModalScreenRouteProp = RouteProp<HomeStackParamList, "color_modal">;
+export type ColorModalScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  "color_modal"
+>;
+export type FavouriteScreenRouteProp = RouteProp<
+  HomeStackParamList,
+  "favourite"
+>;
 
 function DrawerContent(props: DrawerContentComponentProps) {
   const theme = useTheme();
@@ -75,9 +108,12 @@ function DrawerContent(props: DrawerContentComponentProps) {
   );
 }
 
-function BackIcon(props: StackHeaderLeftButtonProps & { icon: IconProp }) : JSX.Element {
+function BackIcon(
+  // eslint-disable-next-line react/require-default-props
+  props: StackHeaderLeftButtonProps & { icon: IconProp; color?: string }
+): JSX.Element {
   const { colors } = useTheme();
-  const { onPress, icon } = props;
+  const { onPress, icon, color } = props;
   const styles = StyleSheet.create({
     icon: {
       marginLeft: 20,
@@ -86,13 +122,20 @@ function BackIcon(props: StackHeaderLeftButtonProps & { icon: IconProp }) : JSX.
   });
   return (
     <Pressable onPress={onPress}>
-      <FontAwesomeIcon style={styles.icon} color={colors.accent} size={30} icon={icon} />
+      <FontAwesomeIcon
+        style={styles.icon}
+        color={color ?? colors.accent}
+        size={30}
+        icon={icon}
+      />
     </Pressable>
   );
 }
 
 function HomeStack() {
   const Stack = createStackNavigator<HomeStackParamList>();
+  const navigation = useNavigation();
+  
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -102,6 +145,13 @@ function HomeStack() {
           title: "Home",
           headerTitle: "",
           headerLeft: () => <HeaderIcon />,
+          headerRight: () => (
+            <BackIcon
+              color="#ffff00"
+              icon={faStar}
+              onPress={() => navigation.navigate("favourite")}
+            />
+          ),
         }}
       />
       <Stack.Screen
@@ -128,6 +178,13 @@ function HomeStack() {
           headerTitle: "",
         }}
         component={ColorPicker}
+      />
+      <Stack.Screen
+        options={{
+          headerTitle: "Favourite Colors",
+        }}
+        name="favourite"
+        component={Favourite}
       />
     </Stack.Navigator>
   );

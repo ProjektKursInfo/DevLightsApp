@@ -4,7 +4,11 @@ import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
-import { GestureResponderEvent, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Headline, useTheme } from "react-native-paper";
 import { Theme } from "react-native-paper/lib/typescript/src/types";
 import { Light } from "../../interfaces";
@@ -33,6 +37,9 @@ export default function Card(props: CardProps): JSX.Element {
       left: 16,
       color: getContrastTextColor(colors[0]),
     },
+    touchable: {
+      zIndex: 1,
+    },
   });
 
   const navigation = useNavigation();
@@ -42,7 +49,7 @@ export default function Card(props: CardProps): JSX.Element {
     });
   };
   return (
-    <TouchableWithoutFeedback style={{zIndex: 1}} onPress={onPress}>
+    <TouchableWithoutFeedback style={styles.touchable} onPress={onPress}>
       <LinearGradient
         style={styles.card}
         colors={[colors[0], colors[1] ?? colors[0]]}

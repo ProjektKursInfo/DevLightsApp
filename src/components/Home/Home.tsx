@@ -2,26 +2,67 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
+  AsyncStorage,
   RefreshControl,
   ScrollView,
   StatusBar,
-  StyleSheet
+  StyleSheet,
+  View,
 } from "react-native";
-import { Text, Title, useTheme } from "react-native-paper";
+import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { SET_ALL_LIGHTS } from "../../store/actions/types";
+import { SET_ALL_LIGHTS, SET_FAVOURITES } from "../../store/actions/types";
 import Card from "../Card";
+
+interface SpinnerProps {
+  visible: boolean;
+}
+
+export function Spinner(props: SpinnerProps): JSX.Element {
+  const styles = StyleSheet.create({
+    container: {
+      height: "100%",
+      width: "100%",
+      flexDirection: "row",
+      alignSelf: "center",
+      justifyContent: "center",
+    },
+    indicator: {
+      alignSelf: "center",
+      alignItems: "center",
+    },
+  });
+  const {visible} = props;
+  return (
+    <>
+      {visible ? (
+        <View style={styles.container}>
+          <ActivityIndicator
+            style={styles.indicator}
+            size={60}
+          />
+        </View>
+      ) : (
+        <View />
+      )}
+    </>
+  );
+}
 
 export default function Home(): JSX.Element {
   const theme = useTheme();
   const store = useStore();
   const lights: Light[] = useSelector((state: Store) => state.lights);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
-  const getLights = (refreshing = false): void => {
+  const fetch = async (refreshing = false) => {
     if (refreshing) setRefresh(refreshing);
+    const json : string = await AsyncStorage.getItem("favourites");
+    store.dispatch({type: SET_FAVOURITES, favourites: Array.from(JSON.parse(json))});
+    setLoading(true);
     setError(false);
     axios
       .get("http://devlight/")
@@ -30,15 +71,17 @@ export default function Home(): JSX.Element {
           type: SET_ALL_LIGHTS,
           lights: response.data.object,
         });
+        setLoading(false);
       })
       .catch(() => {
         setError(true);
+        setLoading(false);
       });
     if (refreshing) setRefresh(false);
   };
 
   React.useEffect(() => {
-    getLights();
+    fetch();
   }, []);
 
   const { colors } = useTheme();
@@ -60,18 +103,16 @@ export default function Home(): JSX.Element {
         backgroundColor={theme.colors.background}
         barStyle="light-content"
       />
-
+      <Spinner visible={loading} />
       <ScrollView
-        refreshControl={
-          (
-            <RefreshControl
-              refreshing={refresh}
-              onRefresh={() => getLights(true)}
-              tintColor={colors.accent}
-              colors={[colors.primary, colors.accent]}
-            />
-          )
-        }
+        refreshControl={(
+          <RefreshControl
+            refreshing={refresh}
+            onRefresh={() => getLights(true)}
+            tintColor={colors.accent}
+            colors={[colors.primary, colors.accent]}
+          />
+        )}
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>
