@@ -34,15 +34,12 @@ export function Spinner(props: SpinnerProps): JSX.Element {
       alignItems: "center",
     },
   });
-  const {visible} = props;
+  const { visible } = props;
   return (
     <>
       {visible ? (
         <View style={styles.container}>
-          <ActivityIndicator
-            style={styles.indicator}
-            size={60}
-          />
+          <ActivityIndicator style={styles.indicator} size={60} />
         </View>
       ) : (
         <View />
@@ -55,14 +52,17 @@ export default function Home(): JSX.Element {
   const theme = useTheme();
   const store = useStore();
   const lights: Light[] = useSelector((state: Store) => state.lights);
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
   const fetch = async (refreshing = false) => {
-    if (refreshing) setRefresh(refreshing);
-    const json : string = await AsyncStorage.getItem("favourites");
-    store.dispatch({type: SET_FAVOURITES, favourites: Array.from(JSON.parse(json))});
     setLoading(true);
+    if (refreshing) setRefresh(refreshing);
+    const json: string = await AsyncStorage.getItem("favourites");
+    store.dispatch({
+      type: SET_FAVOURITES,
+      favourites: Array.from(JSON.parse(json)),
+    });
     setError(false);
     axios
       .get("http://devlight/")
@@ -82,6 +82,7 @@ export default function Home(): JSX.Element {
 
   React.useEffect(() => {
     fetch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { colors } = useTheme();
@@ -108,7 +109,7 @@ export default function Home(): JSX.Element {
         refreshControl={(
           <RefreshControl
             refreshing={refresh}
-            onRefresh={() => getLights(true)}
+            onRefresh={() => fetch(true)}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
@@ -116,26 +117,34 @@ export default function Home(): JSX.Element {
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>
-        {lights.length > 0 && !error ? (
-          lights.map((light: Light) => <Card key={light.uuid} light={light} />)
-        ) : (
-          <>
-            <Lottie
-              duration={4000}
-              autoPlay
-              hardwareAccelerationAndroid
-              loop={false}
-              autoSize
-              // eslint-disable-next-line global-require
-              source={require("../../../assets/animations/bulb.json")}
-            />
-            <Text style={styles.error_text}>
-              Sorry! We couldn`t find any lights in your Network.
-              {"\n"}
-              Plug some in and they will appear here.
-            </Text>
-          </>
-        )}
+
+        {
+          // eslint-disable-next-line no-nested-ternary
+          lights.length > 0 && !error ? (
+            lights.map((light: Light) => (
+              <Card key={light.uuid} light={light} />
+            ))
+          ) : loading ? (
+            undefined
+          ) : (
+            <>
+              <Lottie
+                duration={4000}
+                autoPlay
+                hardwareAccelerationAndroid
+                loop={false}
+                autoSize
+                // eslint-disable-next-line global-require
+                source={require("../../../assets/animations/bulb.json")}
+              />
+              <Text style={styles.error_text}>
+                Sorry! We couldn`t find any lights in your Network.
+                {"\n"}
+                Plug some in and they will appear here.
+              </Text>
+            </>
+          )
+        }
       </ScrollView>
     </>
   );

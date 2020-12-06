@@ -1,37 +1,36 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faChevronLeft,
   faStar,
-  faTimes,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerItemList,
+  DrawerItemList
 } from "@react-navigation/drawer";
 import {
   NavigationContainer,
   RouteProp,
-  useNavigation,
+  useNavigation
 } from "@react-navigation/native";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
   StackNavigationProp,
-  TransitionPresets,
+  TransitionPresets
 } from "@react-navigation/stack";
 import * as React from "react";
-import { Pressable, View, StyleSheet, AsyncStorage } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { IconButton, List, useTheme } from "react-native-paper";
-import { useDispatch, useStore } from "react-redux";
 import ColorPicker from "../ColorPicker";
 import Favourite from "../Favourite";
 import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import Home from "../Home";
 import LightScreen from "../LightScreens";
-import theme from "../theme";
 
 export type HomeStackParamList = {
   home: undefined;
@@ -43,32 +42,32 @@ export type HomeStackParamList = {
 };
 
 export type LightScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "light"
+HomeStackParamList,
+"light"
 >;
 export type HomeScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "home"
+HomeStackParamList,
+"home"
 >;
 export type ColorModalScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "color_modal"
+HomeStackParamList,
+"color_modal"
 >;
 
 export type FavouriteScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "favourite"
+HomeStackParamList,
+"favourite"
 >;
 
 export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
 export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
 export type ColorModalScreenRouteProp = RouteProp<
-  HomeStackParamList,
-  "color_modal"
+HomeStackParamList,
+"color_modal"
 >;
 export type FavouriteScreenRouteProp = RouteProp<
-  HomeStackParamList,
-  "favourite"
+HomeStackParamList,
+"favourite"
 >;
 
 function DrawerContent(props: DrawerContentComponentProps) {
@@ -110,7 +109,7 @@ function DrawerContent(props: DrawerContentComponentProps) {
 
 function BackIcon(
   // eslint-disable-next-line react/require-default-props
-  props: StackHeaderLeftButtonProps & { icon: IconProp; color?: string }
+  props: StackHeaderLeftButtonProps & { icon: IconProp; color?: string },
 ): JSX.Element {
   const { colors } = useTheme();
   const { onPress, icon, color } = props;
@@ -135,7 +134,6 @@ function BackIcon(
 function HomeStack() {
   const Stack = createStackNavigator<HomeStackParamList>();
   const navigation = useNavigation();
-  
   return (
     <Stack.Navigator>
       <Stack.Screen

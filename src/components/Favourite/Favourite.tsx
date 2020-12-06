@@ -1,6 +1,8 @@
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useTheme } from "@react-navigation/native";
 import * as React from "react";
-import { ScrollView } from "react-native";
+import { Pressable, ScrollView } from "react-native";
 import { Avatar, FAB, List, Text } from "react-native-paper";
 import { useStore } from "react-redux";
 import { REMOVE_FAVOURITE } from "../../store/actions/types";
@@ -20,14 +22,10 @@ export function Color(props: {
           style={{ backgroundColor: props.color }}
         />
       )}
-      onPress={props.onPress}
       right={() => (
-        <Avatar.Icon
-          icon="trash-can"
-          color="#fff"
-          style={{ backgroundColor: theme.colors.background }}
-          size={40}
-        />
+        <Pressable style={{ alignSelf: "center" }} onPress={props.onPress}>
+          <FontAwesomeIcon icon={faTrash} color="#fff" />
+        </Pressable>
       )}
     />
   );
@@ -35,27 +33,19 @@ export function Color(props: {
 
 export default function Favourite(): JSX.Element {
   const store = useStore();
-  const {favourites} = store.getState();
-
+  const { favourites } = store.getState();
+  const onPress = (fav: string) => {
+    store.dispatch({ type: REMOVE_FAVOURITE, favourite: fav });
+  };
   return (
-    <>
-      <FAB
-        onPress={() => console.log("press")}
-        style={{ position: "absolute", bottom: 32, right: 32, zIndex: 30 }}
-        icon="plus"
-      />
-      <ScrollView>
-        {favourites.length > 0 ? (
-          favourites.map((fav: string) => {
-            const onPress = () => {
-              store.dispatch({ type: REMOVE_FAVOURITE, favourite: fav });
-            };
-            return <Color onPress={onPress} color={fav} />;
-          })
-        ) : (
-          <Text> You haven`t saved any favourite colors</Text>
-        )}
-      </ScrollView>
-    </>
+    <ScrollView>
+      {favourites.length > 0 ? (
+        favourites.map((fav: string) => (
+          <Color onPress={() => onPress(fav)} color={fav} />
+        ))
+      ) : (
+        <Text> You haven`t saved any favourite colors</Text>
+      )}
+    </ScrollView>
   );
 }

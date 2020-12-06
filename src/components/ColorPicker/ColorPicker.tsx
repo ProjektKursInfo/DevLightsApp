@@ -62,8 +62,8 @@ export default function ColorPicker(): JSX.Element {
   const onHueChange = ({ hue }: { hue: number }) => {
     setHsv({ ...hsv, h: hue });
     setHex(tinycolor.fromRatio({ ...hsv, h: hue }).toHexString());
-    if (icon === fullstar) setIcon(faStar);
     if (store.getState().favourites.includes(hex)) setIcon(fullstar);
+    else if (icon === fullstar) setIcon(faStar);
   };
 
   const onSatValChange = ({
@@ -77,8 +77,8 @@ export default function ColorPicker(): JSX.Element {
     setHex(
       tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString()
     );
-    if (icon === fullstar) setIcon(faStar);
     if (store.getState().favourites.includes(hex)) setIcon(fullstar);
+    else if (icon === fullstar) setIcon(faStar);
   };
   const onSubmit = (): void => {
     Axios.patch(`http://devlight/${route.params.id}/color`, {

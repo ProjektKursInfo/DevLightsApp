@@ -11,7 +11,6 @@ export interface PlainComponentProps {
   colors: string[];
   id: string;
   pattern: string;
-  style?: ViewStyle
 }
 
 export default function PlainComponent(props: PlainComponentProps): JSX.Element {
@@ -22,7 +21,6 @@ export default function PlainComponent(props: PlainComponentProps): JSX.Element 
       id: props.id,
     });
   };
-  const {style} = props;
   const leds: Leds = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.uuid === props.id)?.leds as Leds,
     (left: Leds, right: Leds) => !isEqual(left.colors, right.colors),
@@ -35,7 +33,7 @@ export default function PlainComponent(props: PlainComponentProps): JSX.Element 
     },
   });
   return (
-    <View style={style}>
+    <View>
       <Button
         mode="contained"
         style={styles.button}
