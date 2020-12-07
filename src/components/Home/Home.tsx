@@ -52,37 +52,41 @@ export default function Home(): JSX.Element {
   const theme = useTheme();
   const store = useStore();
   const lights: Light[] = useSelector((state: Store) => state.lights);
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
   const fetch = async (refreshing = false) => {
     setLoading(true);
     if (refreshing) setRefresh(refreshing);
     const json: string = await AsyncStorage.getItem("favourites");
-    store.dispatch({
-      type: SET_FAVOURITES,
-      favourites: Array.from(JSON.parse(json)),
-    });
+    if (json != null) {
+      store.dispatch({
+        type: SET_FAVOURITES,
+        favourites: Array.from(JSON.parse(json)),
+      });
+    }
     setError(false);
     axios
-      .get("http://devlight/")
+      .get("http://devlight/", {})
       .then((response: AxiosResponse) => {
+        console.log(response);
         store.dispatch({
           type: SET_ALL_LIGHTS,
           lights: response.data.object,
         });
         setLoading(false);
       })
-      .catch(() => {
-        setError(true);
+      .catch((err) => {
+        console.log(err);
         setLoading(false);
+        setError(true);
       });
     if (refreshing) setRefresh(false);
   };
 
   React.useEffect(() => {
     fetch();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { colors } = useTheme();
@@ -106,14 +110,14 @@ export default function Home(): JSX.Element {
       />
       <Spinner visible={loading} />
       <ScrollView
-        refreshControl={(
+        refreshControl={
           <RefreshControl
             refreshing={refresh}
             onRefresh={() => fetch(true)}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
-        )}
+        }
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>
@@ -124,9 +128,7 @@ export default function Home(): JSX.Element {
             lights.map((light: Light) => (
               <Card key={light.uuid} light={light} />
             ))
-          ) : loading ? (
-            undefined
-          ) : (
+          ) : loading ? undefined : (
             <>
               <Lottie
                 duration={4000}

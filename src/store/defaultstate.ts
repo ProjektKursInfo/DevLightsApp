@@ -1,4 +1,4 @@
 export default {
-  favourites: ["#fff"],
+  favourites: [],
   lights: [],
 };

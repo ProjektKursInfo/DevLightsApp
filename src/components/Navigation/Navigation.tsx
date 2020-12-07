@@ -91,7 +91,7 @@ function DrawerContent(props: DrawerContentComponentProps) {
       <View style={styles.container}>
         <List.Item
           title="DevLights"
-          description="Controland Setup your Smart Lights"
+          description="Control and Setup your Smart Lights"
           left={(iconProps) => (
             <IconButton
               {...iconProps}
@@ -107,15 +107,16 @@ function DrawerContent(props: DrawerContentComponentProps) {
   );
 }
 
-function BackIcon(
+function Icon(
   // eslint-disable-next-line react/require-default-props
-  props: StackHeaderLeftButtonProps & { icon: IconProp; color?: string },
+  props: StackHeaderLeftButtonProps & { icon: IconProp; color?: string, position: "left" | "right"; },
 ): JSX.Element {
   const { colors } = useTheme();
-  const { onPress, icon, color } = props;
+  const { onPress, icon, color, position } = props;
   const styles = StyleSheet.create({
     icon: {
-      marginLeft: 20,
+      marginLeft: position === "left" ? 10 : 0,
+      marginRight: position === "right" ? 10 : 0,
       marginTop: 10,
     },
   });
@@ -144,9 +145,10 @@ function HomeStack() {
           headerTitle: "",
           headerLeft: () => <HeaderIcon />,
           headerRight: () => (
-            <BackIcon
+            <Icon
               color="#ffff00"
               icon={faStar}
+              position="right"
               onPress={() => navigation.navigate("favourite")}
             />
           ),
@@ -157,13 +159,12 @@ function HomeStack() {
         options={() => ({
           headerBackTitleVisible: false,
           headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <BackIcon icon={faChevronLeft} {...props} />
+            <Icon position="left" icon={faChevronLeft} {...props} />
           ),
-
           headerTitle: "",
           gestureEnabled: true,
-          ...TransitionPresets.SlideFromRightIOS,
           gestureResponseDistance: 200,
+          ...TransitionPresets.SlideFromRightIOS,
         })}
         component={LightScreen}
       />
@@ -171,7 +172,7 @@ function HomeStack() {
         name="color_modal"
         options={{
           headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <BackIcon icon={faTimes} {...props} />
+            <Icon position="left" icon={faTimes} {...props} />
           ),
           headerTitle: "",
         }}
@@ -180,6 +181,7 @@ function HomeStack() {
       <Stack.Screen
         options={{
           headerTitle: "Favourite Colors",
+          headerLeft: (props: StackHeaderLeftButtonProps) => <Icon icon={faTimes} position="left" {...props} />
         }}
         name="favourite"
         component={Favourite}
