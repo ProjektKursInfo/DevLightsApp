@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
@@ -7,7 +7,7 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  View,
+  View
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
@@ -15,6 +15,7 @@ import { Light } from "../../interfaces";
 import { Store } from "../../store";
 import { SET_ALL_LIGHTS, SET_FAVOURITES } from "../../store/actions/types";
 import Card from "../Card";
+import useNetwork from "../../hooks/useNetwork";
 
 interface SpinnerProps {
   visible: boolean;
@@ -23,10 +24,9 @@ interface SpinnerProps {
 export function Spinner(props: SpinnerProps): JSX.Element {
   const styles = StyleSheet.create({
     container: {
-      height: "100%",
+      height: "75%",
       width: "100%",
       flexDirection: "row",
-      alignSelf: "center",
       justifyContent: "center",
     },
     indicator: {
@@ -48,7 +48,7 @@ export function Spinner(props: SpinnerProps): JSX.Element {
   );
 }
 
-export default function Home(): JSX.Element {
+function Home(): JSX.Element {
   const theme = useTheme();
   const store = useStore();
   const lights: Light[] = useSelector((state: Store) => state.lights);
@@ -69,25 +69,26 @@ export default function Home(): JSX.Element {
     axios
       .get("http://devlight/", {})
       .then((response: AxiosResponse) => {
-        console.log(response);
         store.dispatch({
           type: SET_ALL_LIGHTS,
           lights: response.data.object,
         });
         setLoading(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setLoading(false);
         setError(true);
       });
     if (refreshing) setRefresh(false);
   };
+  const network = useNetwork();
 
   React.useEffect(() => {
-    fetch();
+    console.log(network);
+    if (network) fetch();
+    else setError(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [network]);
 
   const { colors } = useTheme();
   const styles = StyleSheet.create({
@@ -96,21 +97,22 @@ export default function Home(): JSX.Element {
       marginBottom: 10,
       fontSize: 40,
     },
-    contentContainerStyle: { alignItems: "center" },
+    contentContainerStyle: { alignItems: "center", width: "100%", height: "100%" },
     error_text: {
       textAlign: "center",
       fontSize: 16,
     },
   });
   return (
-    <>
+    <View style={{width: "100%", height: "100%"}}>
       <StatusBar
         backgroundColor={theme.colors.background}
         barStyle="light-content"
       />
-      <Spinner visible={loading} />
+
       <ScrollView
         refreshControl={
+          // eslint-disable-next-line react/jsx-wrap-multilines
           <RefreshControl
             refreshing={refresh}
             onRefresh={() => fetch(true)}
@@ -122,32 +124,30 @@ export default function Home(): JSX.Element {
       >
         <Title style={styles.title}>Lights</Title>
 
-        {
-          // eslint-disable-next-line no-nested-ternary
-          lights.length > 0 && !error ? (
-            lights.map((light: Light) => (
-              <Card key={light.uuid} light={light} />
-            ))
-          ) : loading ? undefined : (
-            <>
-              <Lottie
-                duration={4000}
-                autoPlay
-                hardwareAccelerationAndroid
-                loop={false}
-                autoSize
-                // eslint-disable-next-line global-require
-                source={require("../../../assets/animations/bulb.json")}
-              />
-              <Text style={styles.error_text}>
-                Sorry! We couldn`t find any lights in your Network.
-                {"\n"}
-                Plug some in and they will appear here.
-              </Text>
-            </>
-          )
-        }
+        {loading ? (
+          <Spinner visible={true} />
+        ) : lights.length > 0 && !error ? (
+          lights.map((light: Light) => <Card key={light.uuid} light={light} />)
+        ) : (
+          <>
+            <Lottie
+              duration={4000}
+              autoPlay
+              hardwareAccelerationAndroid
+              loop={false}
+              autoSize
+              // eslint-disable-next-line global-require
+              source={require("../../../assets/animations/bulb.json")}
+            />
+            <Text style={styles.error_text}>
+              Sorry! We couldn`t find any lights in your Network.
+              {"\n"}
+              Plug some in and they will appear here.
+            </Text>
+          </>
+        )}
       </ScrollView>
-    </>
+    </View>
   );
 }
+export default Home;

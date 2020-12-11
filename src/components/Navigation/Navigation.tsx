@@ -115,9 +115,9 @@ function Icon(
   const { onPress, icon, color, position } = props;
   const styles = StyleSheet.create({
     icon: {
-      marginLeft: position === "left" ? 10 : 0,
-      marginRight: position === "right" ? 10 : 0,
-      marginTop: 10,
+      marginLeft: position === "left" ? 30 : 0,
+      marginRight: position === "right" ? 30 : 0,
+      marginTop: 20,
     },
   });
   return (
@@ -135,6 +135,7 @@ function Icon(
 function HomeStack() {
   const Stack = createStackNavigator<HomeStackParamList>();
   const navigation = useNavigation();
+  const theme = useTheme();
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -146,7 +147,7 @@ function HomeStack() {
           headerLeft: () => <HeaderIcon />,
           headerRight: () => (
             <Icon
-              color="#ffff00"
+              color={"#ffff00"}
               icon={faStar}
               position="right"
               onPress={() => navigation.navigate("favourite")}

@@ -1,50 +1,92 @@
-import { useRoute } from "@react-navigation/native";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
+import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Axios from "axios";
 import * as React from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { EDIT_LIGHT_NAME } from "../../store/actions/types";
+import { EDIT_LIGHT_NAME, SET_LIGHT_STATUS } from "../../store/actions/types";
 import ChangeableText from "../ChangeableText";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
 
+interface PowerBulbProps{
+  light: Light
+}
+export function PowerBulb(props: PowerBulbProps): JSX.Element {
+  const {light} = props;
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const [icon, setIcon] = React.useState<IconDefinition>(light.isOn ? faLightbulb : regular);
+  const onPress = () => {
+    Axios.patch(`http://devlight/${light.uuid}/${light.isOn ? "off" : "on"}`)
+      .then(() => {
+        setIcon(light.isOn ? regular : faLightbulb);
+        dispatch({
+          type: SET_LIGHT_STATUS,
+          id: light.uuid,
+          isOn: !light.isOn,
+        });
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  };
+  return (
+    <Pressable
+      onPress={onPress}
+      style={{ marginRight: 30, marginTop: 15, alignSelf: "center" }}
+    >
+      <FontAwesomeIcon size={30} {...props} color={theme.colors.accent} icon={icon} />
+    </Pressable>
+  );
+}
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const theme = useTheme();
-  const light: Light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.uuid === route.params.id),
+  const light: Light = useSelector((state: Store) =>
+    state.lights.find((l: Light) => l.uuid === route.params.id)
   ) as Light;
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <PowerBulb light={light} />
+      ),
+    });
+  }, []);
 
   const changeName = (name: string) => {
     Axios.patch(`http://devlight/${light.uuid}`, {
       name,
-    })
-      .then(() => {
-        dispatch({
-          type: EDIT_LIGHT_NAME,
-          id: light.uuid,
-          name,
-        });
+    }).then(() => {
+      dispatch({
+        type: EDIT_LIGHT_NAME,
+        id: light.uuid,
+        name,
       });
+    });
   };
-
+  
   const changeNumber = (count: string) => {
     if (!/^\d+$/.test(count)) return;
     Axios.patch(`http://devlight/count/${light.uuid}`, {
       count: parseInt(count, 10),
-    })
-      .then(() => {
-        dispatch({
-          type: "EDIT_LED_COUNT",
-          id: light.uuid,
-          count: parseInt(count, 10),
-        });
+    }).then(() => {
+      dispatch({
+        type: "EDIT_LED_COUNT",
+        id: light.uuid,
+        count: parseInt(count, 10),
       });
+    });
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,6 +123,7 @@ export default function LightScreen(): JSX.Element {
       borderColor: "transparent",
     },
     selectDropdown: {
+      zIndex: 10,
       marginLeft: 0,
       backgroundColor: "#4f4f4f",
       borderColor: "transparent",
@@ -98,6 +141,7 @@ export default function LightScreen(): JSX.Element {
       fontWeight: "600",
     },
     dropdownItems: {
+      zIndex: 10,
       justifyContent: "flex-start",
     },
     dropdownLabel: {
@@ -120,11 +164,7 @@ export default function LightScreen(): JSX.Element {
       />
 
       <View style={styles.numberContainer}>
-        <Text
-          style={styles.title}
-        >
-          LEDs
-        </Text>
+        <Text style={styles.title}>LEDs</Text>
         <TextInput
           keyboardType="number-pad"
           onSubmitEditing={({ nativeEvent: { text } }) => changeNumber(text)}
@@ -156,7 +196,7 @@ export default function LightScreen(): JSX.Element {
       </View>
 
       <Divider style={styles.divider} />
-      <View>
+      <View style={{ zIndex: -1 }}>
         {light.leds.pattern === "plain" ? (
           <PlainComponent
             colors={light.leds.colors}

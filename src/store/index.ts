@@ -4,6 +4,6 @@ import lightsReducer from "./reducers/lights";
 import favouriteReducer from "./reducers/favourites";
 
 const combinedReducers = combineReducers({ lights: lightsReducer, favourites: favouriteReducer });
-export type Store = CombinedState<{ lights: Light[] }>;
+export type Store = CombinedState<{ lights: Light[], favourites: string[] }>;
 const store: Store = createStore(combinedReducers);
 export default store;
