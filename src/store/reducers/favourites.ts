@@ -14,13 +14,13 @@ function favouriteReducer(
       favourites = action.favourites;
       return favourites;
     case ADD_FAVOURITE:
-      favourites = state;
+      favourites = [...state];
       favourite = favourites.find((f) => f === action.favourite);
       if (favourite === undefined) favourites = [...favourites, action.favourite];
       AsyncStorage.setItem("favourites", JSON.stringify(favourites));
       return favourites;
     case REMOVE_FAVOURITE:
-      favourites = state;
+      favourites = [...state];
       index = favourites.findIndex((f) => f === action.favourite);
       if (index !== undefined) {
         favourites.splice(index, 1);

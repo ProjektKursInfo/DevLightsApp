@@ -38,10 +38,13 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
         console.log(err.response);
       });
   };
+  const styles = StyleSheet.create({
+    pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
+  });
   return (
     <Pressable
       onPress={onPress}
-      style={{ marginRight: 30, marginTop: 15, alignSelf: "center" }}
+      style={styles.pressable}
     >
       <FontAwesomeIcon size={30} {...props} color={theme.colors.accent} icon={icon} />
     </Pressable>
@@ -50,9 +53,9 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const theme = useTheme();
-  const light: Light = useSelector((state: Store) =>
+  const light: Light = useSelector((state: Store) => (
     state.lights.find((l: Light) => l.uuid === route.params.id)
-  ) as Light;
+  )) as Light;
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -75,7 +78,6 @@ export default function LightScreen(): JSX.Element {
       });
     });
   };
-  
   const changeNumber = (count: string) => {
     if (!/^\d+$/.test(count)) return;
     Axios.patch(`http://devlight/count/${light.uuid}`, {

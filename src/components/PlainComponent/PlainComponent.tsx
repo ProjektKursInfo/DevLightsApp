@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { StyleSheet,  View,  ViewStyle } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { Leds, Light } from "../../interfaces";

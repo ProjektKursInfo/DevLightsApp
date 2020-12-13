@@ -1,22 +1,22 @@
-import { FontawesomeObject, IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios, { AxiosError } from "axios";
+import Axios from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text, useTheme } from "react-native-paper";
-import { useDispatch, useSelector, useStore } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
 import { Leds, Light } from "../../interfaces";
 import { Store } from "../../store";
 import {
   ADD_FAVOURITE,
   EDIT_LIGHT_COLOR,
-  REMOVE_FAVOURITE,
+  REMOVE_FAVOURITE
 } from "../../store/actions/types";
 import { ledsEquality } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
@@ -25,8 +25,9 @@ import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
   const leds = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.uuid === route.params.id)?.leds as Leds,
+    (state: Store) => (
+      state.lights.find((l: Light) => l.uuid === route.params.id)?.leds as Leds
+    ),
     ledsEquality,
   );
   const favourites : string[] = useSelector((state: Store) => state.favourites, isEqual);
@@ -41,7 +42,7 @@ export default function ColorPicker(): JSX.Element {
     if (favourites.includes(tinycolor.fromRatio(hsv).toHexString())) {
       dispatch({
         type: REMOVE_FAVOURITE,
-        favourite: tinycolor.fromRatio(hsv).toHexString(), 
+        favourite: tinycolor.fromRatio(hsv).toHexString(),
       });
       setIcon(faStar);
     } else {
@@ -98,8 +99,6 @@ export default function ColorPicker(): JSX.Element {
         colors: [tinycolor.fromRatio(hsv).toHexString()],
       });
       navigation.goBack();
-    }).catch((err) => {
-      console.log(err.response);
     });
   };
   const styles = StyleSheet.create({

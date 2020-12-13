@@ -1,13 +1,11 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
-import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
 import {
   GestureResponderEvent,
   StyleSheet,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback
 } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
 import { Theme } from "react-native-paper/lib/typescript/src/types";

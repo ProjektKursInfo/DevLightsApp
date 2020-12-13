@@ -135,7 +135,6 @@ function Icon(
 function HomeStack() {
   const Stack = createStackNavigator<HomeStackParamList>();
   const navigation = useNavigation();
-  const theme = useTheme();
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -147,7 +146,7 @@ function HomeStack() {
           headerLeft: () => <HeaderIcon />,
           headerRight: () => (
             <Icon
-              color={"#ffff00"}
+              color="#ffff00"
               icon={faStar}
               position="right"
               onPress={() => navigation.navigate("favourite")}
@@ -182,6 +181,10 @@ function HomeStack() {
       <Stack.Screen
         options={{
           headerTitle: "Favourite Colors",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            marginTop: 20,
+          },
           headerLeft: (props: StackHeaderLeftButtonProps) => <Icon icon={faTimes} position="left" {...props} />
         }}
         name="favourite"

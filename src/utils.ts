@@ -1,7 +1,18 @@
+/* eslint-disable import/prefer-default-export */
 import { isEqual } from "lodash";
 import { Leds } from "./interfaces";
 
-// eslint-disable-next-line import/prefer-default-export
 export const ledsEquality = (left: Leds, right: Leds): boolean => (
   isEqual(left.colors, right.colors) || isEqual(left.pattern, right.pattern)
 );
+
+export const favouritesEquality = (left: string[], right: string[]): boolean => {
+  try {
+    for (let i = 0; i < (left.length > right.length ? left.length : right.length); i++) {
+      if (right[i] !== left[i]) return false;
+    }
+  } catch {
+    return false;
+  }
+  return true;
+};

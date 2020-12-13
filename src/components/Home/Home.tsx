@@ -92,6 +92,7 @@ function Home(): JSX.Element {
 
   const { colors } = useTheme();
   const styles = StyleSheet.create({
+    container: {width: "100%", height: "100%"},
     title: {
       paddingTop: 30,
       marginBottom: 10,
@@ -104,7 +105,7 @@ function Home(): JSX.Element {
     },
   });
   return (
-    <View style={{width: "100%", height: "100%"}}>
+    <View style={styles.container}>
       <StatusBar
         backgroundColor={theme.colors.background}
         barStyle="light-content"
@@ -125,7 +126,7 @@ function Home(): JSX.Element {
         <Title style={styles.title}>Lights</Title>
 
         {loading ? (
-          <Spinner visible={true} />
+          <Spinner visible />
         ) : lights.length > 0 && !error ? (
           lights.map((light: Light) => <Card key={light.uuid} light={light} />)
         ) : (
