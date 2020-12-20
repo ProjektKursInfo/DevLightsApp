@@ -2,7 +2,7 @@ import { isEqual } from "lodash";
 import * as React from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Text } from "react-native-paper";
-import { useSelector, useStore } from "react-redux";
+import { useSelector } from "react-redux";
 import { Store } from "../../store";
 
 export interface FavouriteListProps {
@@ -10,8 +10,6 @@ export interface FavouriteListProps {
 }
 
 export default function FavouriteList(props: FavouriteListProps): JSX.Element {
-  const store = useStore();
-  /* const { favourites } = store.getState(); */
   const favourites : string[] = useSelector((state: Store) => state.favourites, isEqual);
   const styles = StyleSheet.create({
     container: { width: "100%", height: 120, alignItems: "center" },

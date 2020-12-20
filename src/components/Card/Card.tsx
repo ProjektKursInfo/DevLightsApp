@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback
 } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
-import { Theme } from "react-native-paper/lib/typescript/src/types";
 import { Light } from "../../interfaces";
 import getContrastTextColor from "../textContrast";
 
@@ -17,7 +16,7 @@ export interface CardProps {
 }
 
 export default function Card(props: CardProps): JSX.Element {
-  const theme: Theme = useTheme();
+  const theme: ReactNativePaper.Theme = useTheme();
   const { light } = props;
   const { colors } = light.leds;
   const styles = StyleSheet.create({

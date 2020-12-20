@@ -185,7 +185,7 @@ function HomeStack() {
           headerTitleStyle: {
             marginTop: 20,
           },
-          headerLeft: (props: StackHeaderLeftButtonProps) => <Icon icon={faTimes} position="left" {...props} />
+          headerLeft: (props: StackHeaderLeftButtonProps) => <Icon icon={faTimes} position="left" {...props} />,
         }}
         name="favourite"
         component={Favourite}

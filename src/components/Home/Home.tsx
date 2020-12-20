@@ -2,13 +2,13 @@ import axios, { AxiosResponse } from "axios";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
-  AsyncStorage,
   RefreshControl,
   ScrollView,
   StatusBar,
   StyleSheet,
   View
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
 import { Light } from "../../interfaces";
@@ -58,7 +58,7 @@ function Home(): JSX.Element {
   const fetch = async (refreshing = false) => {
     setLoading(true);
     if (refreshing) setRefresh(refreshing);
-    const json: string = await AsyncStorage.getItem("favourites");
+    const json: string | null = await AsyncStorage.getItem("favourites");
     if (json != null) {
       store.dispatch({
         type: SET_FAVOURITES,
@@ -67,7 +67,7 @@ function Home(): JSX.Element {
     }
     setError(false);
     axios
-      .get("http://devlight/", {})
+      .get("http://devlight/")
       .then((response: AxiosResponse) => {
         store.dispatch({
           type: SET_ALL_LIGHTS,
@@ -82,9 +82,7 @@ function Home(): JSX.Element {
     if (refreshing) setRefresh(false);
   };
   const network = useNetwork();
-
   React.useEffect(() => {
-    console.log(network);
     if (network) fetch();
     else setError(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps

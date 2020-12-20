@@ -156,6 +156,7 @@ export default function LightScreen(): JSX.Element {
       height: 45,
       zIndex: 10,
     },
+    plain: { zIndex: -1 },
   });
   return (
     <View style={styles.container}>
@@ -198,7 +199,7 @@ export default function LightScreen(): JSX.Element {
       </View>
 
       <Divider style={styles.divider} />
-      <View style={{ zIndex: -1 }}>
+      <View style={styles.plain}>
         {light.leds.pattern === "plain" ? (
           <PlainComponent
             colors={light.leds.colors}

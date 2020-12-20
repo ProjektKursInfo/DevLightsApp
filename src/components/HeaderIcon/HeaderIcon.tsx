@@ -7,6 +7,7 @@ import { useTheme } from "react-native-paper";
 
 export default function HeaderIcon(): JSX.Element {
   const navigation = useNavigation().dangerouslyGetParent();
+
   const theme = useTheme();
   const styles = StyleSheet.create({
     icon: { marginLeft: 30, marginTop: 20 },
