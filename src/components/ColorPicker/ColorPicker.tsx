@@ -53,10 +53,22 @@ export default function ColorPicker(): JSX.Element {
       setIcon(fullstar);
     }
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: "#2f2f2f",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    button: { marginTop: 20 },
+    icon: { marginRight: 20, marginTop: 15 },
+  });
+
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable style={{ marginRight: 20, marginTop: 15 }} onPress={() => saveColor()}>
+        <Pressable style={styles.icon} onPress={() => saveColor()}>
           <FontAwesomeIcon color={theme.colors.accent} size={30} icon={icon} />
         </Pressable>
       ),
@@ -101,15 +113,7 @@ export default function ColorPicker(): JSX.Element {
       navigation.goBack();
     });
   };
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: "#2f2f2f",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    button: { marginTop: 20 },
-  });
+
   return (
     <View style={styles.container}>
       <FavouriteList onPress={onPress} />

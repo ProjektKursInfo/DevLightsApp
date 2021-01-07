@@ -1,5 +1,6 @@
 import React from "react";
 import { Text } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
 import "react-native-gesture-handler";
 import { Provider as PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -11,11 +12,18 @@ import store from "./store";
 
 export default function App(): JSX.Element {
   const [theme, setTheme] = React.useState<unknown>();
+
   React.useEffect(() => {
+    setTheme(null);
+    SplashScreen.preventAutoHideAsync()
+      .then((result) => console.log("result" + result))
+      .catch((err) => console.log(err));
     themeFunction().then((t) => {
       setTheme(t);
+      SplashScreen.hideAsync();
     });
   }, []);
+
   return (
     <>
       {theme ? (
@@ -29,7 +37,7 @@ export default function App(): JSX.Element {
           </PaperProvider>
         </Provider>
       ) : (
-        <Text>This is a splashscreen</Text>
+        <Text> This is a SplashScreen</Text>
       )}
     </>
   );

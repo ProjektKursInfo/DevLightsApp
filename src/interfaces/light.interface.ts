@@ -1,9 +1,11 @@
 import Leds from "./led.interface";
 
 export default interface Light {
-  name: string,
-  uuid: string,
-  leds: Leds,
-  count: number,
-  isOn: boolean
+  name: string;
+  uuid: string;
+  leds: Leds;
+  count: number;
+  brightness: number;
+  tags?: string[];
+  isOn: boolean;
 }

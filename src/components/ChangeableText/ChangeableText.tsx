@@ -53,6 +53,7 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
       fontSize: 40,
       fontWeight: "600",
       fontFamily: "TitilliumWeb-Bold",
+      width: "90%",
     },
   });
   return (
@@ -60,6 +61,8 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
       <Input
         selectionColor={`${colors.primary}77`}
         editable={editable}
+        multiline
+        textBreakStrategy="highQuality"
         onSubmitEditing={handleSave}
         onChangeText={setText}
         ref={inputRef}

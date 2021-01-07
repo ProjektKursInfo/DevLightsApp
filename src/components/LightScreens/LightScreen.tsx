@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
 import { EDIT_LIGHT_NAME, SET_LIGHT_STATUS } from "../../store/actions/types";
+import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
@@ -157,6 +158,14 @@ export default function LightScreen(): JSX.Element {
       zIndex: 10,
     },
     plain: { zIndex: -1 },
+    slider_container: {
+      marginTop: theme.spacing(4),
+      marginLeft: theme.spacing(7),
+    },
+    slider_text: {
+      fontSize: 20,
+      fontFamily: "TitilliumWeb-Regular",
+    }
   });
   return (
     <View style={styles.container}>
@@ -197,6 +206,11 @@ export default function LightScreen(): JSX.Element {
           onChangeItem={(item) => changePattern(item.value)}
         />
       </View>
+        
+      <View style={styles.slider_container}>
+        <Text style={styles.slider_text}> Brightness</Text>
+        <BrightnessSlider light={light} />
+      </View>  
 
       <Divider style={styles.divider} />
       <View style={styles.plain}>
@@ -210,6 +224,7 @@ export default function LightScreen(): JSX.Element {
           <Text>Not implemented yet!</Text>
         )}
       </View>
+      
     </View>
   );
 }
