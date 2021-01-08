@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { StatusBar, StatusBarIOS, Text } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-gesture-handler";
 import { Provider as PaperProvider } from "react-native-paper";
@@ -14,7 +14,6 @@ export default function App(): JSX.Element {
   const [theme, setTheme] = React.useState<unknown>();
 
   React.useEffect(() => {
-    setTheme(null);
     SplashScreen.preventAutoHideAsync()
       .then((result) => console.log("result" + result))
       .catch((err) => console.log(err));
@@ -37,7 +36,7 @@ export default function App(): JSX.Element {
           </PaperProvider>
         </Provider>
       ) : (
-        <Text> This is a SplashScreen</Text>
+        <StatusBar translucent backgroundColor="transparent" />
       )}
     </>
   );

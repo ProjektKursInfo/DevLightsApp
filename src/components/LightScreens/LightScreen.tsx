@@ -11,20 +11,26 @@ import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { EDIT_LIGHT_NAME, SET_LIGHT_STATUS } from "../../store/actions/types";
+import {
+  EDIT_LED_COUNT,
+  EDIT_LIGHT_NAME,
+  SET_LIGHT_STATUS,
+} from "../../store/actions/types";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
 
-interface PowerBulbProps{
-  light: Light
+interface PowerBulbProps {
+  light: Light;
 }
 export function PowerBulb(props: PowerBulbProps): JSX.Element {
-  const {light} = props;
+  const { light } = props;
   const dispatch = useDispatch();
   const theme = useTheme();
-  const [icon, setIcon] = React.useState<IconDefinition>(light.isOn ? faLightbulb : regular);
+  const [icon, setIcon] = React.useState<IconDefinition>(
+    light.isOn ? faLightbulb : regular
+  );
   const onPress = () => {
     Axios.patch(`http://devlight/${light.uuid}/${light.isOn ? "off" : "on"}`)
       .then(() => {
@@ -43,28 +49,30 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
     pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
   });
   return (
-    <Pressable
-      onPress={onPress}
-      style={styles.pressable}
-    >
-      <FontAwesomeIcon size={30} {...props} color={theme.colors.accent} icon={icon} />
+    <Pressable onPress={onPress} style={styles.pressable}>
+      <FontAwesomeIcon
+        size={30}
+        {...props}
+        color={theme.colors.accent}
+        icon={icon}
+      />
     </Pressable>
   );
 }
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const theme = useTheme();
-  const light: Light = useSelector((state: Store) => (
+  const light: Light = useSelector((state: Store) =>
     state.lights.find((l: Light) => l.uuid === route.params.id)
-  )) as Light;
+  ) as Light;
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  const ref = React.useRef<TextInput>();
+
   React.useEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <PowerBulb light={light} />
-      ),
+      headerRight: () => <PowerBulb light={light} />,
     });
   }, []);
 
@@ -81,15 +89,22 @@ export default function LightScreen(): JSX.Element {
   };
   const changeNumber = (count: string) => {
     if (!/^\d+$/.test(count)) return;
-    Axios.patch(`http://devlight/count/${light.uuid}`, {
+    Axios.patch(`http://devlight/${light.uuid}/count`, {
       count: parseInt(count, 10),
-    }).then(() => {
-      dispatch({
-        type: "EDIT_LED_COUNT",
-        id: light.uuid,
-        count: parseInt(count, 10),
+    })
+      .then(() => {
+        dispatch({
+          type: EDIT_LED_COUNT,
+          id: light.uuid,
+          count: parseInt(count, 10),
+        });
+      })
+      .catch((err) => {
+        if (ref) {
+          ref.current?.setNativeProps({ text: light.count.toString() });
+          console.log(err.response.data.message);
+        }
       });
-    });
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -165,7 +180,7 @@ export default function LightScreen(): JSX.Element {
     slider_text: {
       fontSize: 20,
       fontFamily: "TitilliumWeb-Regular",
-    }
+    },
   });
   return (
     <View style={styles.container}>
@@ -178,6 +193,7 @@ export default function LightScreen(): JSX.Element {
       <View style={styles.numberContainer}>
         <Text style={styles.title}>LEDs</Text>
         <TextInput
+          ref={ref}
           keyboardType="number-pad"
           onSubmitEditing={({ nativeEvent: { text } }) => changeNumber(text)}
           textAlign="right"
@@ -193,7 +209,6 @@ export default function LightScreen(): JSX.Element {
               label: "Single Color",
               value: "plain",
             },
-            /* { label: "Gradient", value: "gradient" }, */
           ]}
           defaultValue={light.leds.pattern}
           containerStyle={styles.dropdownContainer}
@@ -206,11 +221,11 @@ export default function LightScreen(): JSX.Element {
           onChangeItem={(item) => changePattern(item.value)}
         />
       </View>
-        
+
       <View style={styles.slider_container}>
         <Text style={styles.slider_text}> Brightness</Text>
-        <BrightnessSlider light={light} />
-      </View>  
+        <BrightnessSlider color={light.leds.colors[0]} id={light.uuid} />
+      </View>
 
       <Divider style={styles.divider} />
       <View style={styles.plain}>
@@ -224,7 +239,6 @@ export default function LightScreen(): JSX.Element {
           <Text>Not implemented yet!</Text>
         )}
       </View>
-      
     </View>
   );
 }

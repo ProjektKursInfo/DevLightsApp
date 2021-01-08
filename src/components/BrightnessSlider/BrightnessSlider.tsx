@@ -1,16 +1,25 @@
 import * as React from "react";
 import Slider from "@react-native-community/slider";
-import Axios from "axios";
-import { useDispatch } from "react-redux";
+import Axios, { AxiosError } from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import { SET_BRIGHTNESS } from "../../store/actions/types";
 import { Light } from "../../interfaces";
+import { Store } from "../../store";
+import { isEqual } from "lodash";
+import { lightEquality } from "../../utils";
 
 export interface SliderProps {
-  light: Light;
+  color: string;
+  id: string;
 }
 
-export default function BrightnessSlider(props: SliderProps) : JSX.Element {
-  const { light } = props;
+export default function BrightnessSlider(props: SliderProps): JSX.Element {
+  const { id } = props;
+  const light: Light = useSelector(
+    (state: Store) => state.lights.find((l: Light) => l.uuid === id) as Light,
+    (left: Light, right: Light) => !isEqual(left, right)
+  );
+
   const [brightness, setBrightness] = React.useState<number>(light.brightness);
 
   const dispatch = useDispatch();
@@ -20,10 +29,14 @@ export default function BrightnessSlider(props: SliderProps) : JSX.Element {
       brightness: Math.round(value),
     })
       .then(() => {
-        dispatch({type: SET_BRIGHTNESS, brightness: Math.round(value), id: light.uuid});
-        console.log(light.brightness);
+        dispatch({
+          type: SET_BRIGHTNESS,
+          brightness: Math.round(value),
+          id: light.uuid,
+        });
       })
-      .catch(() => {
+      .catch((err: AxiosError) => {
+        console.log(err.response?.data.message);
         setBrightness(light.brightness);
       });
   };
