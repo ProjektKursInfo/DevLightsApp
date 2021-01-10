@@ -3,25 +3,25 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faChevronLeft,
   faStar,
-  faTimes
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerItemList
+  DrawerItemList,
 } from "@react-navigation/drawer";
 import {
   NavigationContainer,
   RouteProp,
-  useNavigation
+  useNavigation,
 } from "@react-navigation/native";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
   StackNavigationProp,
-  TransitionPresets
+  TransitionPresets,
 } from "@react-navigation/stack";
 import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -37,37 +37,40 @@ export type HomeStackParamList = {
   light: {
     id: string;
   };
-  color_modal: { id: string };
+  color_modal: {
+    id: string;
+    index: number;
+  };
   favourite: undefined;
 };
 
 export type LightScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"light"
+  HomeStackParamList,
+  "light"
 >;
 export type HomeScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"home"
+  HomeStackParamList,
+  "home"
 >;
 export type ColorModalScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"color_modal"
+  HomeStackParamList,
+  "color_modal"
 >;
 
 export type FavouriteScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"favourite"
+  HomeStackParamList,
+  "favourite"
 >;
 
 export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
 export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
 export type ColorModalScreenRouteProp = RouteProp<
-HomeStackParamList,
-"color_modal"
+  HomeStackParamList,
+  "color_modal"
 >;
 export type FavouriteScreenRouteProp = RouteProp<
-HomeStackParamList,
-"favourite"
+  HomeStackParamList,
+  "favourite"
 >;
 
 function DrawerContent(props: DrawerContentComponentProps) {
@@ -109,7 +112,11 @@ function DrawerContent(props: DrawerContentComponentProps) {
 
 function Icon(
   // eslint-disable-next-line react/require-default-props
-  props: StackHeaderLeftButtonProps & { icon: IconProp; color?: string, position: "left" | "right"; },
+  props: StackHeaderLeftButtonProps & {
+    icon: IconProp;
+    color?: string;
+    position: "left" | "right";
+  }
 ): JSX.Element {
   const { colors } = useTheme();
   const { onPress, icon, color, position } = props;
@@ -185,7 +192,9 @@ function HomeStack() {
           headerTitleStyle: {
             marginTop: 20,
           },
-          headerLeft: (props: StackHeaderLeftButtonProps) => <Icon icon={faTimes} position="left" {...props} />,
+          headerLeft: (props: StackHeaderLeftButtonProps) => (
+            <Icon icon={faTimes} position="left" {...props} />
+          ),
         }}
         name="favourite"
         component={Favourite}

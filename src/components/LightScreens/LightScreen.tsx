@@ -4,8 +4,9 @@ import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Axios from "axios";
+import { isEqual } from "lodash";
 import * as React from "react";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Pressable, RefreshControl, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,11 +14,14 @@ import { Light } from "../../interfaces";
 import { Store } from "../../store";
 import {
   EDIT_LED_COUNT,
+  EDIT_LIGHT_COLOR,
   EDIT_LIGHT_NAME,
+  SET_LIGHT,
   SET_LIGHT_STATUS,
 } from "../../store/actions/types";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
+import GradientComponent from "../GradientComponent";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
 
@@ -40,9 +44,6 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
           id: light.uuid,
           isOn: !light.isOn,
         });
-      })
-      .catch((err) => {
-        console.log(err.response);
       });
   };
   const styles = StyleSheet.create({
@@ -62,14 +63,16 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const theme = useTheme();
-  const light: Light = useSelector((state: Store) =>
-    state.lights.find((l: Light) => l.uuid === route.params.id)
-  ) as Light;
+  const {colors} = theme;
+  const light = useSelector(
+    (state: Store) =>
+      state.lights.find((l: Light) => l.uuid === route.params.id) as Light,
+    (left: Light, right: Light) => !isEqual(left.leds, right.leds),
+  );
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
   const ref = React.useRef<TextInput>();
-
+  const [refresh, setRefresh] = React.useState<boolean>(false);
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => <PowerBulb light={light} />,
@@ -111,6 +114,30 @@ export default function LightScreen(): JSX.Element {
   const changePattern = (pattern: string) => {
     // change pattern
     // TODO does nothing till implemented on server
+    const colors : string[] = [light.leds.colors[0]];
+    if (pattern === "gradient") {
+      colors.push(light.leds.colors[0]);
+    }
+    Axios.patch(`http://devlight/${light.uuid}/color`, {
+      colors: colors,
+      pattern,
+    }).then((response) => {
+      dispatch({
+        type: EDIT_LIGHT_COLOR,
+        id: light.uuid,
+        colors: response.data.object.leds.colors,
+        pattern: response.data.object.leds.pattern,
+      });
+    }).catch((err) => {
+    });
+  };
+
+  const fetch = () => {
+    setRefresh(true);
+    Axios.get(`http://devlight/${route.params.id}`).then((response) => {
+      dispatch({type: SET_LIGHT, id: route.params.id, light: response.data.object});
+      setRefresh(false);
+    });
   };
 
   const styles = StyleSheet.create({
@@ -141,7 +168,6 @@ export default function LightScreen(): JSX.Element {
       borderColor: "transparent",
     },
     selectDropdown: {
-      zIndex: 10,
       marginLeft: 0,
       backgroundColor: "#4f4f4f",
       borderColor: "transparent",
@@ -159,7 +185,6 @@ export default function LightScreen(): JSX.Element {
       fontWeight: "600",
     },
     dropdownItems: {
-      zIndex: 10,
       justifyContent: "flex-start",
     },
     dropdownLabel: {
@@ -170,12 +195,12 @@ export default function LightScreen(): JSX.Element {
     },
     dropdownContainer: {
       height: 45,
-      zIndex: 10,
     },
     plain: { zIndex: -1 },
     slider_container: {
-      marginTop: theme.spacing(4),
-      marginLeft: theme.spacing(7),
+      marginTop: 10,
+      marginLeft: theme.spacing(6),
+      marginRight: theme.spacing(6),
     },
     slider_text: {
       fontSize: 20,
@@ -183,7 +208,15 @@ export default function LightScreen(): JSX.Element {
     },
   });
   return (
-    <View style={styles.container}>
+    <ScrollView refreshControl={
+      <RefreshControl
+        refreshing={refresh}
+        onRefresh={() => fetch(true)}
+        tintColor={colors.accent}
+        colors={[colors.primary, colors.accent]}
+      />
+    } 
+    style={styles.container}>
       <ChangeableText
         value={light.name}
         onSave={changeName}
@@ -208,6 +241,10 @@ export default function LightScreen(): JSX.Element {
             {
               label: "Single Color",
               value: "plain",
+            },
+            {
+              label: "Gradient",
+              value: "gradient",
             },
           ]}
           defaultValue={light.leds.pattern}
@@ -235,10 +272,14 @@ export default function LightScreen(): JSX.Element {
             pattern={light.leds.pattern}
             id={light.uuid}
           />
-        ) : (
-          <Text>Not implemented yet!</Text>
-        )}
+        ) : light.leds.pattern === "gradient" ? (
+          <GradientComponent 
+            colors={light.leds.colors}
+            pattern={light.leds.pattern}
+            id={light.uuid}
+          /> 
+        ) : null}
       </View>
-    </View>
+    </ScrollView>
   );
 }

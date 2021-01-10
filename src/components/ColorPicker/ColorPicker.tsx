@@ -3,7 +3,7 @@ import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios, { AxiosError } from "axios";
+import Axios, { AxiosError, AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -11,6 +11,7 @@ import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
+import useLight from "../../hooks/useLight";
 import { Leds, Light } from "../../interfaces";
 import { Store } from "../../store";
 import {
@@ -24,6 +25,7 @@ import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
 
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
+  const lights = useLight();
   const light = useSelector(
     (state: Store) =>
       state.lights.find((l: Light) => l.uuid === route.params.id) as Light,
@@ -34,7 +36,7 @@ export default function ColorPicker(): JSX.Element {
     isEqual
   );
   const [hsv, setHsv] = React.useState<ColorFormats.HSV>(
-    tinycolor(light.leds.colors[0]).toHsv()
+    tinycolor(light.leds.colors[route.params.index]).toHsv()
   );
   const [icon, setIcon] = React.useState<IconProp>(faStar);
   const navigation = useNavigation();
@@ -109,24 +111,24 @@ export default function ColorPicker(): JSX.Element {
     } else if (icon === fullstar) setIcon(faStar);
   };
   const onSubmit = (): void => {
-    Axios.patch(`http://devlight/${route.params.id}/color`, {
-      colors: [tinycolor.fromRatio(hsv).toHexString()],
-      pattern: light.leds.pattern,
-    })
-      .then(() => {
-        dispatch({
-          type: EDIT_LIGHT_COLOR,
-          id: route.params.id,
-          colors: [tinycolor.fromRatio(hsv).toHexString()],
-        });
-        navigation.goBack();
-      })
-      .catch((err: AxiosError) => {
-        setHsv(tinycolor(light.leds.colors[0]).toHsv());
-        console.log(err.response?.data.message);
-      });
+    const secondColor =
+      route.params.index === 0
+        ? light.leds.colors[1] ?? ""
+        : light.leds.colors[0];
+    const ax = lights.setColor(
+      route.params.id,
+      tinycolor.fromRatio(hsv).toHexString(),
+      light.leds.pattern === "plain" ? undefined : secondColor,
+      light.leds.pattern,
+      route.params.index,
+    );
+    ax.then(() => {
+      navigation.goBack();
+    });
+    ax.catch((err) => {
+      setHsv(tinycolor(light.leds.colors[route.params.index]).toHsv());
+    });
   };
-
   return (
     <View style={styles.container}>
       <FavouriteList onPress={onPress} />

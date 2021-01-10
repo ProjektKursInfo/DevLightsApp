@@ -6,6 +6,7 @@ import {
 
   SET_ALL_LIGHTS,
   SET_BRIGHTNESS,
+  SET_LIGHT,
   SET_LIGHT_STATUS
 } from "../actions/types";
 import defaultstate from "../defaultstate";
@@ -21,6 +22,13 @@ function lightsReducer(
     case SET_ALL_LIGHTS:
       lights = action.lights;
       return lights;
+    case SET_LIGHT:
+      lights = [...state];
+      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      light = lights[index];
+      light = action.light;
+      lights[index] = light;
+      return lights;
     case EDIT_LIGHT_NAME:
       lights = [...state];
       index = lights.findIndex((l: Light) => (l.uuid === action.id));
@@ -32,7 +40,10 @@ function lightsReducer(
       lights = [...state];
       index = lights.findIndex((l: Light) => (l.uuid === action.id));
       light = lights[index];
-      light.leds.colors = action.colors;
+      light.leds = {
+        colors: action.colors,
+        pattern: action.pattern ?? light.leds.pattern,
+      };
       lights[index] = light;
       return lights;
     case EDIT_LED_COUNT:

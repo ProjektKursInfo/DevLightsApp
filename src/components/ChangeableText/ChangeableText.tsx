@@ -45,15 +45,12 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
       alignItems: "center",
       flexDirection: "row",
     }, style]),
-    icon: {
-      marginLeft: 10,
-    },
     input: {
       color: colors.text,
       fontSize: 40,
       fontWeight: "600",
       fontFamily: "TitilliumWeb-Bold",
-      width: "90%",
+      maxWidth: "88%",
     },
   });
   return (
@@ -76,7 +73,6 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
           icon={editable ? faCheck : faPen}
           color={colors.text}
           size={18}
-          style={styles.icon}
         />
       </TouchableOpacity>
     </View>

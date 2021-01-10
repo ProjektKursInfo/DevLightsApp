@@ -9,6 +9,7 @@ import Navigation from "./components/Navigation/Navigation";
 import SafeAreaView from "./components/SafeAreaView";
 import themeFunction from "./components/theme";
 import store from "./store";
+import LightProvider from "./hooks/useLight/LightProvider";
 
 export default function App(): JSX.Element {
   const [theme, setTheme] = React.useState<unknown>();
@@ -28,11 +29,13 @@ export default function App(): JSX.Element {
       {theme ? (
         <Provider store={store}>
           <PaperProvider theme={theme}>
-            <SafeAreaProvider>
-              <SafeAreaView>
-                <Navigation />
-              </SafeAreaView>
-            </SafeAreaProvider>
+            <LightProvider>
+              <SafeAreaProvider>
+                <SafeAreaView>
+                  <Navigation />
+                </SafeAreaView>
+              </SafeAreaProvider>
+            </LightProvider>
           </PaperProvider>
         </Provider>
       ) : (
