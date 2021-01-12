@@ -110,6 +110,7 @@ export default function LightScreen(): JSX.Element {
       });
   };
 
+  let controller : unknown; 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePattern = (pattern: string) => {
     // change pattern
@@ -118,6 +119,7 @@ export default function LightScreen(): JSX.Element {
     if (pattern === "gradient") {
       colors.push(light.leds.colors[0]);
     }
+    console.log("change")
     Axios.patch(`http://devlight/${light.uuid}/color`, {
       colors: colors,
       pattern,
@@ -129,6 +131,10 @@ export default function LightScreen(): JSX.Element {
         pattern: response.data.object.leds.pattern,
       });
     }).catch((err) => {
+    /*   if(controller) controller.reset(); */
+      /* if (controller && err) {
+      controller.select(light.leds.pattern);
+      } */
     });
   };
 
@@ -247,6 +253,7 @@ export default function LightScreen(): JSX.Element {
               value: "gradient",
             },
           ]}
+          controller={(instance) => controller = instance}
           defaultValue={light.leds.pattern}
           containerStyle={styles.dropdownContainer}
           arrowColor={theme.colors.text}
@@ -255,7 +262,7 @@ export default function LightScreen(): JSX.Element {
           dropDownStyle={styles.selectDropdown}
           labelStyle={styles.dropdownLabel}
           itemStyle={styles.dropdownItems}
-          onChangeItem={(item) => changePattern(item.value)}
+          onChangeItem={(item) => light.isOn ? changePattern(item.value) : console.log("light is off")}
         />
       </View>
 

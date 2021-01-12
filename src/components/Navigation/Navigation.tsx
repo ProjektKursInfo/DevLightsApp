@@ -59,7 +59,7 @@ export type ColorModalScreenNavigationProp = StackNavigationProp<
 
 export type FavouriteScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
-  "favourite"
+ "favourite"
 >;
 
 export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
