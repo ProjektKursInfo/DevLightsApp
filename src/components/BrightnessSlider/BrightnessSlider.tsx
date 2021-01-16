@@ -1,14 +1,13 @@
+import Axios from "axios";
+import { isEqual } from "lodash";
 import * as React from "react";
+import { StyleSheet } from "react-native";
 import Slider from "react-native-slider";
-import Axios, { AxiosError } from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { SET_BRIGHTNESS } from "../../store/actions/types";
+import tinycolor from "tinycolor2";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { isEqual } from "lodash";
-import { lightEquality } from "../../utils";
-import { useTheme } from "react-native-paper";
-import tinycolor from "tinycolor2";
+import { SET_BRIGHTNESS } from "../../store/actions/types";
 
 export interface SliderProps {
   color: string;
@@ -17,7 +16,6 @@ export interface SliderProps {
 
 export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const { id } = props;
-  const theme = useTheme();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.uuid === id) as Light,
     (left: Light, right: Light) => !isEqual(left, right)
@@ -38,27 +36,30 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
           id: light.uuid,
         });
       })
-      .catch((err: AxiosError) => {
-        console.log(err.response?.data.message);
+      .catch(() => {
         setBrightness(light.brightness);
       });
   };
 
+  const styles = StyleSheet.create({
+    trackStyle: {height: 5},
+    thumbStyle: {
+      backgroundColor: tinycolor(light.leds.colors[0])
+        .spin(180)
+        .toHexString(),
+      borderRadius: 20,
+      height: 30,
+      width: 30,
+    },
+  });
   return (
     <Slider
       minimumTrackTintColor={light.leds.colors[0]}
       minimumValue={1}
       maximumValue={255}
       value={brightness}
-      trackStyle={{ height: 5 }}
-      thumbStyle={{
-        backgroundColor: tinycolor(light.leds.colors[0])
-          .spin(180)
-          .toHexString(),
-        borderRadius: 20,
-        height: 30,
-        width: 30,
-      }}
+      trackStyle={styles.trackStyle}
+      thumbStyle={styles.thumbStyle}
       onValueChange={(value: number) => setBrightness(value)}
       onSlidingComplete={(value: number) => updateBrightness(value)}
     />

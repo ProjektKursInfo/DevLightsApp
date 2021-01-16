@@ -12,6 +12,7 @@ import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
 import useLight from "../../hooks/useLight";
+import useSnackbar from "../../hooks/useSnackbar";
 import { Leds, Light } from "../../interfaces";
 import { Store } from "../../store";
 import {
@@ -19,7 +20,7 @@ import {
   EDIT_LIGHT_COLOR,
   REMOVE_FAVOURITE,
 } from "../../store/actions/types";
-import { ledsEquality } from "../../utils";
+import { ledsEquality, makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
 import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
 
@@ -42,6 +43,7 @@ export default function ColorPicker(): JSX.Element {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const snackbar = useSnackbar();
   const saveColor = () => {
     if (favourites.includes(tinycolor.fromRatio(hsv).toHexString())) {
       dispatch({
@@ -111,21 +113,18 @@ export default function ColorPicker(): JSX.Element {
     } else if (icon === fullstar) setIcon(faStar);
   };
   const onSubmit = (): void => {
-    const secondColor =
-      route.params.index === 0
-        ? light.leds.colors[1] ?? ""
-        : light.leds.colors[0];
-    const ax = lights.setColor(
-      route.params.id,
+    const colors = makeValidColorArray(
       tinycolor.fromRatio(hsv).toHexString(),
-      light.leds.pattern === "plain" ? undefined : secondColor,
-      light.leds.pattern,
+      light.leds.colors,
       route.params.index,
     );
-    ax.then(() => {
-      navigation.goBack();
+    const ax = lights.setColor(route.params.id, colors, light.leds.pattern);
+    ax.then((response: AxiosResponse) => {
+      if (response.status === 200) {
+        navigation.goBack();
+      }
     });
-    ax.catch((err) => {
+    ax.catch(() => {
       setHsv(tinycolor(light.leds.colors[route.params.index]).toHsv());
     });
   };

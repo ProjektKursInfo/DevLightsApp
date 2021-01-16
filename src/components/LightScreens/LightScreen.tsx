@@ -3,10 +3,17 @@ import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
 import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios from "axios";
+import Axios, { AxiosError, AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { Pressable, RefreshControl, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import {
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +31,20 @@ import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
+import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
+import useLight from "../../hooks/useLight";
+
+function PatternComponent(props: {pattern: string, id: string}) : JSX.Element {
+  const {pattern, id} = props;
+  switch(pattern) {
+    case "gradient":
+      return <GradientComponent id={id}/>;
+    case "plain":
+      return <PlainComponent id={id}/>;
+    default: 
+      return <Text> Not implemented yet </Text>;    
+  }
+}
 
 interface PowerBulbProps {
   light: Light;
@@ -32,19 +53,22 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
   const { light } = props;
   const dispatch = useDispatch();
   const theme = useTheme();
+  const snackbar = useSnackbar();
   const [icon, setIcon] = React.useState<IconDefinition>(
     light.isOn ? faLightbulb : regular
   );
   const onPress = () => {
-    Axios.patch(`http://devlight/${light.uuid}/${light.isOn ? "off" : "on"}`)
-      .then(() => {
-        setIcon(light.isOn ? regular : faLightbulb);
-        dispatch({
-          type: SET_LIGHT_STATUS,
-          id: light.uuid,
-          isOn: !light.isOn,
-        });
+    Axios.patch(
+      `http://devlight/${light.uuid}/${light.isOn ? "off" : "on"}`,
+    ).then((response: AxiosResponse) => {
+      setIcon(light.isOn ? regular : faLightbulb);
+      snackbar.makeSnackbar(response.data.message, theme.colors.accent);
+      dispatch({
+        type: SET_LIGHT_STATUS,
+        id: light.uuid,
+        isOn: !light.isOn,
       });
+    });
   };
   const styles = StyleSheet.create({
     pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
@@ -63,15 +87,17 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const theme = useTheme();
-  const {colors} = theme;
+  const { colors } = theme;
   const light = useSelector(
     (state: Store) =>
       state.lights.find((l: Light) => l.uuid === route.params.id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds, right.leds),
+    (left: Light, right: Light) => !isEqual(left.leds, right.leds)
   );
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const ref = React.useRef<TextInput>();
+  const snackbar = useSnackbar();
+  const lights = useLight();
   const [refresh, setRefresh] = React.useState<boolean>(false);
   React.useEffect(() => {
     navigation.setOptions({
@@ -80,68 +106,40 @@ export default function LightScreen(): JSX.Element {
   }, []);
 
   const changeName = (name: string) => {
-    Axios.patch(`http://devlight/${light.uuid}`, {
-      name,
-    }).then(() => {
-      dispatch({
-        type: EDIT_LIGHT_NAME,
-        id: light.uuid,
-        name,
-      });
-    });
-  };
-  const changeNumber = (count: string) => {
-    if (!/^\d+$/.test(count)) return;
-    Axios.patch(`http://devlight/${light.uuid}/count`, {
-      count: parseInt(count, 10),
-    })
-      .then(() => {
-        dispatch({
-          type: EDIT_LED_COUNT,
-          id: light.uuid,
-          count: parseInt(count, 10),
-        });
-      })
-      .catch((err) => {
-        if (ref) {
-          ref.current?.setNativeProps({ text: light.count.toString() });
-          console.log(err.response.data.message);
-        }
-      });
+    lights.setName(light.uuid, name);
   };
 
-  let controller : unknown; 
+  const changeNumber = (count: string) => {
+    if (!/^\d+$/.test(count)) return;
+    const response = lights.setCount(light.uuid, parseInt(count, 10));
+    response.catch((err: AxiosError) => {
+      if (ref) {
+        ref.current?.setNativeProps({ text: light.count.toString() });
+      }
+      if (err?.response?.data.message) {
+        snackbar.makeSnackbar(err.response.data.message, "#f00");
+      }
+    });
+  };
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePattern = (pattern: string) => {
-    // change pattern
-    // TODO does nothing till implemented on server
-    const colors : string[] = [light.leds.colors[0]];
-    if (pattern === "gradient") {
-      colors.push(light.leds.colors[0]);
+    if (pattern !== light.leds.pattern) {
+      const colors: string[] = [light.leds.colors[0]];
+      if (pattern === "gradient") {
+        colors.push(light.leds.colors[0]);
+      }
+      lights.setColor(light.uuid, colors, pattern);
     }
-    console.log("change")
-    Axios.patch(`http://devlight/${light.uuid}/color`, {
-      colors: colors,
-      pattern,
-    }).then((response) => {
-      dispatch({
-        type: EDIT_LIGHT_COLOR,
-        id: light.uuid,
-        colors: response.data.object.leds.colors,
-        pattern: response.data.object.leds.pattern,
-      });
-    }).catch((err) => {
-    /*   if(controller) controller.reset(); */
-      /* if (controller && err) {
-      controller.select(light.leds.pattern);
-      } */
-    });
   };
 
   const fetch = () => {
     setRefresh(true);
     Axios.get(`http://devlight/${route.params.id}`).then((response) => {
-      dispatch({type: SET_LIGHT, id: route.params.id, light: response.data.object});
+      dispatch({
+        type: SET_LIGHT,
+        id: route.params.id,
+        light: response.data.object,
+      });
       setRefresh(false);
     });
   };
@@ -214,15 +212,17 @@ export default function LightScreen(): JSX.Element {
     },
   });
   return (
-    <ScrollView refreshControl={
-      <RefreshControl
-        refreshing={refresh}
-        onRefresh={() => fetch(true)}
-        tintColor={colors.accent}
-        colors={[colors.primary, colors.accent]}
-      />
-    } 
-    style={styles.container}>
+    <ScrollView
+      refreshControl={(
+        <RefreshControl
+          refreshing={refresh}
+          onRefresh={fetch}
+          tintColor={colors.accent}
+          colors={[colors.primary, colors.accent]}
+        />
+      )}
+      style={styles.container}
+    >
       <ChangeableText
         value={light.name}
         onSave={changeName}
@@ -253,7 +253,6 @@ export default function LightScreen(): JSX.Element {
               value: "gradient",
             },
           ]}
-          controller={(instance) => controller = instance}
           defaultValue={light.leds.pattern}
           containerStyle={styles.dropdownContainer}
           arrowColor={theme.colors.text}
@@ -262,7 +261,9 @@ export default function LightScreen(): JSX.Element {
           dropDownStyle={styles.selectDropdown}
           labelStyle={styles.dropdownLabel}
           itemStyle={styles.dropdownItems}
-          onChangeItem={(item) => light.isOn ? changePattern(item.value) : console.log("light is off")}
+          onChangeItem={(item) => (
+            changePattern(item.value)
+          )}
         />
       </View>
 
@@ -273,19 +274,7 @@ export default function LightScreen(): JSX.Element {
 
       <Divider style={styles.divider} />
       <View style={styles.plain}>
-        {light.leds.pattern === "plain" ? (
-          <PlainComponent
-            colors={light.leds.colors}
-            pattern={light.leds.pattern}
-            id={light.uuid}
-          />
-        ) : light.leds.pattern === "gradient" ? (
-          <GradientComponent 
-            colors={light.leds.colors}
-            pattern={light.leds.pattern}
-            id={light.uuid}
-          /> 
-        ) : null}
+        <PatternComponent pattern={light.leds.pattern} id={light.uuid} />
       </View>
     </ScrollView>
   );

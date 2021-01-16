@@ -1,15 +1,15 @@
+import { AxiosPromise } from "axios";
 import * as React from "react";
 import { LightContext } from "./LightProvider";
-import { AxiosPromise } from "axios";
 
-export default function useLights() {
+export default function useLight() {
   return React.useContext<{
+    setName(id: string, name: string): Promise<AxiosPromise<any>>;
+    setCount(id: string, count: number): Promise<AxiosPromise<any>>;
     setColor(
-    id: string,
-    new_color: string,
-    second_color?: string,
-    pattern?: string,
-    index?: number
-    ) : Promise<AxiosPromise>;
+      id: string,
+      colors: string[],
+      pattern?: string
+    ): Promise<AxiosPromise>;
   }>(LightContext);
 }

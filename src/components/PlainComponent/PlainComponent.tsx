@@ -1,29 +1,24 @@
 import { useNavigation } from "@react-navigation/native";
-import Axios from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
-import { Leds, Light } from "../../interfaces";
+import { useSelector } from "react-redux";
+import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { EDIT_LIGHT_COLOR } from "../../store/actions/types";
 import { ColorModalScreenNavigationProp } from "../Navigation/Navigation";
 
 export interface PlainComponentProps {
-  colors: string[];
   id: string;
-  pattern: string;
 }
 
 export default function PlainComponent(
-  props: PlainComponentProps
+  props: PlainComponentProps,
 ): JSX.Element {
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
-  const dispatch = useDispatch();
   const light: Light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.uuid === props.id) as Light,
+    (state: Store) => (
+      state.lights.find((l: Light) => l.uuid === props.id) as Light),
     (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors)
   );
 
