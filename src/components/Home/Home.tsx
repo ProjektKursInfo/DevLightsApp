@@ -6,11 +6,12 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  View
+  View,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
+import * as SplashScreen from "expo-splash-screen";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
 import { SET_ALL_LIGHTS, SET_FAVOURITES } from "../../store/actions/types";
@@ -74,10 +75,12 @@ function Home(): JSX.Element {
           lights: response.data.object,
         });
         setLoading(false);
+        SplashScreen.hideAsync();
       })
       .catch(() => {
         setLoading(false);
         setError(true);
+        SplashScreen.hideAsync();
       });
     if (refreshing) setRefresh(false);
   };
@@ -90,13 +93,17 @@ function Home(): JSX.Element {
 
   const { colors } = useTheme();
   const styles = StyleSheet.create({
-    container: {width: "100%", height: "100%"},
+    container: { width: "100%", height: "100%" },
     title: {
       paddingTop: 30,
       marginBottom: 10,
       fontSize: 40,
     },
-    contentContainerStyle: { alignItems: "center", width: "100%", height: "100%" },
+    contentContainerStyle: {
+      alignItems: "center",
+      width: "100%",
+      height: "100%",
+    },
     error_text: {
       textAlign: "center",
       fontSize: 16,

@@ -15,3 +15,8 @@ export const favouritesEquality = (left: string[], right: string[]): boolean => 
   }
   return true;
 };
+
+export const makeValidColorArray = (new_color: string, colorArray: string[], index: number) : string[] => {
+  colorArray[index] = new_color;
+  return colorArray;
+}

@@ -1,32 +1,24 @@
-import * as React from "react";
 import { useNavigation } from "@react-navigation/native";
-import Axios from "axios";
 import { isEqual } from "lodash";
+import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
 import { ColorModalScreenNavigationProp } from "../Navigation/Navigation";
-import { EDIT_LIGHT_COLOR } from "../../store/actions/types";
-import useLight from "../../hooks/useLight";
 
 export interface GradientComponentProps {
-  colors: string[];
   id: string;
-  pattern: string;
 }
 
-export default function GradientComponent(props: GradientComponentProps) {
+export default function GradientComponent(props: GradientComponentProps) : JSX.Element {
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
-  const dispatch = useDispatch();
-  
   const light: Light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.uuid === props.id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors)
+    (state: Store) => (
+      state.lights.find((l: Light) => l.uuid === props.id) as Light),
+    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
   );
-
 
   const onPress = (index: number) => {
     navigation.navigate("color_modal", {
@@ -41,11 +33,10 @@ export default function GradientComponent(props: GradientComponentProps) {
       alignSelf: "center",
       margin: 20,
     },
-
     container: {
       flexDirection: "row",
       alignSelf: "center",
-      alignContent: "space-between"
+      alignContent: "space-between",
     },
   });
   return (

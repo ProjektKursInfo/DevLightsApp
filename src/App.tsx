@@ -1,5 +1,5 @@
 import React from "react";
-import { StatusBar, StatusBarIOS, Text } from "react-native";
+import { StatusBar } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-gesture-handler";
 import { Provider as PaperProvider } from "react-native-paper";
@@ -9,18 +9,16 @@ import Navigation from "./components/Navigation/Navigation";
 import SafeAreaView from "./components/SafeAreaView";
 import themeFunction from "./components/theme";
 import store from "./store";
-import LightProvider from "./hooks/useLight/LightProvider";
+import {LightProvider} from "./hooks/useLight";
+import SnackbarProvider from "./hooks/useSnackbar/SnackbarProvider";
 
 export default function App(): JSX.Element {
   const [theme, setTheme] = React.useState<unknown>();
 
   React.useEffect(() => {
-    SplashScreen.preventAutoHideAsync()
-      .then((result) => console.log("result" + result))
-      .catch((err) => console.log(err));
+    SplashScreen.preventAutoHideAsync();
     themeFunction().then((t) => {
       setTheme(t);
-      SplashScreen.hideAsync();
     });
   }, []);
 
@@ -29,13 +27,15 @@ export default function App(): JSX.Element {
       {theme ? (
         <Provider store={store}>
           <PaperProvider theme={theme}>
-            <LightProvider>
-              <SafeAreaProvider>
-                <SafeAreaView>
-                  <Navigation />
-                </SafeAreaView>
-              </SafeAreaProvider>
-            </LightProvider>
+            <SnackbarProvider>
+              <LightProvider>
+                <SafeAreaProvider>
+                  <SafeAreaView>
+                    <Navigation />
+                  </SafeAreaView>
+                </SafeAreaProvider>
+              </LightProvider>
+            </SnackbarProvider>
           </PaperProvider>
         </Provider>
       ) : (
