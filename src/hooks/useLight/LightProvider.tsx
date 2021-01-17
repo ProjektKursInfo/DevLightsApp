@@ -10,11 +10,11 @@ import {
 } from "../../store/actions/types";
 import useSnackbar from "../useSnackbar";
 
-export const LightContext = React.createContext({ setName (id: string, name: string): Promise<any>, setCount(id: string, count: number): Promise<any>, setColor(
-  id: string,
-  colors: string[],
-  pattern?: string,
-): Promise<any> });
+export const LightContext = React.createContext<{
+  setName(id: string, name: string): Promise<any>;
+  setCount(id: string, count: number): Promise<any>;
+  setColor(id: string, colors: string[], pattern?: string): Promise<any>;
+}>(undefined);
 
 export interface LightProviderProps {
   children?: JSX.Element;
