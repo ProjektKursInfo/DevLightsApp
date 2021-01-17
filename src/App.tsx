@@ -7,7 +7,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import Navigation from "./components/Navigation/Navigation";
 import SafeAreaView from "./components/SafeAreaView";
-import themeFunction from "./components/theme";
+import {theme as themeFunction, lightTheme as lightFunction} from "./components/theme";
 import store from "./store";
 import {LightProvider} from "./hooks/useLight";
 import SnackbarProvider from "./hooks/useSnackbar/SnackbarProvider";
@@ -16,6 +16,8 @@ export default function App(): JSX.Element {
   const [theme, setTheme] = React.useState<unknown>();
 
   React.useEffect(() => {
+    StatusBar.setTranslucent(true);
+    StatusBar.setBackgroundColor("transparent");
     SplashScreen.preventAutoHideAsync();
     themeFunction().then((t) => {
       setTheme(t);

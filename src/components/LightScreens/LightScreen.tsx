@@ -36,13 +36,13 @@ import useLight from "../../hooks/useLight";
 
 function PatternComponent(props: {pattern: string, id: string}) : JSX.Element {
   const {pattern, id} = props;
-  switch(pattern) {
+  switch (pattern) {
     case "gradient":
-      return <GradientComponent id={id}/>;
+      return <GradientComponent id={id} />;
     case "plain":
-      return <PlainComponent id={id}/>;
-    default: 
-      return <Text> Not implemented yet </Text>;    
+      return <PlainComponent id={id} />;
+    default:
+      return <Text> Not implemented yet </Text>;
   }
 }
 
@@ -59,7 +59,7 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
   );
   const onPress = () => {
     Axios.patch(
-      `http://devlight/${light.uuid}/${light.isOn ? "off" : "on"}`,
+      `http://devlight/lights/${light.uuid}/${light.isOn ? "off" : "on"}`,
     ).then((response: AxiosResponse) => {
       setIcon(light.isOn ? regular : faLightbulb);
       snackbar.makeSnackbar(response.data.message, theme.colors.accent);
@@ -134,7 +134,7 @@ export default function LightScreen(): JSX.Element {
 
   const fetch = () => {
     setRefresh(true);
-    Axios.get(`http://devlight/${route.params.id}`).then((response) => {
+    Axios.get(`http://devlight/lights/${route.params.id}`).then((response) => {
       dispatch({
         type: SET_LIGHT,
         id: route.params.id,

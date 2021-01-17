@@ -1,6 +1,13 @@
-import { TitilliumWeb_300Light, TitilliumWeb_400Regular, TitilliumWeb_400Regular_Italic, TitilliumWeb_600SemiBold, TitilliumWeb_700Bold, TitilliumWeb_700Bold_Italic } from "@expo-google-fonts/titillium-web";
+import {
+  TitilliumWeb_300Light,
+  TitilliumWeb_400Regular,
+  TitilliumWeb_400Regular_Italic,
+  TitilliumWeb_600SemiBold,
+  TitilliumWeb_700Bold,
+  TitilliumWeb_700Bold_Italic,
+} from "@expo-google-fonts/titillium-web";
 import * as Font from "expo-font";
-import { configureFonts, DarkTheme } from "react-native-paper";
+import { configureFonts, DarkTheme, DefaultTheme } from "react-native-paper";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -47,8 +54,25 @@ const loadFonts = async () => {
   });
 };
 
+export const lightTheme = async () => {
+  await loadFonts();
+  return {
+    ...DefaultTheme,
+    dark: false,
+    spacing(s: number) {
+      return 4 * s;
+    },
+    primary: "#FF9800",
+    accent: "#1DE9B6",
+    background: "#2f2f2f",
+    secondary: "#FF7D91",
+    text: "#d1d1d1",
+    lightText: "#d1d1d1aa",
+  };
+};
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const theme = async () => {
+export const theme = async () => {
   await loadFonts();
   return {
     ...DarkTheme,
@@ -68,4 +92,3 @@ const theme = async () => {
     fonts: configureFonts(fontConfig),
   };
 };
-export default theme;

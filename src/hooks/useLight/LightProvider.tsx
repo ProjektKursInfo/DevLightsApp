@@ -10,11 +10,11 @@ import {
 } from "../../store/actions/types";
 import useSnackbar from "../useSnackbar";
 
-export const LightContext = React.createContext({ setName (id: string, name: string): Promise<any>, setCount(id: string, count: number): Promise<any>, setColor(
-  id: string,
-  colors: string[],
-  pattern?: string,
-): Promise<any> });
+export const LightContext = React.createContext<{
+  setName(id: string, name: string): Promise<any>;
+  setCount(id: string, count: number): Promise<any>;
+  setColor(id: string, colors: string[], pattern?: string): Promise<any>;
+}>(undefined);
 
 export interface LightProviderProps {
   children?: JSX.Element;
@@ -26,7 +26,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   const theme = useTheme();
 
   async function setName(id: string, name: string) {
-    const ax = Axios.patch(`http://devlight/${id}`, {
+    const ax = Axios.patch(`http://devlight/lights/${id}/update`, {
       name,
     });
     ax.then((res: AxiosResponse) => {
@@ -37,7 +37,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   }
 
   async function setCount(id: string, count: number) {
-    const ax = Axios.patch(`http://devlight/${id}/count`, {
+    const ax = Axios.patch(`http://devlight/lights/${id}/count`, {
       count,
     });
     ax.then((res: AxiosResponse) => {
@@ -53,19 +53,17 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     pattern?: string,
   ): Promise<AxiosPromise> {
     const ax = Axios.patch(
-      `http://devlight/${id}/color`,
+      `http://devlight/lights/${id}/color`,
       {
         colors,
         pattern,
       },
       {
         timeout: 200,
-        validateStatus(status) {
-          return status < 400; // Reject only if the status code is greater than or equal to 400
-        },
       },
     );
     ax.then((res: AxiosResponse) => {
+      console.log(res.status);
       if (res.status === 304) {
         snackbar.makeSnackbar("Nothing changed", "#f00");
       } else if (res.status === 200) {
@@ -78,6 +76,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       }
     });
     ax.catch((err: AxiosError) => {
+      console.log(err.response);
       snackbar.makeSnackbar(
         err?.response?.data.message ?? "Unexpected error",
         "#f00",

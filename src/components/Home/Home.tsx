@@ -68,7 +68,7 @@ function Home(): JSX.Element {
     }
     setError(false);
     axios
-      .get("http://devlight/")
+      .get("http://devlight/lights")
       .then((response: AxiosResponse) => {
         store.dispatch({
           type: SET_ALL_LIGHTS,
@@ -81,6 +81,7 @@ function Home(): JSX.Element {
         setLoading(false);
         setError(true);
         SplashScreen.hideAsync();
+        StatusBar.setTranslucent(false);
       });
     if (refreshing) setRefresh(false);
   };
