@@ -34,7 +34,7 @@ export default function ColorPicker(): JSX.Element {
   );
   const favourites: string[] = useSelector(
     (state: Store) => state.favourites,
-    isEqual
+    isEqual,
   );
   const [hsv, setHsv] = React.useState<ColorFormats.HSV>(
     tinycolor(light.leds.colors[route.params.index]).toHsv()
@@ -43,7 +43,6 @@ export default function ColorPicker(): JSX.Element {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const theme = useTheme();
-  const snackbar = useSnackbar();
   const saveColor = () => {
     if (favourites.includes(tinycolor.fromRatio(hsv).toHexString())) {
       dispatch({
@@ -123,10 +122,12 @@ export default function ColorPicker(): JSX.Element {
       if (response.status === 200) {
         navigation.goBack();
       }
-    });
+    });/* 
     ax.catch(() => {
+      console.log(light);
+      console.log(light.leds.colors[route.params.index]);
       setHsv(tinycolor(light.leds.colors[route.params.index]).toHsv());
-    });
+    }); */
   };
   return (
     <View style={styles.container}>

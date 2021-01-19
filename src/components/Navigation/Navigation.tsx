@@ -2,35 +2,35 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faChevronLeft,
+  faCog,
+  faHome,
   faStar,
-  faTimes,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  createDrawerNavigator,
-  DrawerContentComponentProps,
-  DrawerContentScrollView,
-  DrawerItemList,
+  createDrawerNavigator
 } from "@react-navigation/drawer";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import {
   NavigationContainer,
   RouteProp,
-  useNavigation,
+  useNavigation
 } from "@react-navigation/native";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
   StackNavigationProp,
-  TransitionPresets,
+  TransitionPresets
 } from "@react-navigation/stack";
 import * as React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { IconButton, List, useTheme } from "react-native-paper";
+import { Pressable, StyleSheet } from "react-native";
+import { useTheme } from "react-native-paper";
 import ColorPicker from "../ColorPicker";
 import Favourite from "../Favourite";
-import HeaderIcon from "../HeaderIcon/HeaderIcon";
 import Home from "../Home";
 import LightScreen from "../LightScreens";
+import Settings from "../Settings";
 
 export type HomeStackParamList = {
   home: undefined;
@@ -59,7 +59,7 @@ export type ColorModalScreenNavigationProp = StackNavigationProp<
 
 export type FavouriteScreenNavigationProp = StackNavigationProp<
   HomeStackParamList,
- "favourite"
+  "favourite"
 >;
 
 export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
@@ -72,43 +72,6 @@ export type FavouriteScreenRouteProp = RouteProp<
   HomeStackParamList,
   "favourite"
 >;
-
-function DrawerContent(props: DrawerContentComponentProps) {
-  const theme = useTheme();
-  const styles = StyleSheet.create({
-    scrollview: {
-      backgroundColor: "#2f2f2f",
-    },
-    container: {
-      margin: 15,
-    },
-    icon: {
-      alignSelf: "center",
-    },
-    list: {
-      fontFamily: "TitilliumWeb-Regular",
-    },
-  });
-  return (
-    <DrawerContentScrollView style={styles.scrollview} {...props}>
-      <View style={styles.container}>
-        <List.Item
-          title="DevLights"
-          description="Control and Setup your Smart Lights"
-          left={(iconProps) => (
-            <IconButton
-              {...iconProps}
-              color={theme.colors.primary}
-              icon="lightbulb"
-              style={styles.icon}
-            />
-          )}
-        />
-      </View>
-      <DrawerItemList labelStyle={styles.list} {...props} />
-    </DrawerContentScrollView>
-  );
-}
 
 function Icon(
   // eslint-disable-next-line react/require-default-props
@@ -150,7 +113,6 @@ function HomeStack() {
         options={{
           title: "Home",
           headerTitle: "",
-          headerLeft: () => <HeaderIcon />,
           headerRight: () => (
             <Icon
               color="#ffff00"
@@ -203,21 +165,42 @@ function HomeStack() {
   );
 }
 
+function SettingsNavigator() {
+  const Stack = createStackNavigator();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="home" options={{ headerTitle: "Settings", headerTitleAlign: "left"}} component={Settings} />
+    </Stack.Navigator>
+  );
+}
+
 export default function Navigation(): JSX.Element {
   const theme = useTheme();
-  const Drawer = createDrawerNavigator();
+  const Tab = createMaterialBottomTabNavigator();
   return (
     <NavigationContainer theme={theme}>
-      <Drawer.Navigator
-        initialRouteName="home"
-        drawerContent={(contentProps) => <DrawerContent {...contentProps} />}
-      >
-        <Drawer.Screen
+      <Tab.Navigator labeled={false} initialRouteName="home">
+        <Tab.Screen
           component={HomeStack}
-          options={{ title: "Home" }}
+          options={{
+            tabBarIcon: (props: { color: string }) => (
+              // eslint-disable-next-line react/destructuring-assignment
+              <FontAwesomeIcon color={props.color} icon={faHome} size={26} />
+            ),
+          }}
           name="home"
         />
-      </Drawer.Navigator>
+        <Tab.Screen
+          component={SettingsNavigator}
+          options={{
+            tabBarIcon: (props: { color: string }) => (
+              // eslint-disable-next-line react/destructuring-assignment
+              <FontAwesomeIcon color={props.color} icon={faCog} size={26} />
+            ),
+          }}
+          name="settings"
+        />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }

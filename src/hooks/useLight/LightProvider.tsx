@@ -26,7 +26,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   const theme = useTheme();
 
   async function setName(id: string, name: string) {
-    const ax = Axios.patch(`http://devlight/${id}`, {
+    const ax = Axios.patch(`http://devlight/lights/${id}/update`, {
       name,
     });
     ax.then((res: AxiosResponse) => {
@@ -37,7 +37,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   }
 
   async function setCount(id: string, count: number) {
-    const ax = Axios.patch(`http://devlight/${id}/count`, {
+    const ax = Axios.patch(`http://devlight/lights/${id}/count`, {
       count,
     });
     ax.then((res: AxiosResponse) => {
@@ -52,20 +52,19 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     colors: string[],
     pattern?: string,
   ): Promise<AxiosPromise> {
+    console.log(pattern);
     const ax = Axios.patch(
-      `http://devlight/${id}/color`,
+      `http://devlight/lights/${id}/color`,
       {
         colors,
         pattern,
       },
       {
-        timeout: 200,
-        validateStatus(status) {
-          return status < 400; // Reject only if the status code is greater than or equal to 400
-        },
+        timeout: 3000,
       },
     );
     ax.then((res: AxiosResponse) => {
+      console.log(res.status);
       if (res.status === 304) {
         snackbar.makeSnackbar("Nothing changed", "#f00");
       } else if (res.status === 200) {
@@ -74,10 +73,12 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
           type: EDIT_LIGHT_COLOR,
           id,
           colors,
+          pattern,
         });
       }
     });
     ax.catch((err: AxiosError) => {
+      console.log(err.response);
       snackbar.makeSnackbar(
         err?.response?.data.message ?? "Unexpected error",
         "#f00",
@@ -85,7 +86,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     });
     return await ax;
   }
-
+  const {children} = props;
   return (
     <LightContext.Provider
       value={{
@@ -94,7 +95,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         setColor,
       }}
     >
-      {props.children}
+      {children}
     </LightContext.Provider>
   );
 }
