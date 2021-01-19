@@ -26,7 +26,7 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const dispatch = useDispatch();
 
   const updateBrightness = (value: number) => {
-    Axios.patch(`http://devlight/${light.uuid}/brightness`, {
+    Axios.patch(`http://devlight/lights/${light.uuid}/brightness`, {
       brightness: Math.round(value),
     })
       .then(() => {

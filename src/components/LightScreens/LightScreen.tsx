@@ -35,6 +35,7 @@ import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
 import useLight from "../../hooks/useLight";
 
 function PatternComponent(props: {pattern: string, id: string}) : JSX.Element {
+  console.log(props.pattern);
   const {pattern, id} = props;
   switch (pattern) {
     case "gradient":
@@ -128,6 +129,7 @@ export default function LightScreen(): JSX.Element {
       if (pattern === "gradient") {
         colors.push(light.leds.colors[0]);
       }
+      console.log(pattern);
       lights.setColor(light.uuid, colors, pattern);
     }
   };

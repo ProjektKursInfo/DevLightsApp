@@ -1,34 +1,27 @@
 import React from "react";
-import { StatusBar } from "react-native";
+import { StatusBar, Appearance } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-gesture-handler";
 import { Provider as PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Navigation from "./components/Navigation/Navigation";
 import SafeAreaView from "./components/SafeAreaView";
-import {theme as themeFunction, lightTheme as lightFunction} from "./components/theme";
 import store from "./store";
 import {LightProvider} from "./hooks/useLight";
 import SnackbarProvider from "./hooks/useSnackbar/SnackbarProvider";
+import { ThemeType } from "./interfaces/types";
+import ThemeProvider from "./components/ThemeDialog/ThemeProvider";
 
 export default function App(): JSX.Element {
-  const [theme, setTheme] = React.useState<unknown>();
-
-  React.useEffect(() => {
-    StatusBar.setTranslucent(true);
-    StatusBar.setBackgroundColor("transparent");
-    SplashScreen.preventAutoHideAsync();
-    themeFunction().then((t) => {
-      setTheme(t);
-    });
-  }, []);
-
+  const [theme, setTheme] = React.useState<ReactNativePaper.Theme>();
+  const colorScheme = Appearance.getColorScheme();
+  console.log(colorScheme);
   return (
     <>
-      {theme ? (
         <Provider store={store}>
-          <PaperProvider theme={theme}>
+          <ThemeProvider>
             <SnackbarProvider>
               <LightProvider>
                 <SafeAreaProvider>
@@ -38,11 +31,8 @@ export default function App(): JSX.Element {
                 </SafeAreaProvider>
               </LightProvider>
             </SnackbarProvider>
-          </PaperProvider>
+          </ThemeProvider>
         </Provider>
-      ) : (
-        <StatusBar translucent backgroundColor="transparent" />
-      )}
     </>
   );
 }

@@ -52,6 +52,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     colors: string[],
     pattern?: string,
   ): Promise<AxiosPromise> {
+    console.log(pattern);
     const ax = Axios.patch(
       `http://devlight/lights/${id}/color`,
       {
@@ -59,7 +60,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         pattern,
       },
       {
-        timeout: 200,
+        timeout: 3000,
       },
     );
     ax.then((res: AxiosResponse) => {
@@ -72,6 +73,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
           type: EDIT_LIGHT_COLOR,
           id,
           colors,
+          pattern,
         });
       }
     });
@@ -84,7 +86,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     });
     return await ax;
   }
-
+  const {children} = props;
   return (
     <LightContext.Provider
       value={{
@@ -93,7 +95,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         setColor,
       }}
     >
-      {props.children}
+      {children}
     </LightContext.Provider>
   );
 }

@@ -53,7 +53,7 @@ const loadFonts = async () => {
     "TitilliumWeb-Bold-Italic": TitilliumWeb_700Bold_Italic,
   });
 };
-
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const lightTheme = async () => {
   await loadFonts();
   return {
@@ -62,12 +62,15 @@ export const lightTheme = async () => {
     spacing(s: number) {
       return 4 * s;
     },
-    primary: "#FF9800",
-    accent: "#1DE9B6",
-    background: "#2f2f2f",
-    secondary: "#FF7D91",
-    text: "#d1d1d1",
-    lightText: "#d1d1d1aa",
+    colors: {
+      primary: "#FF9800",
+      accent: "#1DE9B6",
+      secondary: "#FF7D91",
+      text: "#000000",
+      background: "#fff",
+      surface: "#fff",
+      lightText: "#d1d1d1",
+    },
   };
 };
 
