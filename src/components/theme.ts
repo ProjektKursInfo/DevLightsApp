@@ -15,6 +15,8 @@ declare global {
     interface ThemeColors {
       secondary: string;
       lightText: string;
+      grey: string,
+      dark_grey: string,
     }
     interface Theme {
       spacing: (value: number) => number;
@@ -70,6 +72,8 @@ export const lightTheme = async () => {
       background: "#fff",
       surface: "#fff",
       lightText: "#d1d1d1",
+      grey: "#cfcfcf",
+      dark_grey: "#919191",
     },
   };
 };
@@ -91,6 +95,8 @@ export const theme = async () => {
       secondary: "#FF7D91",
       text: "#d1d1d1",
       lightText: "#d1d1d1aa",
+      grey: "#4f4f4f",
+      dark_grey: "#393939",
     },
     fonts: configureFonts(fontConfig),
   };

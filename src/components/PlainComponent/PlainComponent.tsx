@@ -22,10 +22,6 @@ export default function PlainComponent(
     (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors)
   );
 
-  React.useEffect(() => {
-    console.log("update");
-  }, [light]);
-
   const onPress = () => {
     navigation.navigate("color_modal", {
       id: props.id,
@@ -43,6 +39,7 @@ export default function PlainComponent(
   return (
     <View>
       <Button
+        disabled={!light.isOn}
         mode="contained"
         style={styles.button}
         onPress={onPress}

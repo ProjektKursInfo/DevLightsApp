@@ -52,7 +52,6 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     colors: string[],
     pattern?: string,
   ): Promise<AxiosPromise> {
-    console.log(pattern);
     const ax = Axios.patch(
       `http://devlight/lights/${id}/color`,
       {
@@ -64,11 +63,11 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       },
     );
     ax.then((res: AxiosResponse) => {
-      console.log(res.status);
       if (res.status === 304) {
         snackbar.makeSnackbar("Nothing changed", "#f00");
       } else if (res.status === 200) {
         snackbar.makeSnackbar(res.data.message, theme.colors.accent);
+        console.log("dispatcccch");
         dispatch({
           type: EDIT_LIGHT_COLOR,
           id,
@@ -78,7 +77,6 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       }
     });
     ax.catch((err: AxiosError) => {
-      console.log(err.response);
       snackbar.makeSnackbar(
         err?.response?.data.message ?? "Unexpected error",
         "#f00",

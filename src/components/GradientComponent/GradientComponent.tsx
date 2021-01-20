@@ -42,6 +42,7 @@ export default function GradientComponent(props: GradientComponentProps) : JSX.E
   return (
     <View style={styles.container}>
       <Button
+        disabled={!light.isOn}
         mode="contained"
         style={styles.button_left}
         onPress={() => onPress(0)}
@@ -50,6 +51,7 @@ export default function GradientComponent(props: GradientComponentProps) : JSX.E
         {light.leds.colors[0]}
       </Button>
       <Button
+        disabled={!light.isOn}
         mode="contained"
         style={styles.button_left}
         onPress={() => onPress(1)}

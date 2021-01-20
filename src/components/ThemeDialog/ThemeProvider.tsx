@@ -23,7 +23,6 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
   const [theme, setTheme] = React.useState<ReactNativePaper.Theme>();
   const colorScheme = Appearance.getColorScheme();
   React.useEffect(() => {
-    console.log("mount");
     StatusBar.setTranslucent(true);
     StatusBar.setBackgroundColor("transparent");
     SplashScreen.preventAutoHideAsync();

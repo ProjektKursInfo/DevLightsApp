@@ -38,7 +38,7 @@ function lightsReducer(
       return lights;
     case EDIT_LIGHT_COLOR:
       lights = [...state];
-      console.log(action);
+      console.log("updddaaate");
       index = lights.findIndex((l: Light) => (l.uuid === action.id));
       light = lights[index];
       light.leds = {

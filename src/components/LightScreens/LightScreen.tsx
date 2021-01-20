@@ -12,31 +12,25 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  View,
+  View
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import tinycolor from "tinycolor2";
+import useLight from "../../hooks/useLight";
+import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import {
-  EDIT_LED_COUNT,
-  EDIT_LIGHT_COLOR,
-  EDIT_LIGHT_NAME,
-  SET_LIGHT,
-  SET_LIGHT_STATUS,
-} from "../../store/actions/types";
+import { SET_LIGHT, SET_LIGHT_STATUS } from "../../store/actions/types";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
-import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
-import useLight from "../../hooks/useLight";
 
-function PatternComponent(props: {pattern: string, id: string}) : JSX.Element {
-  console.log(props.pattern);
-  const {pattern, id} = props;
+function PatternComponent(props: { pattern: string; id: string }): JSX.Element {
+  const { pattern, id } = props;
   switch (pattern) {
     case "gradient":
       return <GradientComponent id={id} />;
@@ -56,7 +50,7 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
   const theme = useTheme();
   const snackbar = useSnackbar();
   const [icon, setIcon] = React.useState<IconDefinition>(
-    light.isOn ? faLightbulb : regular
+    light.isOn ? faLightbulb : regular,
   );
   const onPress = () => {
     Axios.patch(
@@ -78,9 +72,9 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
     <Pressable onPress={onPress} style={styles.pressable}>
       <FontAwesomeIcon
         size={30}
-        {...props}
         color={theme.colors.accent}
         icon={icon}
+        {...props}
       />
     </Pressable>
   );
@@ -90,9 +84,9 @@ export default function LightScreen(): JSX.Element {
   const theme = useTheme();
   const { colors } = theme;
   const light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.uuid === route.params.id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds, right.leds)
+    (state: Store) => (
+      state.lights.find((l: Light) => l.uuid === route.params.id) as Light),
+    (left: Light, right: Light) => !isEqual(left.leds, right.leds),
   );
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -104,6 +98,7 @@ export default function LightScreen(): JSX.Element {
     navigation.setOptions({
       headerRight: () => <PowerBulb light={light} />,
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const changeName = (name: string) => {
@@ -111,7 +106,13 @@ export default function LightScreen(): JSX.Element {
   };
 
   const changeNumber = (count: string) => {
-    if (!/^\d+$/.test(count)) return;
+    if (!/^\d+$/.test(count)) {
+      snackbar.makeSnackbar("Invalid number or string provided", "#f00");
+      if (ref) {
+        ref.current?.setNativeProps({ text: light.count.toString() });
+      }
+      return;
+    }
     const response = lights.setCount(light.uuid, parseInt(count, 10));
     response.catch((err: AxiosError) => {
       if (ref) {
@@ -122,15 +123,13 @@ export default function LightScreen(): JSX.Element {
       }
     });
   };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const changePattern = (pattern: string) => {
     if (pattern !== light.leds.pattern) {
-      const colors: string[] = [light.leds.colors[0]];
+      const newColors: string[] = [light.leds.colors[0]];
       if (pattern === "gradient") {
-        colors.push(light.leds.colors[0]);
+        newColors.push(light.leds.colors[0]);
       }
-      console.log(pattern);
-      lights.setColor(light.uuid, colors, pattern);
+      lights.setColor(light.uuid, newColors, pattern);
     }
   };
 
@@ -145,7 +144,6 @@ export default function LightScreen(): JSX.Element {
       setRefresh(false);
     });
   };
-
   const styles = StyleSheet.create({
     container: {
       marginTop: 30,
@@ -170,12 +168,12 @@ export default function LightScreen(): JSX.Element {
     },
     select: {
       marginLeft: 0,
-      backgroundColor: "#393939",
+      backgroundColor: colors.dark_grey,
       borderColor: "transparent",
     },
     selectDropdown: {
       marginLeft: 0,
-      backgroundColor: "#4f4f4f",
+      backgroundColor: colors.grey,
       borderColor: "transparent",
     },
     title: {
@@ -234,6 +232,7 @@ export default function LightScreen(): JSX.Element {
       <View style={styles.numberContainer}>
         <Text style={styles.title}>LEDs</Text>
         <TextInput
+          editable={light.isOn}
           ref={ref}
           keyboardType="number-pad"
           onSubmitEditing={({ nativeEvent: { text } }) => changeNumber(text)}
@@ -245,6 +244,7 @@ export default function LightScreen(): JSX.Element {
       <View style={styles.selectContainer}>
         <Text style={styles.selectLabel}>Pattern</Text>
         <DropDownPicker
+          disabled={!light.isOn}
           items={[
             {
               label: "Single Color",
@@ -263,9 +263,7 @@ export default function LightScreen(): JSX.Element {
           dropDownStyle={styles.selectDropdown}
           labelStyle={styles.dropdownLabel}
           itemStyle={styles.dropdownItems}
-          onChangeItem={(item) => (
-            changePattern(item.value)
-          )}
+          onChangeItem={(item) => changePattern(item.value)}
         />
       </View>
 
