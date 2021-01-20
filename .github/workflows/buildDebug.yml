@@ -1,4 +1,4 @@
-name: react-native-android-build-apk-debug
+name: debug-build
 on:
   push:
     branches:
