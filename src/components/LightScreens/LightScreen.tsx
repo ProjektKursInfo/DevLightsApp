@@ -54,13 +54,13 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
   );
   const onPress = () => {
     Axios.patch(
-      `http://devlight/lights/${light.uuid}/${light.isOn ? "off" : "on"}`,
+      `http://devlight/lights/${light.id}/${light.isOn ? "off" : "on"}`,
     ).then((response: AxiosResponse) => {
       setIcon(light.isOn ? regular : faLightbulb);
       snackbar.makeSnackbar(response.data.message, theme.colors.accent);
       dispatch({
         type: SET_LIGHT_STATUS,
-        id: light.uuid,
+        id: light.id,
         isOn: !light.isOn,
       });
     });
@@ -85,7 +85,7 @@ export default function LightScreen(): JSX.Element {
   const { colors } = theme;
   const light = useSelector(
     (state: Store) => (
-      state.lights.find((l: Light) => l.uuid === route.params.id) as Light),
+      state.lights.find((l: Light) => l.id === route.params.id) as Light),
     (left: Light, right: Light) => !isEqual(left.leds, right.leds),
   );
   const dispatch = useDispatch();
@@ -102,7 +102,7 @@ export default function LightScreen(): JSX.Element {
   }, []);
 
   const changeName = (name: string) => {
-    lights.setName(light.uuid, name);
+    lights.setName(light.id, name);
   };
 
   const changeNumber = (count: string) => {
@@ -113,7 +113,7 @@ export default function LightScreen(): JSX.Element {
       }
       return;
     }
-    const response = lights.setCount(light.uuid, parseInt(count, 10));
+    const response = lights.setCount(light.id, parseInt(count, 10));
     response.catch((err: AxiosError) => {
       if (ref) {
         ref.current?.setNativeProps({ text: light.count.toString() });
@@ -129,7 +129,7 @@ export default function LightScreen(): JSX.Element {
       if (pattern === "gradient") {
         newColors.push(light.leds.colors[0]);
       }
-      lights.setColor(light.uuid, newColors, pattern);
+      lights.setColor(light.id, newColors, pattern);
     }
   };
 
@@ -269,12 +269,12 @@ export default function LightScreen(): JSX.Element {
 
       <View style={styles.slider_container}>
         <Text style={styles.slider_text}> Brightness</Text>
-        <BrightnessSlider color={light.leds.colors[0]} id={light.uuid} />
+        <BrightnessSlider color={light.leds.colors[0]} id={light.id} />
       </View>
 
       <Divider style={styles.divider} />
       <View style={styles.plain}>
-        <PatternComponent pattern={light.leds.pattern} id={light.uuid} />
+        <PatternComponent pattern={light.leds.pattern} id={light.id} />
       </View>
     </ScrollView>
   );

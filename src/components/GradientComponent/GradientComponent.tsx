@@ -16,7 +16,7 @@ export default function GradientComponent(props: GradientComponentProps) : JSX.E
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const light: Light = useSelector(
     (state: Store) => (
-      state.lights.find((l: Light) => l.uuid === props.id) as Light),
+      state.lights.find((l: Light) => l.id === props.id) as Light),
     (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
   );
 

@@ -70,6 +70,7 @@ function Home(): JSX.Element {
     axios
       .get("http://devlight/lights")
       .then((response: AxiosResponse) => {
+        console.log(response.data);
         store.dispatch({
           type: SET_ALL_LIGHTS,
           lights: response.data.object,
@@ -134,7 +135,7 @@ function Home(): JSX.Element {
         {loading ? (
           <Spinner visible />
         ) : lights.length > 0 && !error ? (
-          lights.map((light: Light) => <Card key={light.uuid} light={light} />)
+          lights.map((light: Light) => <Card key={light.id} light={light} />)
         ) : (
           <>
             <Lottie

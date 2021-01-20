@@ -27,7 +27,7 @@ export default function ColorPicker(): JSX.Element {
   const lights = useLight();
   const light = useSelector(
     (state: Store) =>
-      state.lights.find((l: Light) => l.uuid === route.params.id) as Light,
+      state.lights.find((l: Light) => l.id === route.params.id) as Light,
     (left: Light, right: Light) => !isEqual(left.leds, right.leds)
   );
   const favourites: string[] = useSelector(

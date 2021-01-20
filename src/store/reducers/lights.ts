@@ -24,14 +24,14 @@ function lightsReducer(
       return lights;
     case SET_LIGHT:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      index = lights.findIndex((l: Light) => (l.id === action.id));
       light = lights[index];
       light = action.light;
       lights[index] = light;
       return lights;
     case EDIT_LIGHT_NAME:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      index = lights.findIndex((l: Light) => (l.id === action.id));
       light = lights[index];
       light.name = action.name;
       lights[index] = light;
@@ -39,7 +39,7 @@ function lightsReducer(
     case EDIT_LIGHT_COLOR:
       lights = [...state];
       console.log("updddaaate");
-      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      index = lights.findIndex((l: Light) => (l.id === action.id));
       light = lights[index];
       light.leds = {
         colors: action.colors,
@@ -49,21 +49,21 @@ function lightsReducer(
       return lights;
     case EDIT_LED_COUNT:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      index = lights.findIndex((l: Light) => (l.id === action.id));
       light = lights[index];
       light.count = action.count;
       lights[index] = light;
       return lights;
     case SET_BRIGHTNESS:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      index = lights.findIndex((l: Light) => (l.id === action.id));
       light = lights[index];
       light.brightness = action.brightness;
       lights[index] = light;
       return lights;
     case SET_LIGHT_STATUS:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.uuid === action.id));
+      index = lights.findIndex((l: Light) => (l.id === action.id));
       light = lights[index];
       light.isOn = action.isOn;
       lights[index] = light;

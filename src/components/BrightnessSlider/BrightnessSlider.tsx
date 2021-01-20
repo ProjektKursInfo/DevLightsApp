@@ -17,7 +17,7 @@ export interface SliderProps {
 export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const { id } = props;
   const light: Light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.uuid === id) as Light,
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (left: Light, right: Light) => !isEqual(left, right)
   );
 
@@ -26,14 +26,14 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const dispatch = useDispatch();
 
   const updateBrightness = (value: number) => {
-    Axios.patch(`http://devlight/lights/${light.uuid}/brightness`, {
+    Axios.patch(`http://devlight/lights/${light.id}/brightness`, {
       brightness: Math.round(value),
     })
       .then(() => {
         dispatch({
           type: SET_BRIGHTNESS,
           brightness: Math.round(value),
-          id: light.uuid,
+          id: light.id,
         });
       })
       .catch(() => {
