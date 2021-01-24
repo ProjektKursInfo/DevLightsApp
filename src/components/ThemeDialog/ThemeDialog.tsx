@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
-import { StyleProp, StyleSheet, TextStyle, View } from "react-native";
+import { StyleProp, StyleSheet, TextStyle } from "react-native";
 import { Button, Dialog, Portal, RadioButton } from "react-native-paper";
 import { ThemeType } from "../../interfaces/types";
 import { useThemeChange } from "./ThemeProvider";
@@ -16,8 +16,7 @@ export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
   const changeTheme = useThemeChange();
   React.useEffect(() => {
     async function get() {
-      const themeType: ThemeType =
-        ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
+      const themeType: ThemeType = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
       setValue(themeType);
     }
     get();

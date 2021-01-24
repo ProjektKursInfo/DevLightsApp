@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as React from "react";
 import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
-import { List, Title, useTheme } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
 import { ThemeType } from "../../interfaces/types";
 import ThemeDialog from "../ThemeDialog";
 
@@ -14,12 +14,12 @@ export default function Settings() : JSX.Element {
   React.useEffect(() => {
     async function get() {
       AsyncStorage.getItem("theme").then((t) => {
-        setType(t);
+        const type = t as ThemeType;
+        setType(type ?? "dark");
       });
     }
     get();
   }, []);
-  console.log(themeType);
   const styles = StyleSheet.create({
     container: { width: "100%", height: "100%" },
     title: {

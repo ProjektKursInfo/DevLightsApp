@@ -45,32 +45,32 @@ export type HomeStackParamList = {
 };
 
 export type LightScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "light"
+HomeStackParamList,
+"light"
 >;
 export type HomeScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "home"
+HomeStackParamList,
+"home"
 >;
 export type ColorModalScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "color_modal"
+HomeStackParamList,
+"color_modal"
 >;
 
 export type FavouriteScreenNavigationProp = StackNavigationProp<
-  HomeStackParamList,
-  "favourite"
+HomeStackParamList,
+"favourite"
 >;
 
 export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
 export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
 export type ColorModalScreenRouteProp = RouteProp<
-  HomeStackParamList,
-  "color_modal"
+HomeStackParamList,
+"color_modal"
 >;
 export type FavouriteScreenRouteProp = RouteProp<
-  HomeStackParamList,
-  "favourite"
+HomeStackParamList,
+"favourite"
 >;
 
 function Icon(

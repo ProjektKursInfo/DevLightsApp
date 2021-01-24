@@ -4,7 +4,7 @@ import {
   TitilliumWeb_400Regular_Italic,
   TitilliumWeb_600SemiBold,
   TitilliumWeb_700Bold,
-  TitilliumWeb_700Bold_Italic,
+  TitilliumWeb_700Bold_Italic
 } from "@expo-google-fonts/titillium-web";
 import * as Font from "expo-font";
 import { configureFonts, DarkTheme, DefaultTheme } from "react-native-paper";
@@ -65,6 +65,7 @@ export const lightTheme = async () => {
       return 4 * s;
     },
     colors: {
+      ...DefaultTheme.colors,
       primary: "#FF9800",
       accent: "#1DE9B6",
       secondary: "#FF7D91",
@@ -75,6 +76,7 @@ export const lightTheme = async () => {
       grey: "#cfcfcf",
       dark_grey: "#919191",
     },
+    fonts: configureFonts(fontConfig),
   };
 };
 

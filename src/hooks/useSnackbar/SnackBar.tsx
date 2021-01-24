@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Component } from "react";
+import { StyleSheet } from "react-native";
 import { Snackbar as PaperBar, Text } from "react-native-paper";
 import getContrastTextColor from "../../components/textContrast";
 
@@ -12,20 +12,27 @@ export interface SnackbarProps {
 
 export default function Snackbar(props: SnackbarProps): JSX.Element {
   const { color, message, visible, onDismiss } = props;
+
+  const styles = StyleSheet.create({
+    snackbar: {
+      zIndex: 2000,
+      position: "absolute",
+      left: 0,
+      bottom: 10,
+      backgroundColor: color,
+    },
+    text: {
+      color: getContrastTextColor(color ?? "#000"),
+    },
+  });
   return (
     <PaperBar
       duration={2000}
       onDismiss={onDismiss}
       visible={visible}
-      style={{
-        zIndex: 2000,
-        position: "absolute",
-        left: 0,
-        bottom: 10,
-        backgroundColor: color,
-      }}
+      style={styles.snackbar}
     >
-      <Text style={{ color: getContrastTextColor(color ?? "#000") }}>{message}</Text>
+      <Text style={styles.text}>{message}</Text>
     </PaperBar>
   );
 }

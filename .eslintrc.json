@@ -28,7 +28,8 @@
         "object-curly-newline": "off",
         "prettier/prettier": "off",
         "require-jsdoc": "off",
-        "react/jsx-props-no-spreading": "warn",
+        "react/jsx-props-no-spreading": "off",
+        "react-hooks/exhaustive-deps": "off",
         "no-plusplus": "off",
         "no-empty": [
             "error",{

@@ -1,10 +1,10 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
 import { Appearance, StatusBar } from "react-native";
 import { Provider } from "react-native-paper";
-import * as SplashScreen from "expo-splash-screen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { theme as themeFunction, lightTheme as lightFunction } from "../theme";
 import { ThemeType } from "../../interfaces/types";
+import { lightTheme as lightFunction, theme as themeFunction } from "../theme";
 
 export interface ThemeProviderProps {
   children: JSX.Element;
@@ -12,10 +12,10 @@ export interface ThemeProviderProps {
 
 export const ThemeContext = React.createContext<{
   changeTheme(type: ThemeType): Promise<void>;
-}>(undefined);
+}>({changeTheme: () => new Promise<void>(() : void => {}) });
 
-export function useThemeChange() : React.ContextType<typeof ThemeContext> {
-  return React.useContext<{changeTheme(type: ThemeType): Promise<void>}>(ThemeContext);
+export function useThemeChange(): React.ContextType<typeof ThemeContext> {
+  return React.useContext<{ changeTheme(type: ThemeType): Promise<void> }>(ThemeContext);
 }
 
 export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
@@ -27,18 +27,15 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
     StatusBar.setBackgroundColor("transparent");
     SplashScreen.preventAutoHideAsync();
     async function getTheme() {
-      const themeType: ThemeType =
-        ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
+      const themeType: ThemeType = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
       if (
-        themeType === "dark" ||
-        (themeType === "system-default" && colorScheme === "dark")
+        themeType === "dark" || (themeType === "system-default" && colorScheme === "dark")
       ) {
         themeFunction().then((t) => {
           setTheme(t);
         });
       } else if (
-        themeType === "light" ||
-        (themeType === "system-default" && colorScheme === "light")
+        themeType === "light" || (themeType === "system-default" && colorScheme === "light")
       ) {
         lightFunction().then((t) => {
           setTheme(t);

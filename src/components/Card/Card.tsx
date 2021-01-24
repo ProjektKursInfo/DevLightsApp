@@ -40,10 +40,9 @@ export default function Card(props: CardProps): JSX.Element {
   });
 
   const navigation = useNavigation();
-  console.log(props.light.id);
   const onPress = (): void => {
     navigation.navigate("light", {
-      id: props.light.id,
+      id: light.id,
     });
   };
   return (

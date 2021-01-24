@@ -6,7 +6,7 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  View,
+  View
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
@@ -70,7 +70,6 @@ function Home(): JSX.Element {
     axios
       .get("http://devlight/lights")
       .then((response: AxiosResponse) => {
-        console.log(response.data);
         store.dispatch({
           type: SET_ALL_LIGHTS,
           lights: response.data.object,
@@ -90,7 +89,6 @@ function Home(): JSX.Element {
   React.useEffect(() => {
     if (network) fetch();
     else setError(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [network]);
 
   const { colors } = useTheme();
@@ -132,9 +130,9 @@ function Home(): JSX.Element {
       >
         <Title style={styles.title}>Lights</Title>
 
-        {loading ? (
-          <Spinner visible />
-        ) : lights.length > 0 && !error ? (
+        <Spinner visible={loading} />
+
+        {lights.length > 0 && !error && !loading ? (
           lights.map((light: Light) => <Card key={light.id} light={light} />)
         ) : (
           <>

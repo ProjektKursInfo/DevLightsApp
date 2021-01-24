@@ -17,7 +17,6 @@ import {
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import tinycolor from "tinycolor2";
 import useLight from "../../hooks/useLight";
 import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
 import { Light } from "../../interfaces";
@@ -98,7 +97,6 @@ export default function LightScreen(): JSX.Element {
     navigation.setOptions({
       headerRight: () => <PowerBulb light={light} />,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const changeName = (name: string) => {
@@ -140,6 +138,9 @@ export default function LightScreen(): JSX.Element {
         type: SET_LIGHT,
         id: route.params.id,
         light: response.data.object,
+      });
+      navigation.setOptions({
+        headerRight: () => <PowerBulb light={response.data.object} />,
       });
       setRefresh(false);
     });

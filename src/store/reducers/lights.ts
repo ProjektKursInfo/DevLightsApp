@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Light } from "../../interfaces";
 import {
   EDIT_LED_COUNT,
@@ -12,7 +13,9 @@ import {
 import defaultstate from "../defaultstate";
 
 function lightsReducer(
+  // @ts-ignore
   state = defaultstate.lights,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   action: {type: string, [key: string]: any},
 ): Light[] {
   let lights: Light[];
@@ -25,7 +28,6 @@ function lightsReducer(
     case SET_LIGHT:
       lights = [...state];
       index = lights.findIndex((l: Light) => (l.id === action.id));
-      light = lights[index];
       light = action.light;
       lights[index] = light;
       return lights;
@@ -38,7 +40,6 @@ function lightsReducer(
       return lights;
     case EDIT_LIGHT_COLOR:
       lights = [...state];
-      console.log("updddaaate");
       index = lights.findIndex((l: Light) => (l.id === action.id));
       light = lights[index];
       light.leds = {

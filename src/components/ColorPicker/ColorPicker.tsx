@@ -3,10 +3,12 @@ import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,9 +28,9 @@ export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
   const lights = useLight();
   const light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === route.params.id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds, right.leds)
+    (state: Store) => (
+      state.lights.find((l: Light) => l.id === route.params.id) as Light),
+    (left: Light, right: Light) => !isEqual(left.leds, right.leds),
   );
   const favourites: string[] = useSelector(
     (state: Store) => state.favourites,
@@ -108,7 +110,7 @@ export default function ColorPicker(): JSX.Element {
     setHsv({ ...hsv, s: saturation, v: value });
     if (
       favourites.includes(
-        tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString()
+        tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString(),
       )
     ) {
       setIcon(fullstar);
@@ -123,13 +125,11 @@ export default function ColorPicker(): JSX.Element {
     );
     const ax = lights.setColor(route.params.id, newColors, light.leds.pattern);
     ax.then((response: AxiosResponse) => {
-      console.log(".then");
       if (response.status === 200) {
         navigation.goBack();
       }
     });
-    ax.catch((err: AxiosError) => {
-      console.log(err.response?.data);
+    ax.catch(() => {
       setHsv(tinycolor(oldColor).toHsv());
     });
   };
