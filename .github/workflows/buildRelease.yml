@@ -11,14 +11,11 @@ jobs:
       - name: Install npm dependencies
         run: |
           npm install
-  build-android:
+  build-android-release:
     needs: install-and-test
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
-      - name: Install npm dependencies
-        run: |
-          npm install
       - name: Build Android Release
         run: |
           cd android && ./gradlew assembleRelease
@@ -27,3 +24,16 @@ jobs:
         with:
           name: app-release.apk
           path: android/app/build/outputs/apk/release/
+  build-android-debug:
+    needs: install-and-test
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Build Android Debug
+        run: |
+          cd android && ./gradlew assembleDebug
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-debug.apk
+          path: android/app/build/outputs/apk/debug/        
