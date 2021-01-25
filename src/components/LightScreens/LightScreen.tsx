@@ -3,7 +3,7 @@ import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
 import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios, { AxiosError, AxiosResponse } from "axios";
+import Axios, { AxiosError } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -12,7 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  View
+  View,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
@@ -21,7 +21,7 @@ import useLight from "../../hooks/useLight";
 import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { SET_LIGHT, SET_LIGHT_STATUS } from "../../store/actions/types";
+import { SET_LIGHT } from "../../store/actions/types";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
@@ -45,30 +45,22 @@ interface PowerBulbProps {
 }
 export function PowerBulb(props: PowerBulbProps): JSX.Element {
   const { light } = props;
-  const dispatch = useDispatch();
   const theme = useTheme();
-  const snackbar = useSnackbar();
+  const lights = useLight();
   const [icon, setIcon] = React.useState<IconDefinition>(
-    light.isOn ? faLightbulb : regular,
+    light.isOn ? faLightbulb : regular
   );
-  const onPress = () => {
-    Axios.patch(
-      `http://devlight/lights/${light.id}/${light.isOn ? "off" : "on"}`,
-    ).then((response: AxiosResponse) => {
-      setIcon(light.isOn ? regular : faLightbulb);
-      snackbar.makeSnackbar(response.data.message, theme.colors.accent);
-      dispatch({
-        type: SET_LIGHT_STATUS,
-        id: light.id,
-        isOn: !light.isOn,
-      });
-    });
-  };
   const styles = StyleSheet.create({
     pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
   });
   return (
-    <Pressable onPress={onPress} style={styles.pressable}>
+    <Pressable
+      onPress={() => {
+        lights.setStatus(light.id, !light.isOn);
+        setIcon(light.isOn ? regular : faLightbulb);
+      }}
+      style={styles.pressable}
+    >
       <FontAwesomeIcon
         size={30}
         color={theme.colors.accent}
@@ -83,9 +75,10 @@ export default function LightScreen(): JSX.Element {
   const theme = useTheme();
   const { colors } = theme;
   const light = useSelector(
-    (state: Store) => (
-      state.lights.find((l: Light) => l.id === route.params.id) as Light),
-    (left: Light, right: Light) => !isEqual(left.leds, right.leds),
+    (state: Store) =>
+      state.lights.find((l: Light) => l.id === route.params.id) as Light,
+    (left: Light, right: Light) =>
+      !isEqual(left.leds, right.leds) || !isEqual(left.isOn, right.isOn)
   );
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -111,15 +104,7 @@ export default function LightScreen(): JSX.Element {
       }
       return;
     }
-    const response = lights.setCount(light.id, parseInt(count, 10));
-    response.catch((err: AxiosError) => {
-      if (ref) {
-        ref.current?.setNativeProps({ text: light.count.toString() });
-      }
-      if (err?.response?.data.message) {
-        snackbar.makeSnackbar(err.response.data.message, "#f00");
-      }
-    });
+    lights.setCount(light.id, parseInt(count, 10));
   };
   const changePattern = (pattern: string) => {
     if (pattern !== light.leds.pattern) {

@@ -7,11 +7,13 @@ import {
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,
   EDIT_LIGHT_NAME,
-  SET_BRIGHTNESS
+  SET_BRIGHTNESS,
+  SET_LIGHT_STATUS
 } from "../../store/actions/types";
 import useSnackbar from "../useSnackbar";
 
 export const LightContext = React.createContext<{
+  setStatus(id: string, status: boolean): Promise<AxiosResponse<unknown>>
   setName(id: string, name: string): Promise<AxiosResponse<unknown>>;
   setCount(id: string, count: number): Promise<AxiosResponse<unknown>>;
   setColor(
@@ -24,6 +26,7 @@ export const LightContext = React.createContext<{
     brightness: number
   ): Promise<AxiosResponse<unknown>>;
 }>({
+      setStatus: () => new Promise<AxiosResponse>((): void => {}),
       setName: () => new Promise<AxiosResponse>((): void => {}),
       setCount: () => new Promise<AxiosResponse>((): void => {}),
       setColor: () => new Promise<AxiosResponse>((): void => {}),
@@ -38,6 +41,18 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   const dispatch = useDispatch();
   const snackbar = useSnackbar();
   const theme = useTheme();
+
+  async function setStatus(id: string, status: boolean) : Promise<AxiosResponse> {
+    const ax = Axios.patch(`http://devlight/lights/${id}/${status ? "on" : "off"}`);
+    ax.then((res: AxiosResponse) => {
+      snackbar.makeSnackbar(res.data.message, theme.colors.accent);
+      dispatch({type: SET_LIGHT_STATUS, id, isOn: status});
+    });
+    ax.catch((err: AxiosError) => {
+      snackbar.makeSnackbar(err.response?.data.message, theme.colors.error);
+    });
+    return await ax;
+  }
 
   async function setName(id: string, name: string): Promise<AxiosResponse> {
     const ax = Axios.patch(`http://devlight/lights/${id}/update`, {
@@ -57,6 +72,9 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     ax.then((res: AxiosResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.accent);
       dispatch({ type: EDIT_LED_COUNT, id, count });
+    });
+    ax.catch((err: AxiosError) => {
+      snackbar.makeSnackbar(err?.response?.data.message ?? "Unexpected Error", "#f00");
     });
     return await ax;
   }
@@ -119,6 +137,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   return (
     <LightContext.Provider
       value={{
+        setStatus,
         setName,
         setCount,
         setColor,
