@@ -16,11 +16,12 @@ import { useTheme } from "react-native-paper";
 export interface ChangeableTextProps extends TextInputProps {
   onSave: (text: string) => void;
   style: StyleProp<TextStyle> | StyleProp<ViewStyle>;
+  error?: boolean;
 }
 
 export default function ChangeableText(props: ChangeableTextProps): JSX.Element {
   const { colors } = useTheme();
-  const { onSave, style, value, ...rest } = props;
+  const { onSave, style, value, error, ...rest } = props;
 
   const [editable, setEditable] = React.useState<boolean>(false);
   const [text, setText] = React.useState<string>(value ?? "");
@@ -36,6 +37,11 @@ export default function ChangeableText(props: ChangeableTextProps): JSX.Element 
     onSave(text);
     setEditable(false);
   };
+
+  React.useEffect(() => {
+    if (error) inputRef.current?.setNativeProps({text: value});
+  }, [error]);
+
   const handleEdit = (): void => {
     setEditable(true);
   };

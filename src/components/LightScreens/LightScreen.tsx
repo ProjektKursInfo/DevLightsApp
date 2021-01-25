@@ -3,7 +3,7 @@ import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
 import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios, { AxiosError } from "axios";
+import Axios from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -12,7 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  View,
+  View
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
@@ -77,8 +77,9 @@ export default function LightScreen(): JSX.Element {
   const light = useSelector(
     (state: Store) =>
       state.lights.find((l: Light) => l.id === route.params.id) as Light,
-    (left: Light, right: Light) =>
+    (left: Light, right: Light) => (
       !isEqual(left.leds, right.leds) || !isEqual(left.isOn, right.isOn)
+    ),
   );
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -86,19 +87,23 @@ export default function LightScreen(): JSX.Element {
   const snackbar = useSnackbar();
   const lights = useLight();
   const [refresh, setRefresh] = React.useState<boolean>(false);
+  const [error,setError] = React.useState<boolean>(false);
   React.useEffect(() => {
+    setError(false);
     navigation.setOptions({
       headerRight: () => <PowerBulb light={light} />,
     });
   }, []);
 
   const changeName = (name: string) => {
-    lights.setName(light.id, name);
+    const ax = lights.setName(light.id, name);
+    ax.then(() => (setError(false)));
+    ax.catch(() => { setError(true); });
   };
 
   const changeNumber = (count: string) => {
     if (!/^\d+$/.test(count)) {
-      snackbar.makeSnackbar("Invalid number or string provided", "#f00");
+      snackbar.makeSnackbar("Invalid number or string provided", colors.error);
       if (ref) {
         ref.current?.setNativeProps({ text: light.count.toString() });
       }
@@ -210,6 +215,7 @@ export default function LightScreen(): JSX.Element {
       style={styles.container}
     >
       <ChangeableText
+        error={error}
         value={light.name}
         onSave={changeName}
         style={{ marginBottom: theme.spacing(5) }}

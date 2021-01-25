@@ -5,92 +5,17 @@ import * as React from "react";
 import {
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  View,
-  Text
+  View
 } from "react-native";
-import {
-  Avatar,
-  List,
-  Portal,
-  useTheme,
-  Button,
-  RadioButton,
-  Title,
-} from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
 import { Modalize } from "react-native-modalize";
+import { Avatar, List, useTheme } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
 import { Store } from "../../store";
 import { REMOVE_FAVOURITE } from "../../store/actions/types";
 import { favouritesEquality } from "../../utils";
-import { Light } from "../../interfaces";
-import useLight from "../../hooks/useLight";
-
-const Modal = React.forwardRef(
-  (props: {color: string, onConfirm: () => void}, ref: React.ForwardedRef<Modalize>) => {
-    const lights = useSelector((state: Store) => state.lights);
-    const theme = useTheme();
-    const light = useLight();
-
-    const [values, setValues] = React.useState<string[]>([]);
-
-    const onPress = (id: string) => {
-      if (!values.includes(id)) {
-        setValues([...values, id]);
-      } else {
-        const index: number = values.indexOf(id);
-        const old = [...values];
-        old.splice(index, 1);
-        setValues(old);
-      }
-    };
-
-    const onConfirm = () => {
-      props.onConfirm();
-      values.forEach((v: string) => {
-        light.setColor(v, [props.color], "plain");
-      });
-    };
-    return (
-      <Portal>
-        <Modalize
-          snapPoint={200}
-          useNativeDriver
-          modalStyle={{
-            backgroundColor: theme.colors.background,
-          }}
-          ref={ref}
-          onClose={() => setValues([])}
-        >
-          <Title
-            style={{
-              marginTop: theme.spacing(2),
-              marginLeft: theme.spacing(2),
-            }}
-          >
-            Apply favourite color on Light
-          </Title>
-          {lights.map((l: Light) => (
-            <RadioButton.Item
-              value={l.id}
-              label={l.name}
-              labelStyle={{
-                color: values.includes(l.id)
-                  ? theme.colors.lightText
-                  : theme.colors.grey,
-              }}
-              mode="ios"
-              onPress={() => onPress(l.id)}
-              status={values.includes(l.id) ? "checked" : "unchecked"}
-            />
-          ))}
-
-          <Button onPress={() => onConfirm()}> Apply color</Button>
-        </Modalize>
-      </Portal>
-    );
-  },
-);
+import { ApplyDialog } from "./ApplyDialog/ApplyDialog";
 
 export function Color(props: {
   color: string;
@@ -125,7 +50,11 @@ export function Color(props: {
           </TouchableOpacity>
         )}
       />
-      <Modal onConfirm={() => modalizeRef.current?.close()} color={color} ref={modalizeRef} />
+      <ApplyDialog
+        onConfirm={() => modalizeRef.current?.close()}
+        colors={[color]}
+        ref={modalizeRef}
+      />
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import * as React from "react";
+import { Pattern } from "../../interfaces/types";
 import { LightContext } from "./LightProvider";
 
 export default function useLight() : React.ContextType<typeof LightContext> {
@@ -10,7 +11,7 @@ export default function useLight() : React.ContextType<typeof LightContext> {
     setColor(
       id: string,
       colors: string[],
-      pattern?: string
+      pattern?: Pattern
     ): Promise<AxiosResponse<unknown>>;
     setBrightness(id: string, brightness: number): Promise<AxiosResponse<unknown>>;
   }>(LightContext);

@@ -99,6 +99,7 @@ export const theme = async () => {
       lightText: "#d1d1d1aa",
       grey: "#4f4f4f",
       dark_grey: "#393939",
+      error: "rgb(178, 0, 35)",
     },
     fonts: configureFonts(fontConfig),
   };
