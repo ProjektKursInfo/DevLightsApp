@@ -49,7 +49,10 @@ export default function Card(props: CardProps): JSX.Element {
     <TouchableWithoutFeedback style={styles.touchable} onPress={onPress}>
       <LinearGradient
         style={styles.card}
-        colors={[colors[0], colors[1] && light.leds.pattern !== "plain" ? colors[1] : colors[0]]}
+        colors={[
+          colors[0],
+          colors[1] && light.leds.pattern !== "plain" ? colors[1] : colors[0],
+        ]}
         start={[0, 1]}
         end={[1, 0]}
       >

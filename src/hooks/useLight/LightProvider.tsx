@@ -3,6 +3,7 @@ import Axios, { AxiosError, AxiosResponse } from "axios";
 import * as React from "react";
 import { useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
+import { Pattern } from "../../interfaces/types";
 import {
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,
@@ -19,7 +20,7 @@ export const LightContext = React.createContext<{
   setColor(
     id: string,
     colors: string[],
-    pattern?: string
+    pattern?: Pattern
   ): Promise<AxiosResponse<unknown>>;
   setBrightness(
     id: string,
@@ -62,6 +63,10 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       snackbar.makeSnackbar(res.data.message, theme.colors.accent);
       dispatch({ type: EDIT_LIGHT_NAME, id, name });
     });
+
+    ax.catch((err: AxiosError) => {
+      snackbar.makeSnackbar(err?.response?.data.message ?? "Unexpected Error", theme.colors.error);
+    });
     return await ax;
   }
 
@@ -74,7 +79,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       dispatch({ type: EDIT_LED_COUNT, id, count });
     });
     ax.catch((err: AxiosError) => {
-      snackbar.makeSnackbar(err?.response?.data.message ?? "Unexpected Error", "#f00");
+      snackbar.makeSnackbar(err?.response?.data.message ?? "Unexpected Error", theme.colors.error);
     });
     return await ax;
   }
@@ -82,7 +87,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   async function setColor(
     id: string,
     colors: string[],
-    pattern?: string,
+    pattern?: Pattern,
   ): Promise<AxiosResponse<unknown>> {
     const ax = Axios.patch(
       `http://devlight/lights/${id}/color`,
@@ -96,7 +101,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     );
     ax.then((res: AxiosResponse) => {
       if (res.status === 304) {
-        snackbar.makeSnackbar("Nothing changed", "#f00");
+        snackbar.makeSnackbar("Nothing changed", theme.colors.error);
       } else if (res.status === 200) {
         snackbar.makeSnackbar(res.data.message, theme.colors.accent);
         dispatch({
@@ -110,7 +115,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     ax.catch((err: AxiosError) => {
       snackbar.makeSnackbar(
         err?.response?.data.message ?? "Unexpected error",
-        "#f00",
+        theme.colors.error,
       );
     });
     return await ax;

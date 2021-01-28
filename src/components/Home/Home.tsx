@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosResponse } from "axios";
+import * as SplashScreen from "expo-splash-screen";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
@@ -8,15 +10,14 @@ import {
   StyleSheet,
   View
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
-import * as SplashScreen from "expo-splash-screen";
+import useNetwork from "../../hooks/useNetwork";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { SET_ALL_LIGHTS, SET_FAVOURITES } from "../../store/actions/types";
+import { setFavouriteColors, setFavouriteGradients } from "../../store/actions/favourites";
+import { setAllLights } from "../../store/actions/lights";
 import Card from "../Card";
-import useNetwork from "../../hooks/useNetwork";
 
 interface SpinnerProps {
   visible: boolean;
@@ -59,21 +60,19 @@ function Home(): JSX.Element {
   const fetch = async (refreshing = false) => {
     setLoading(true);
     if (refreshing) setRefresh(refreshing);
-    const json: string | null = await AsyncStorage.getItem("favourites");
-    if (json != null) {
-      store.dispatch({
-        type: SET_FAVOURITES,
-        favourites: Array.from(JSON.parse(json)),
-      });
+    const favouriteColors: string | null = await AsyncStorage.getItem("favouriteColors");
+    const favouriteGradients : string | null = await AsyncStorage.getItem("favouriteGradients");
+    if (favouriteColors != null) {
+      store.dispatch(setFavouriteColors(Array.from(JSON.parse(favouriteColors))));
+    }
+    if (favouriteGradients != null) {
+      store.dispatch(setFavouriteGradients(Array.from(JSON.parse(favouriteGradients))));
     }
     setError(false);
     axios
       .get("http://devlight/lights")
       .then((response: AxiosResponse) => {
-        store.dispatch({
-          type: SET_ALL_LIGHTS,
-          lights: response.data.object,
-        });
+        store.dispatch(setAllLights(response.data.object));
         setLoading(false);
         SplashScreen.hideAsync();
       })

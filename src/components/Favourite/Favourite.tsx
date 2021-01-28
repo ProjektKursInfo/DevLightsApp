@@ -1,86 +1,162 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { LinearGradient } from "expo-linear-gradient";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  View,
-  Text
+  View
 } from "react-native";
-import { Avatar, List, useTheme } from "react-native-paper";
+import { Modalize } from "react-native-modalize";
+import { List, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import { Gradient } from "../../interfaces/store";
 import { Store } from "../../store";
-import { REMOVE_FAVOURITE } from "../../store/actions/types";
-import { favouritesEquality } from "../../utils";
+import {
+  removeFavouriteColor,
+  removeFavouriteGradient
+} from "../../store/actions/favourites";
+import { favouriteGradientsEquality, favouritesEquality } from "../../utils";
+import { ApplyDialog } from "./ApplyDialog/ApplyDialog";
 
-export function Color(props: {
-  color: string;
-  onPress: () => void;
-}): JSX.Element {
-  const { color, onPress } = props;
-  const theme = useTheme();
+export function Circle(props: { colors: string[] }): JSX.Element {
+  const { colors } = props;
   const styles = StyleSheet.create({
-    container: {width: "100%"},
-    pressable: { alignSelf: "center" },
+    root: {
+      flexDirection: "row",
+    },
+    gradient: { borderRadius: 100, height: 40, width: 40 },
   });
   return (
-    <List.Item
-      title={color}
-      style={styles.container}
-      left={() => (
-        <Avatar.Text label="" size={40} style={{ backgroundColor: color }} />
-      )}
-      right={() => (
-        <TouchableOpacity style={styles.pressable} onPress={onPress}>
-          <FontAwesomeIcon size={26} icon={faTrash} color={theme.colors.accent} />
-        </TouchableOpacity>
-      )}
-    />
+    <View style={styles.root}>
+      <LinearGradient
+        start={[0, 0]}
+        end={[1, 1]}
+        colors={[colors[0], colors[1] ?? colors[0]]}
+        style={styles.gradient}
+      />
+    </View>
+  );
+}
+
+export function Color(props: {
+  colors: string[];
+  delete: () => void;
+}): JSX.Element {
+  const { colors } = props;
+  const theme = useTheme();
+  const styles = StyleSheet.create({
+    container: { width: "100%" },
+    pressable: { alignSelf: "center" },
+  });
+  const modalizeRef = React.useRef<Modalize>(null);
+  const press = () => {
+    modalizeRef?.current?.open();
+  };
+
+  return (
+    <>
+      <List.Item
+        title={colors[0] + (colors[1] ? ` + ${colors[1]}` : "")}
+        onPress={press}
+        style={styles.container}
+        left={() => <Circle colors={colors} />}
+        right={() => (
+          <TouchableOpacity style={styles.pressable} onPress={props.delete}>
+            <FontAwesomeIcon
+              size={26}
+              icon={faTrash}
+              color={theme.colors.accent}
+            />
+          </TouchableOpacity>
+        )}
+      />
+      <ApplyDialog
+        onConfirm={() => modalizeRef.current?.close()}
+        colors={colors}
+        ref={modalizeRef}
+      />
+    </>
   );
 }
 
 export default function Favourite(): JSX.Element {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const favourites: string[] = useSelector(
-    (state: Store) => state.favourites,
+  const favouriteColors: string[] = useSelector(
+    (state: Store) => state.favouriteColors,
     favouritesEquality,
   );
+
+  const favouriteGradients: Gradient[] = useSelector(
+    (state: Store) => state.favouriteGradients,
+    favouriteGradientsEquality,
+  );
   const styles = StyleSheet.create({
-    scrollview: {marginTop: 10},
-    container: {alignSelf: "center", alignItems: "center", marginTop: 10},
+    scrollview: { marginTop: 15 },
+    container: { alignSelf: "center", alignItems: "center", marginTop: 10 },
+    text: { fontSize: 18, color: theme.colors.text, textAlign: "left" },
   });
   return (
-    <View>
-      {favourites.length > 0 ? (
-        <ScrollView style={styles.scrollview}>
-          {favourites.map((fav: string) => (
-            <Color
-              key={fav}
-              onPress={() => (
-                dispatch({ type: REMOVE_FAVOURITE, favourite: fav })
-              )}
-              color={fav}
+    <ScrollView style={styles.scrollview}>
+      <View>
+        <Text style={styles.text}> Favourite Colors</Text>
+        {favouriteColors.length > 0 ? (
+          <View>
+            {favouriteColors.map((fav: string) => (
+              <Color
+                key={fav}
+                delete={() => dispatch(removeFavouriteColor(fav))}
+                colors={[fav]}
+              />
+            ))}
+          </View>
+        ) : (
+          <View style={styles.container}>
+            <Text style={{ color: theme.colors.text }}>
+              You haven`t saved any favourite colors
+            </Text>
+            <Lottie
+              autoPlay
+              hardwareAccelerationAndroid
+              autoSize
+              loop={false}
+              // eslint-disable-next-line global-require
+              source={require("../../../assets/animations/favourite.json")}
             />
-          ))}
-        </ScrollView>
-      ) : (
-        <View style={styles.container}>
-          <Text style={{ color: theme.colors.text }}>
-            You haven`t saved any favourite colors
-          </Text>
-          <Lottie
-            autoPlay
-            hardwareAccelerationAndroid
-            autoSize
-            loop={false}
-            // eslint-disable-next-line global-require
-            source={require("../../../assets/animations/favourite.json")}
-          />
-        </View>
-      )}
-    </View>
+          </View>
+        )}
+      </View>
+      <View>
+        <Text style={styles.text}> Favourite Gradients</Text>
+        {favouriteGradients.length > 0 ? favouriteGradients.map((g: Gradient) => {
+          const array = [g.start, g.end];
+          return (
+            <Color
+              key={g.start + g.end}
+              delete={() => dispatch(removeFavouriteGradient(g))}
+              colors={array}
+            />
+          );
+        }) : (
+          <View style={styles.container}>
+            <Text style={{ color: theme.colors.text }}>
+              You haven`t saved any favourite gradients
+            </Text>
+            <Lottie
+              autoPlay
+              hardwareAccelerationAndroid
+              autoSize
+              loop={false}
+              // eslint-disable-next-line global-require
+              source={require("../../../assets/animations/favourite.json")}
+            />
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 }
