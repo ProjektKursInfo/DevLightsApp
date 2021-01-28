@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FavouriteGradientsAction } from "../../interfaces/store";
+import { FavouriteGradientsAction } from "../types/favouriteGradients";
 import {
   ADD_FAVOURITE_GRADIENT,
   REMOVE_FAVOURITE_GRADIENT,
   SET_FAVOURITE_GRADIENTS
-} from "../actions/types";
+} from "../types/types";
 import defaultstate from "../defaultstate";
 
 export type Gradient = { start: string; end: string };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Light } from "../../interfaces";
-import { LightActionTypes } from "../../interfaces/store";
+import { LightActionTypes } from "../types/lights";
 import {
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,
@@ -10,7 +10,7 @@ import {
   SET_BRIGHTNESS,
   SET_LIGHT,
   SET_LIGHT_STATUS
-} from "../actions/types";
+} from "../types/types";
 import defaultstate from "../defaultstate";
 
 function lightsReducer(

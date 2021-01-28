@@ -1,7 +1,7 @@
 import { CombinedState, combineReducers, createStore } from "redux";
 import { Light } from "../interfaces";
 import lightsReducer from "./reducers/lights";
-import favouriteReducer from "./reducers/favourites";
+import favouriteReducer from "./reducers/favouriteColors";
 import favouriteGradientsReducer, { Gradient } from "./reducers/favouriteGradients";
 
 const combinedReducers = combineReducers({

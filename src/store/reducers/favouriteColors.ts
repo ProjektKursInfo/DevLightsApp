@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FavouriteColorsAction } from "../../interfaces/store";
-import { ADD_FAVOURITE_COLOR, REMOVE_FAVOURITE_COLOR, SET_FAVOURITE_COLORS } from "../actions/types";
+import { FavouriteColorsAction } from "../types/favouriteColors";
+import { ADD_FAVOURITE_COLOR, REMOVE_FAVOURITE_COLOR, SET_FAVOURITE_COLORS } from "../types/types";
 import defaultstate from "../defaultstate";
 
 function favouriteReducer(

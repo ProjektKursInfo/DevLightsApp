@@ -4,13 +4,7 @@ import * as React from "react";
 import { useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { Pattern } from "../../interfaces/types";
-import {
-  EDIT_LED_COUNT,
-  EDIT_LIGHT_COLOR,
-  EDIT_LIGHT_NAME,
-  SET_BRIGHTNESS,
-  SET_LIGHT_STATUS
-} from "../../store/actions/types";
+import { editLightName, setLedCount, setLightBrightness, setLightColor, setLightStatus } from "../../store/actions/lights";
 import useSnackbar from "../useSnackbar";
 
 export const LightContext = React.createContext<{
@@ -47,7 +41,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     const ax = Axios.patch(`http://devlight/lights/${id}/${status ? "on" : "off"}`);
     ax.then((res: AxiosResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.accent);
-      dispatch({type: SET_LIGHT_STATUS, id, isOn: status});
+      dispatch(setLightStatus(id, status));
     });
     ax.catch((err: AxiosError) => {
       snackbar.makeSnackbar(err.response?.data.message, theme.colors.error);
@@ -61,7 +55,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     });
     ax.then((res: AxiosResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.accent);
-      dispatch({ type: EDIT_LIGHT_NAME, id, name });
+      dispatch(editLightName(id, name));
     });
 
     ax.catch((err: AxiosError) => {
@@ -76,7 +70,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     });
     ax.then((res: AxiosResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.accent);
-      dispatch({ type: EDIT_LED_COUNT, id, count });
+      dispatch(setLedCount(id, count));
     });
     ax.catch((err: AxiosError) => {
       snackbar.makeSnackbar(err?.response?.data.message ?? "Unexpected Error", theme.colors.error);
@@ -104,12 +98,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         snackbar.makeSnackbar("Nothing changed", theme.colors.error);
       } else if (res.status === 200) {
         snackbar.makeSnackbar(res.data.message, theme.colors.accent);
-        dispatch({
-          type: EDIT_LIGHT_COLOR,
-          id,
-          colors,
-          pattern,
-        });
+        dispatch(setLightColor(id, pattern ?? "plain", colors));
       }
     });
     ax.catch((err: AxiosError) => {
@@ -129,11 +118,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       brightness: Math.round(brightness),
     });
     ax.then(() => {
-      dispatch({
-        type: SET_BRIGHTNESS,
-        brightness: Math.round(brightness),
-        id,
-      });
+      dispatch(setLightBrightness(id, brightness));
     });
     return await ax;
   }

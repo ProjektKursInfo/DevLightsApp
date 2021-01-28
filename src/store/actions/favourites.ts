@@ -1,12 +1,10 @@
+import { AddFavouriteColorAction, RemoveFavouriteColorAction, SetFavouriteColorsAction } from "../types/favouriteColors";
 import {
-  AddFavouriteColorAction,
   AddFavouriteGradientAction,
-  RemoveFavouriteColorAction,
   RemoveFavouriteGradientAction,
-  SetFavouriteColorsAction,
   SetFavouriteGradientsAction,
   Gradient
-} from "../../interfaces/store";
+} from "../types/favouriteGradients";
 
 export function setFavouriteColors(
   favourites: string[],

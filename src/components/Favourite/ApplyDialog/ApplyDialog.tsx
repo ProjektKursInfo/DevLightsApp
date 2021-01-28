@@ -73,7 +73,7 @@ export const ApplyDialog = React.forwardRef(
               value={l.id}
               label={l.name}
               labelStyle={{
-                color: l.isOn ? theme.colors.lightText : theme.colors.grey,
+                color: l.isOn ? theme.colors.text : theme.colors.grey,
               }}
               mode="ios"
               onPress={() => onPress(l.id)}
