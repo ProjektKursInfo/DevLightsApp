@@ -16,10 +16,7 @@ import tinycolor, { ColorFormats } from "tinycolor2";
 import useLight from "../../hooks/useLight";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import {
-  ADD_FAVOURITE,
-  REMOVE_FAVOURITE
-} from "../../store/actions/types";
+import { addFavouriteColor, removeFavouriteColor } from "../../store/actions/favourites";
 import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
 import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
@@ -32,8 +29,8 @@ export default function ColorPicker(): JSX.Element {
       state.lights.find((l: Light) => l.id === route.params.id) as Light),
     (left: Light, right: Light) => !isEqual(left.leds, right.leds),
   );
-  const favourites: string[] = useSelector(
-    (state: Store) => state.favourites,
+  const favouriteColors: string[] = useSelector(
+    (state: Store) => state.favouriteColors,
     isEqual,
   );
   const [hsv, setHsv] = React.useState<ColorFormats.HSV>(
@@ -45,17 +42,11 @@ export default function ColorPicker(): JSX.Element {
   const theme = useTheme();
   const {colors} = theme;
   const saveColor = () => {
-    if (favourites.includes(tinycolor.fromRatio(hsv).toHexString())) {
-      dispatch({
-        type: REMOVE_FAVOURITE,
-        favourite: tinycolor.fromRatio(hsv).toHexString(),
-      });
+    if (favouriteColors.includes(tinycolor.fromRatio(hsv).toHexString())) {
+      dispatch(removeFavouriteColor(tinycolor.fromRatio(hsv).toHexString()));
       setIcon(faStar);
     } else {
-      dispatch({
-        type: ADD_FAVOURITE,
-        favourite: tinycolor.fromRatio(hsv).toHexString(),
-      });
+      dispatch(addFavouriteColor(tinycolor.fromRatio(hsv).toHexString()));
       setIcon(fullstar);
     }
   };
@@ -72,7 +63,7 @@ export default function ColorPicker(): JSX.Element {
   });
 
   React.useEffect(() => {
-    if (favourites.includes(light.leds.colors[route.params.index])) setIcon(fullstar);
+    if (favouriteColors.includes(light.leds.colors[route.params.index])) setIcon(fullstar);
   }, []);
 
   React.useEffect(() => {
@@ -94,7 +85,7 @@ export default function ColorPicker(): JSX.Element {
   const onHueChange = ({ hue }: { hue: number }) => {
     setHsv({ ...hsv, h: hue });
     if (
-      favourites.includes(tinycolor.fromRatio({ ...hsv, h: hue }).toHexString())
+      favouriteColors.includes(tinycolor.fromRatio({ ...hsv, h: hue }).toHexString())
     ) {
       setIcon(fullstar);
     } else if (icon === fullstar) setIcon(faStar);
@@ -109,7 +100,7 @@ export default function ColorPicker(): JSX.Element {
   }) => {
     setHsv({ ...hsv, s: saturation, v: value });
     if (
-      favourites.includes(
+      favouriteColors.includes(
         tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString(),
       )
     ) {

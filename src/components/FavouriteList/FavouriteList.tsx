@@ -10,7 +10,7 @@ export interface FavouriteListProps {
 }
 
 export default function FavouriteList(props: FavouriteListProps): JSX.Element {
-  const favourites : string[] = useSelector((state: Store) => state.favourites, isEqual);
+  const favouriteColors : string[] = useSelector((state: Store) => state.favouriteColors, isEqual);
   const styles = StyleSheet.create({
     container: { width: "100%", height: 120, alignItems: "center" },
     scrollview: { height: 45, marginBottom: 30 },
@@ -26,8 +26,8 @@ export default function FavouriteList(props: FavouriteListProps): JSX.Element {
         style={styles.scrollview}
         contentContainerStyle={styles.contentContainer}
       >
-        {favourites.length > 0 ? (
-          favourites.map((fav: string) => {
+        {favouriteColors.length > 0 ? (
+          favouriteColors.map((fav: string) => {
             const style = StyleSheet.create({
               avatar: { backgroundColor: fav, marginLeft: 10 },
             });

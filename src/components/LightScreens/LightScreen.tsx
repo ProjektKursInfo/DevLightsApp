@@ -20,8 +20,9 @@ import { useDispatch, useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
 import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
 import { Light } from "../../interfaces";
+import { Pattern } from "../../interfaces/types";
 import { Store } from "../../store";
-import { SET_LIGHT } from "../../store/actions/types";
+import { setLight } from "../../store/actions/lights";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
@@ -48,7 +49,7 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
   const theme = useTheme();
   const lights = useLight();
   const [icon, setIcon] = React.useState<IconDefinition>(
-    light.isOn ? faLightbulb : regular
+    light.isOn ? faLightbulb : regular,
   );
   const styles = StyleSheet.create({
     pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
@@ -75,8 +76,8 @@ export default function LightScreen(): JSX.Element {
   const theme = useTheme();
   const { colors } = theme;
   const light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === route.params.id) as Light,
+    (state: Store) => (
+      state.lights.find((l: Light) => l.id === route.params.id) as Light),
     (left: Light, right: Light) => (
       !isEqual(left.leds, right.leds) || !isEqual(left.isOn, right.isOn)
     ),
@@ -87,7 +88,7 @@ export default function LightScreen(): JSX.Element {
   const snackbar = useSnackbar();
   const lights = useLight();
   const [refresh, setRefresh] = React.useState<boolean>(false);
-  const [error,setError] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<boolean>(false);
   React.useEffect(() => {
     setError(false);
     navigation.setOptions({
@@ -117,18 +118,14 @@ export default function LightScreen(): JSX.Element {
       if (pattern === "gradient") {
         newColors.push(light.leds.colors[0]);
       }
-      lights.setColor(light.id, newColors, pattern);
+      lights.setColor(light.id, newColors, pattern as Pattern);
     }
   };
 
   const fetch = () => {
     setRefresh(true);
     Axios.get(`http://devlight/lights/${route.params.id}`).then((response) => {
-      dispatch({
-        type: SET_LIGHT,
-        id: route.params.id,
-        light: response.data.object,
-      });
+      dispatch(setLight(route.params.id, response.data.object));
       navigation.setOptions({
         headerRight: () => <PowerBulb light={response.data.object} />,
       });

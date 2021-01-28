@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Light } from "../../interfaces";
+import { LightActionTypes } from "../../interfaces/store";
 import {
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,
@@ -15,8 +16,7 @@ import defaultstate from "../defaultstate";
 function lightsReducer(
   // @ts-ignore
   state = defaultstate.lights,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  action: {type: string, [key: string]: any},
+  action: LightActionTypes,
 ): Light[] {
   let lights: Light[];
   let light: Light;

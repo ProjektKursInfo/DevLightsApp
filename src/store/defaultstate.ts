@@ -1,4 +1,5 @@
 export default {
-  favourites: [],
+  favouriteColors: [],
+  favouriteGradients: [],
   lights: [],
 };
