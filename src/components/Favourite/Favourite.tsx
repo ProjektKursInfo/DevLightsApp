@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,14 +12,14 @@ import {
   View
 } from "react-native";
 import { Modalize } from "react-native-modalize";
-import { List, useTheme } from "react-native-paper";
+import { Divider, List, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { Gradient } from "../../interfaces/store";
 import { Store } from "../../store";
 import {
   removeFavouriteColor,
   removeFavouriteGradient
 } from "../../store/actions/favourites";
+import { Gradient } from "../../store/types/favouriteGradients";
 import { favouriteGradientsEquality, favouritesEquality } from "../../utils";
 import { ApplyDialog } from "./ApplyDialog/ApplyDialog";
 
@@ -103,9 +104,31 @@ export default function Favourite(): JSX.Element {
   return (
     <ScrollView style={styles.scrollview}>
       <View>
-        <Text style={styles.text}> Favourite Colors</Text>
-        {favouriteColors.length > 0 ? (
-          <View>
+        {favouriteColors.length === 0 ? (
+          favouriteGradients.length === 0 ? (
+            <View style={styles.container}>
+              <Lottie
+                autoPlay
+                hardwareAccelerationAndroid
+                autoSize
+                loop={false}
+                // eslint-disable-next-line global-require
+                source={require("../../../assets/animations/favourite.json")}
+              />
+              <Text style={styles.text}>
+                You haven`t saved any favourites yet
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.container}>
+              <Text style={{ color: theme.colors.text }}>
+                You haven`t saved any colors yet
+              </Text>
+            </View>
+          )
+        ) : (
+          <View style={{ marginTop: theme.spacing(4) }}>
+            <Text style={styles.text}>Colors</Text>
             {favouriteColors.map((fav: string) => (
               <Color
                 key={fav}
@@ -114,47 +137,30 @@ export default function Favourite(): JSX.Element {
               />
             ))}
           </View>
-        ) : (
-          <View style={styles.container}>
-            <Text style={{ color: theme.colors.text }}>
-              You haven`t saved any favourite colors
-            </Text>
-            <Lottie
-              autoPlay
-              hardwareAccelerationAndroid
-              autoSize
-              loop={false}
-              // eslint-disable-next-line global-require
-              source={require("../../../assets/animations/favourite.json")}
-            />
-          </View>
         )}
-      </View>
-      <View>
-        <Text style={styles.text}> Favourite Gradients</Text>
-        {favouriteGradients.length > 0 ? favouriteGradients.map((g: Gradient) => {
-          const array = [g.start, g.end];
-          return (
-            <Color
-              key={g.start + g.end}
-              delete={() => dispatch(removeFavouriteGradient(g))}
-              colors={array}
-            />
-          );
-        }) : (
+        <Divider style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}} />
+        {favouriteGradients.length > 0 ? (
+          <View style={{ marginTop: theme.spacing(4) }}>
+            <Text style={styles.text}>Gradients</Text>
+            {favouriteGradients.map((g: Gradient) => {
+              const array = [g.start, g.end];
+              return (
+                <Color
+                  key={g.start + g.end}
+                  delete={() => dispatch(removeFavouriteGradient(g))}
+                  colors={array}
+                />
+              );
+            })}
+          </View>
+        ) : favouriteColors.length !== 0 ? (
           <View style={styles.container}>
             <Text style={{ color: theme.colors.text }}>
-              You haven`t saved any favourite gradients
+              You haven`t saved any colors yet
             </Text>
-            <Lottie
-              autoPlay
-              hardwareAccelerationAndroid
-              autoSize
-              loop={false}
-              // eslint-disable-next-line global-require
-              source={require("../../../assets/animations/favourite.json")}
-            />
           </View>
+        ) : (
+          <Text> </Text>
         )}
       </View>
     </ScrollView>

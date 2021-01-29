@@ -149,7 +149,7 @@ function HomeStack() {
       />
       <Stack.Screen
         options={{
-          headerTitle: "Favourite Colors",
+          headerTitle: "Favourites",
           headerTitleAlign: "center",
           headerTitleStyle: {
             marginTop: 20,
