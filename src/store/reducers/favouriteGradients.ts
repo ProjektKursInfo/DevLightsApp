@@ -13,38 +13,36 @@ export default function favouriteGradientsReducer(
   state = defaultstate.favouriteGradients as Gradient[],
   action: FavouriteGradientsAction,
 ): Gradient[] {
-  let favourites: Gradient[];
+  let favouriteGradients: Gradient[];
   let favourite: Gradient | undefined;
-  let newF : Gradient;
   let index: number;
   switch (action.type) {
     case SET_FAVOURITE_GRADIENTS:
-      favourites = [...action.favourites];
-      return favourites;
+      favouriteGradients = [...action.favourites];
+      return favouriteGradients;
     case ADD_FAVOURITE_GRADIENT:
-      favourites = [...state];
-      newF = action.favourite;
-      favourite = favourites.find(
-        (fav: Gradient) => fav === newF,
+      favouriteGradients = [...state];
+      favourite = favouriteGradients.find(
+        (fav: Gradient) => fav === action.favourite,
       );
       if (favourite === undefined) {
-        favourites = [
-          ...favourites,
-          newF,
+        favouriteGradients = [
+          ...favouriteGradients,
+          action.favourite,
         ];
       }
-      AsyncStorage.setItem("favouriteGradients", JSON.stringify(favourites));
-      return favourites;
+      AsyncStorage.setItem("favouriteGradients", JSON.stringify(favouriteGradients));
+      return favouriteGradients;
     case REMOVE_FAVOURITE_GRADIENT:
-      favourites = [...state];
-      index = favourites.findIndex(
+      favouriteGradients = [...state];
+      index = favouriteGradients.findIndex(
         (f) => f === action.favourite,
       );
       if (index !== undefined) {
-        favourites.splice(index, 1);
-        AsyncStorage.setItem("favouriteGradients", JSON.stringify(favourites));
+        favouriteGradients.splice(index, 1);
+        AsyncStorage.setItem("favouriteGradients", JSON.stringify(favouriteGradients));
       }
-      return favourites;
+      return favouriteGradients;
     default:
       return state;
   }

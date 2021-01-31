@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faChevronLeft,
@@ -8,9 +7,6 @@ import {
   faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  createDrawerNavigator
-} from "@react-navigation/drawer";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import {
   NavigationContainer,
@@ -72,16 +68,13 @@ export type FavouriteScreenRouteProp = RouteProp<
 HomeStackParamList,
 "favourite"
 >;
-
 function Icon(
-  // eslint-disable-next-line react/require-default-props
   props: StackHeaderLeftButtonProps & {
     icon: IconProp;
-    color?: string;
+    color: string;
     position: "left" | "right";
-  }
+  },
 ): JSX.Element {
-  const { colors } = useTheme();
   const { onPress, icon, color, position } = props;
   const styles = StyleSheet.create({
     icon: {
@@ -94,7 +87,7 @@ function Icon(
     <Pressable onPress={onPress}>
       <FontAwesomeIcon
         style={styles.icon}
-        color={color ?? colors.accent}
+        color={color}
         size={30}
         icon={icon}
       />
@@ -105,6 +98,7 @@ function Icon(
 function HomeStack() {
   const Stack = createStackNavigator<HomeStackParamList>();
   const navigation = useNavigation();
+  const theme = useTheme();
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -128,7 +122,7 @@ function HomeStack() {
         options={() => ({
           headerBackTitleVisible: false,
           headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <Icon position="left" icon={faChevronLeft} {...props} />
+            <Icon color={theme.colors.accent} position="left" icon={faChevronLeft} {...props} />
           ),
           headerTitle: "",
           gestureEnabled: true,
@@ -141,7 +135,7 @@ function HomeStack() {
         name="color_modal"
         options={{
           headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <Icon position="left" icon={faTimes} {...props} />
+            <Icon color={theme.colors.accent} position="left" icon={faTimes} {...props} />
           ),
           headerTitle: "",
         }}
@@ -155,7 +149,7 @@ function HomeStack() {
             marginTop: 20,
           },
           headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <Icon icon={faTimes} position="left" {...props} />
+            <Icon color={theme.colors.accent} icon={faTimes} position="left" {...props} />
           ),
         }}
         name="favourite"
@@ -179,7 +173,7 @@ export default function Navigation(): JSX.Element {
   const Tab = createMaterialBottomTabNavigator();
   return (
     <NavigationContainer theme={theme}>
-      <Tab.Navigator labeled={false} initialRouteName="home">
+      <Tab.Navigator barStyle={{backgroundColor: theme.colors.accent}} labeled={false} initialRouteName="home">
         <Tab.Screen
           component={HomeStack}
           options={{

@@ -9,11 +9,11 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Light } from "../../interfaces";
-import { Gradient } from "../../interfaces/store";
+import { Gradient } from "../../store/types/favouriteGradients";
 import { Store } from "../../store";
 import {
   addFavouriteGradient,
-  removeFavouriteGradient,
+  removeFavouriteGradient
 } from "../../store/actions/favourites";
 import { isFavouriteGradient } from "../../utils";
 import { ColorModalScreenNavigationProp } from "../Navigation/Navigation";
@@ -23,16 +23,16 @@ export interface GradientComponentProps {
 }
 
 export default function GradientComponent(
-  props: GradientComponentProps
+  props: GradientComponentProps,
 ): JSX.Element {
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const light: Light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === props.id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors)
+    (state: Store) => (
+      state.lights.find((l: Light) => l.id === props.id) as Light),
+    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
   );
-  const favouriteGradients = useSelector(
-    (state: Store) => state.favouriteGradients
+  const favouriteGradients: Gradient[] = useSelector(
+    (state: Store) => state.favouriteGradients,
   );
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -71,7 +71,7 @@ export default function GradientComponent(
   }, []);
 
   const styles = StyleSheet.create({
-    button_left: {
+    button: {
       width: "40%",
       alignSelf: "center",
       margin: 20,
@@ -92,7 +92,7 @@ export default function GradientComponent(
         <Button
           disabled={!light.isOn}
           mode="contained"
-          style={styles.button_left}
+          style={styles.button}
           onPress={() => onPress(0)}
           color={light.leds.colors[0]}
         >
@@ -101,7 +101,7 @@ export default function GradientComponent(
         <Button
           disabled={!light.isOn}
           mode="contained"
-          style={styles.button_left}
+          style={styles.button}
           onPress={() => onPress(1)}
           color={light.leds.colors[1]}
         >

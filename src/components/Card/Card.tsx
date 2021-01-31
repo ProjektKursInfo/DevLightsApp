@@ -1,9 +1,7 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
 import {
-  GestureResponderEvent,
   StyleSheet,
   TouchableWithoutFeedback
 } from "react-native";
@@ -51,10 +49,10 @@ export default function Card(props: CardProps): JSX.Element {
         style={styles.card}
         colors={[
           colors[0],
-          colors[1] && light.leds.pattern !== "plain" ? colors[1] : colors[0],
+          colors[1] && light.leds.pattern === "gradient" ? colors[1] : colors[0],
         ]}
-        start={[0, 1]}
-        end={[1, 0]}
+        start={[0.25, 0.25]}
+        end={[0.75, 0.75]}
       >
         <Headline style={styles.headline}>
           {light.name ?? "Name not avaible"}
@@ -62,9 +60,4 @@ export default function Card(props: CardProps): JSX.Element {
       </LinearGradient>
     </TouchableWithoutFeedback>
   );
-}
-export interface ActionIconProps {
-  icon: IconProp;
-  color: string;
-  onClick(e: GestureResponderEvent): void;
 }

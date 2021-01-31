@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +8,6 @@ import { AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text, useTheme } from "react-native-paper";
@@ -16,17 +16,20 @@ import tinycolor, { ColorFormats } from "tinycolor2";
 import useLight from "../../hooks/useLight";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { addFavouriteColor, removeFavouriteColor } from "../../store/actions/favourites";
+import {
+  addFavouriteColor,
+  removeFavouriteColor
+} from "../../store/actions/favourites";
 import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
 import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
 
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
+  const { id, index } = route.params;
   const lights = useLight();
   const light = useSelector(
-    (state: Store) => (
-      state.lights.find((l: Light) => l.id === route.params.id) as Light),
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (left: Light, right: Light) => !isEqual(left.leds, right.leds),
   );
   const favouriteColors: string[] = useSelector(
@@ -34,13 +37,13 @@ export default function ColorPicker(): JSX.Element {
     isEqual,
   );
   const [hsv, setHsv] = React.useState<ColorFormats.HSV>(
-    tinycolor(light.leds.colors[route.params.index]).toHsv(),
+    tinycolor(light.leds.colors[index]).toHsv(),
   );
   const [icon, setIcon] = React.useState<IconProp>(faStar);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const theme = useTheme();
-  const {colors} = theme;
+  const { colors } = theme;
   const saveColor = () => {
     if (favouriteColors.includes(tinycolor.fromRatio(hsv).toHexString())) {
       dispatch(removeFavouriteColor(tinycolor.fromRatio(hsv).toHexString()));
@@ -63,7 +66,7 @@ export default function ColorPicker(): JSX.Element {
   });
 
   React.useEffect(() => {
-    if (favouriteColors.includes(light.leds.colors[route.params.index])) setIcon(fullstar);
+    if (favouriteColors.includes(light.leds.colors[index])) setIcon(fullstar);
   }, []);
 
   React.useEffect(() => {
@@ -85,7 +88,9 @@ export default function ColorPicker(): JSX.Element {
   const onHueChange = ({ hue }: { hue: number }) => {
     setHsv({ ...hsv, h: hue });
     if (
-      favouriteColors.includes(tinycolor.fromRatio({ ...hsv, h: hue }).toHexString())
+      favouriteColors.includes(
+        tinycolor.fromRatio({ ...hsv, h: hue }).toHexString(),
+      )
     ) {
       setIcon(fullstar);
     } else if (icon === fullstar) setIcon(faStar);
@@ -108,13 +113,13 @@ export default function ColorPicker(): JSX.Element {
     } else if (icon === fullstar) setIcon(faStar);
   };
   const onSubmit = async () => {
-    const oldColor = light.leds.colors[route.params.index];
+    const oldColor = light.leds.colors[index];
     const newColors = makeValidColorArray(
       tinycolor.fromRatio(hsv).toHexString(),
       light.leds.colors,
-      route.params.index,
+      index,
     );
-    const ax = lights.setColor(route.params.id, newColors, light.leds.pattern);
+    const ax = lights.setColor(id, newColors, light.leds.pattern);
     ax.then((response: AxiosResponse) => {
       if (response.status === 200) {
         navigation.goBack();
@@ -140,11 +145,16 @@ export default function ColorPicker(): JSX.Element {
         onSatValPickerDragMove={onSatValChange}
         onSatValPickerPress={onSatValChange}
       />
+      {/** @ts-ignore */}
       <Text>
         Current color:
         {tinycolor.fromRatio(hsv).toHexString()}
       </Text>
+      {/** @ts-ignore */}
       <Button
+        disabled={
+          tinycolor.fromRatio(hsv).toHexString() === light.leds.colors[index]
+        }
         style={styles.button}
         color={
           tinycolor.fromRatio(hsv).toHexString() !== ""

@@ -19,7 +19,7 @@ export default function PlainComponent(
   const light: Light = useSelector(
     (state: Store) => (
       state.lights.find((l: Light) => l.id === props.id) as Light),
-    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors)
+    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
   );
 
   const onPress = () => {

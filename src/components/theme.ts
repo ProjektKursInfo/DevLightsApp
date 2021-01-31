@@ -66,8 +66,8 @@ export const lightTheme = async () => {
     },
     colors: {
       ...DefaultTheme.colors,
-      primary: "#FF9800",
-      accent: "#1DE9B6",
+      primary: "#1DE9B6",
+      accent: "#FF9800",
       secondary: "#FF7D91",
       text: "#000000",
       background: "#fff",
