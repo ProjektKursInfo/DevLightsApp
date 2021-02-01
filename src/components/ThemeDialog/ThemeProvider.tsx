@@ -3,8 +3,10 @@ import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
 import { Appearance, StatusBar } from "react-native";
 import { Provider } from "react-native-paper";
+import { useDispatch } from "react-redux";
 import { ThemeType } from "../../interfaces/types";
 import { lightTheme as lightFunction, theme as themeFunction } from "../theme";
+import setTheme from "../../store/actions/theme";
 
 export interface ThemeProviderProps {
   children: JSX.Element;
@@ -20,25 +22,27 @@ export function useThemeChange(): React.ContextType<typeof ThemeContext> {
 
 export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
   const { children } = props;
-  const [theme, setTheme] = React.useState<ReactNativePaper.Theme>();
+  const [theme, setStateTheme] = React.useState<ReactNativePaper.Theme>();
   const colorScheme = Appearance.getColorScheme();
+  const dispatch = useDispatch();
   React.useEffect(() => {
     StatusBar.setTranslucent(true);
     StatusBar.setBackgroundColor("transparent");
     SplashScreen.preventAutoHideAsync();
     async function getTheme() {
       const themeType: ThemeType = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
+      dispatch(setTheme(themeType));
       if (
         themeType === "dark" || (themeType === "system-default" && colorScheme === "dark")
       ) {
         themeFunction().then((t) => {
-          setTheme(t);
+          setStateTheme(t);
         });
       } else if (
         themeType === "light" || (themeType === "system-default" && colorScheme === "light")
       ) {
         lightFunction().then((t) => {
-          setTheme(t);
+          setStateTheme(t);
         });
       }
     }
@@ -50,16 +54,16 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
       type === "dark" || (type === "system-default" && colorScheme === "dark")
     ) {
       themeFunction().then((t) => {
-        setTheme(t);
+        setStateTheme(t);
       });
-      await AsyncStorage.setItem("theme", type);
+      dispatch(setTheme(type));
     } else if (
       type === "light" || (type === "system-default" && colorScheme === "light")
     ) {
       lightFunction().then((t) => {
-        setTheme(t);
+        setStateTheme(t);
       });
-      await AsyncStorage.setItem("theme", type);
+      dispatch(setTheme(type));
     }
   };
 

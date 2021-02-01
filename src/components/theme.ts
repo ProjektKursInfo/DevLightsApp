@@ -15,6 +15,7 @@ declare global {
     interface ThemeColors {
       secondary: string;
       lightText: string;
+      success: string;
       grey: string,
       dark_grey: string,
     }
@@ -24,25 +25,31 @@ declare global {
   }
 }
 
-const fontConfig = {
-  default: {
-    regular: {
-      fontFamily: "TitilliumWeb-Regular",
-      fontWeight: "normal",
-    },
-    medium: {
-      fontFamily: "TitilliumWeb-SemiBold",
-      fontWeight: "normal",
-    },
-    light: {
-      fontFamily: "TitilliumWeb-Light",
-      fontWeight: "normal",
-    },
-    thin: {
-      fontFamily: "TitilliumWeb-Light",
-      fontWeight: "normal",
-    },
+const font : ReactNativePaper.ThemeFonts = {
+  regular: {
+    fontFamily: "TitilliumWeb-Regular",
+    fontWeight: "normal",
   },
+  medium: {
+    fontFamily: "TitilliumWeb-SemiBold",
+    fontWeight: "normal",
+  },
+  light: {
+    fontFamily: "TitilliumWeb-Light",
+    fontWeight: "normal",
+  },
+  thin: {
+    fontFamily: "TitilliumWeb-Light",
+    fontWeight: "normal",
+  },
+};
+
+const fontConfig = {
+  default: font,
+  android: font,
+  ios: font,
+  web: font,
+  native: font,
 };
 
 const loadFonts = async () => {
@@ -73,6 +80,7 @@ export const lightTheme = async () => {
       background: "#fff",
       surface: "#fff",
       lightText: "#d1d1d1",
+      success: "#2dce89",
       grey: "#cfcfcf",
       dark_grey: "#919191",
     },
@@ -97,6 +105,7 @@ export const theme = async () => {
       secondary: "#FF7D91",
       text: "#d1d1d1",
       lightText: "#d1d1d1aa",
+      success: "#2dce89",
       grey: "#4f4f4f",
       dark_grey: "#393939",
       error: "rgb(178, 0, 35)",

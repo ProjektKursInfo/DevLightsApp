@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { Modalize } from "react-native-modalize";
 import { Divider, List, useTheme } from "react-native-paper";
@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Store } from "../../store";
 import {
   removeFavouriteColor,
-  removeFavouriteGradient
+  removeFavouriteGradient,
 } from "../../store/actions/favourites";
 import { Gradient } from "../../store/types/favouriteGradients";
 import { favouriteGradientsEquality, favouritesEquality } from "../../utils";
@@ -34,8 +34,8 @@ export function Circle(props: { colors: string[] }): JSX.Element {
   return (
     <View style={styles.root}>
       <LinearGradient
-        start={[0, 0]}
-        end={[1, 1]}
+        start={[0.25, 0.25]}
+        end={[0.75, 0.75]}
         colors={[colors[0], colors[1] ?? colors[0]]}
         style={styles.gradient}
       />
@@ -89,12 +89,12 @@ export default function Favourite(): JSX.Element {
   const dispatch = useDispatch();
   const favouriteColors: string[] = useSelector(
     (state: Store) => state.favouriteColors,
-    favouritesEquality,
+    favouritesEquality
   );
 
   const favouriteGradients: Gradient[] = useSelector(
     (state: Store) => state.favouriteGradients,
-    favouriteGradientsEquality,
+    favouriteGradientsEquality
   );
   const styles = StyleSheet.create({
     scrollview: { marginTop: 15 },
@@ -138,7 +138,16 @@ export default function Favourite(): JSX.Element {
             ))}
           </View>
         )}
-        <Divider style={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}} />
+        {favouriteColors.length === 0 && favouriteGradients.length === 0 ? (
+          <Text></Text>
+        ) : (
+          <Divider
+            style={{
+              marginTop: theme.spacing(2),
+              marginBottom: theme.spacing(2),
+            }}
+          />
+        )}
         {favouriteGradients.length > 0 ? (
           <View style={{ marginTop: theme.spacing(4) }}>
             <Text style={styles.text}>Gradients</Text>
@@ -156,7 +165,7 @@ export default function Favourite(): JSX.Element {
         ) : favouriteColors.length !== 0 ? (
           <View style={styles.container}>
             <Text style={{ color: theme.colors.text }}>
-              You haven`t saved any colors yet
+              You haven`t saved any gradients yet
             </Text>
           </View>
         ) : (

@@ -40,7 +40,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   async function setStatus(id: string, status: boolean) : Promise<AxiosResponse> {
     const ax = Axios.patch(`http://devlight/lights/${id}/${status ? "on" : "off"}`);
     ax.then((res: AxiosResponse) => {
-      snackbar.makeSnackbar(res.data.message, theme.colors.accent);
+      snackbar.makeSnackbar(res.data.message, theme.colors.success);
       dispatch(setLightStatus(id, status));
     });
     ax.catch((err: AxiosError) => {
@@ -54,7 +54,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       name,
     });
     ax.then((res: AxiosResponse) => {
-      snackbar.makeSnackbar(res.data.message, theme.colors.accent);
+      snackbar.makeSnackbar(res.data.message, theme.colors.success);
       dispatch(editLightName(id, name));
     });
 
@@ -69,7 +69,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       count,
     });
     ax.then((res: AxiosResponse) => {
-      snackbar.makeSnackbar(res.data.message, theme.colors.accent);
+      snackbar.makeSnackbar(res.data.message, theme.colors.success);
       dispatch(setLedCount(id, count));
     });
     ax.catch((err: AxiosError) => {
@@ -97,7 +97,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
       if (res.status === 304) {
         snackbar.makeSnackbar("Nothing changed", theme.colors.error);
       } else if (res.status === 200) {
-        snackbar.makeSnackbar(res.data.message, theme.colors.accent);
+        snackbar.makeSnackbar(res.data.message, theme.colors.success);
         dispatch(setLightColor(id, pattern ?? "plain", colors));
       }
     });
