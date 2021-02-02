@@ -49,7 +49,7 @@ export default function Card(props: CardProps): JSX.Element {
         style={styles.card}
         colors={[
           colors[0],
-          colors[1] && light.leds.pattern === "gradient" ? colors[1] : colors[0],
+          colors[1] ? colors[1] : colors[0],
         ]}
         start={[0.25, 0.25]}
         end={[0.75, 0.75]}

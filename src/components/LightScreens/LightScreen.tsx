@@ -4,7 +4,6 @@ import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Axios from "axios";
-import { LinearGradient } from "expo-linear-gradient";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -13,7 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  View,
+  View
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
@@ -29,7 +28,6 @@ import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
 import { LightScreenRouteProp } from "../Navigation/Navigation";
 import PlainComponent from "../PlainComponent";
-import { Text as SvgText, TSpan } from "react-native-svg";
 
 function PatternComponent(props: { pattern: string; id: string }): JSX.Element {
   const { pattern, id } = props;
@@ -51,7 +49,7 @@ export function PowerBulb(props: PowerBulbProps): JSX.Element {
   const theme = useTheme();
   const lights = useLight();
   const [icon, setIcon] = React.useState<IconDefinition>(
-    light.isOn ? faLightbulb : regular
+    light.isOn ? faLightbulb : regular,
   );
   const styles = StyleSheet.create({
     pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
@@ -78,10 +76,9 @@ export default function LightScreen(): JSX.Element {
   const theme = useTheme();
   const { colors } = theme;
   const light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === route.params.id) as Light,
-    (left: Light, right: Light) =>
-      !isEqual(left.leds, right.leds) || !isEqual(left.isOn, right.isOn)
+    (state: Store) => (
+      state.lights.find((l: Light) => l.id === route.params.id) as Light),
+    (l: Light, r: Light) => !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn),
   );
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -268,11 +265,6 @@ export default function LightScreen(): JSX.Element {
       <View style={styles.plain}>
         <PatternComponent pattern={light.leds.pattern} id={light.id} />
       </View>
-      <SvgText fill="url(#rainbow)">
-        <TSpan fontSize="72" x="0" y="72">
-          gradient
-        </TSpan>
-      </SvgText>
     </ScrollView>
   );
 }

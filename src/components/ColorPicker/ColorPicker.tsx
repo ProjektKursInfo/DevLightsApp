@@ -28,7 +28,7 @@ export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
   const { id, index } = route.params;
   const lights = useLight();
-  const light = useSelector(
+  const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (left: Light, right: Light) => !isEqual(left.leds, right.leds),
   );

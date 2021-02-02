@@ -15,7 +15,10 @@ import { useSelector, useStore } from "react-redux";
 import useNetwork from "../../hooks/useNetwork";
 import { Light } from "../../interfaces";
 import { Store } from "../../store";
-import { setFavouriteColors, setFavouriteGradients } from "../../store/actions/favourites";
+import {
+  setFavouriteColors,
+  setFavouriteGradients
+} from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
 import Card from "../Card";
 
@@ -60,13 +63,21 @@ function Home(): JSX.Element {
   const fetch = async (refreshing = false) => {
     setLoading(true);
     if (refreshing) setRefresh(refreshing);
-    const favouriteColors: string | null = await AsyncStorage.getItem("favouriteColors");
-    const favouriteGradients : string | null = await AsyncStorage.getItem("favouriteGradients");
+    const favouriteColors: string | null = await AsyncStorage.getItem(
+      "favouriteColors",
+    );
+    const favouriteGradients: string | null = await AsyncStorage.getItem(
+      "favouriteGradients",
+    );
     if (favouriteColors != null) {
-      store.dispatch(setFavouriteColors(Array.from(JSON.parse(favouriteColors))));
+      store.dispatch(
+        setFavouriteColors(Array.from(JSON.parse(favouriteColors))),
+      );
     }
     if (favouriteGradients != null) {
-      store.dispatch(setFavouriteGradients(Array.from(JSON.parse(favouriteGradients))));
+      store.dispatch(
+        setFavouriteGradients(Array.from(JSON.parse(favouriteGradients))),
+      );
     }
     setError(false);
     axios
@@ -135,20 +146,26 @@ function Home(): JSX.Element {
           lights.map((light: Light) => <Card key={light.id} light={light} />)
         ) : (
           <>
-            <Lottie
-              duration={4000}
-              autoPlay
-              hardwareAccelerationAndroid
-              loop={false}
-              autoSize
-              // eslint-disable-next-line global-require
-              source={require("../../../assets/animations/bulb.json")}
-            />
-            <Text style={styles.error_text}>
-              Sorry! We couldn`t find any lights in your Network.
-              {"\n"}
-              Plug some in and they will appear here.
-            </Text>
+            {loading ? (
+              <Text> </Text>
+            ) : (
+              <>
+                <Lottie
+                  duration={4000}
+                  autoPlay
+                  hardwareAccelerationAndroid
+                  loop={false}
+                  autoSize
+                  // eslint-disable-next-line global-require
+                  source={require("../../../assets/animations/bulb.json")}
+                />
+                <Text style={styles.error_text}>
+                  Sorry! We couldn`t find any lights in your Network.
+                  {"\n"}
+                  Plug some in and they will appear here.
+                </Text>
+              </>
+            )}
           </>
         )}
       </ScrollView>
