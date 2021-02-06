@@ -4,10 +4,11 @@ import * as React from "react";
 import { useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { Pattern } from "../../interfaces/types";
-import { editLightName, setLedCount, setLightBrightness, setLightColor, setLightStatus } from "../../store/actions/lights";
+import { editLightName, setLedCount, setLight, setLightBrightness, setLightColor, setLightStatus } from "../../store/actions/lights";
 import useSnackbar from "../useSnackbar";
 
 export const LightContext = React.createContext<{
+  fetchLight(id: string): Promise<AxiosResponse<unknown>>;
   setStatus(id: string, status: boolean): Promise<AxiosResponse<unknown>>
   setName(id: string, name: string): Promise<AxiosResponse<unknown>>;
   setCount(id: string, count: number): Promise<AxiosResponse<unknown>>;
@@ -21,6 +22,7 @@ export const LightContext = React.createContext<{
     brightness: number
   ): Promise<AxiosResponse<unknown>>;
 }>({
+      fetchLight: () => new Promise<AxiosResponse>((): void => {}),
       setStatus: () => new Promise<AxiosResponse>((): void => {}),
       setName: () => new Promise<AxiosResponse>((): void => {}),
       setCount: () => new Promise<AxiosResponse>((): void => {}),
@@ -36,6 +38,14 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   const dispatch = useDispatch();
   const snackbar = useSnackbar();
   const theme = useTheme();
+
+  async function fetchLight(id: string) {
+    const ax = Axios.get(`http://devlight/lights/${id}`);
+    ax.then((res: AxiosResponse) => {
+      dispatch(setLight(id, res.data.object));
+    });
+    return await ax;
+  }
 
   async function setStatus(id: string, status: boolean) : Promise<AxiosResponse> {
     const ax = Axios.patch(`http://devlight/lights/${id}/${status ? "on" : "off"}`);
@@ -127,6 +137,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   return (
     <LightContext.Provider
       value={{
+        fetchLight,
         setStatus,
         setName,
         setCount,

@@ -5,6 +5,7 @@ import { LightContext } from "./LightProvider";
 
 export default function useLight() : React.ContextType<typeof LightContext> {
   return React.useContext<{
+    fetchLight(id: string): Promise<AxiosResponse<unknown>>;
     setStatus(id: string, status: boolean) : Promise<AxiosResponse<unknown>>;
     setName(id: string, name: string): Promise<AxiosResponse<unknown>>;
     setCount(id: string, count: number): Promise<AxiosResponse<unknown>>;

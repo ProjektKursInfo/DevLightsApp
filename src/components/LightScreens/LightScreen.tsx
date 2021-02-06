@@ -11,8 +11,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  TextComponent,
   TextInput,
-  View
+  View,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
@@ -42,15 +43,23 @@ function PatternComponent(props: { pattern: string; id: string }): JSX.Element {
 }
 
 interface PowerBulbProps {
-  light: Light;
+  id: string;
 }
 export function PowerBulb(props: PowerBulbProps): JSX.Element {
-  const { light } = props;
+  const { id } = props;
+  const light = useSelector(
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
+    (left: Light, right: Light) => isEqual(left.isOn, right.isOn),
+  );
   const theme = useTheme();
   const lights = useLight();
   const [icon, setIcon] = React.useState<IconDefinition>(
     light.isOn ? faLightbulb : regular,
   );
+
+  React.useEffect(() => {
+    setIcon(light.isOn ? faLightbulb : regular);
+  }, [light.isOn]);
   const styles = StyleSheet.create({
     pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
   });
@@ -76,11 +85,10 @@ export default function LightScreen(): JSX.Element {
   const theme = useTheme();
   const { colors } = theme;
   const light = useSelector(
-    (state: Store) => (
-      state.lights.find((l: Light) => l.id === route.params.id) as Light),
+    (state: Store) =>
+      state.lights.find((l: Light) => l.id === route.params.id) as Light,
     (l: Light, r: Light) => !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn),
   );
-  const dispatch = useDispatch();
   const navigation = useNavigation();
   const ref = React.useRef<TextInput>();
   const snackbar = useSnackbar();
@@ -90,7 +98,7 @@ export default function LightScreen(): JSX.Element {
   React.useEffect(() => {
     setError(false);
     navigation.setOptions({
-      headerRight: () => <PowerBulb light={light} />,
+      headerRight: () => <PowerBulb id={light.id} />,
     });
   }, []);
 
@@ -102,9 +110,9 @@ export default function LightScreen(): JSX.Element {
     });
   };
 
-  const changeNumber = (count: string) => {
-    if (!/^\d+$/.test(count)) {
-      snackbar.makeSnackbar("Invalid number or string provided", colors.error);
+  const changeLedCount = (count: string) => {
+    if (!/^\d+$/.test(count) || parseInt(count, 10) > 150) {
+      snackbar.makeSnackbar("Invalid number or string provided!", colors.error);
       if (ref) {
         ref.current?.setNativeProps({ text: light.count.toString() });
       }
@@ -122,15 +130,10 @@ export default function LightScreen(): JSX.Element {
     }
   };
 
-  const fetch = () => {
+  const fetch = async () => {
     setRefresh(true);
-    Axios.get(`http://devlight/lights/${route.params.id}`).then((response) => {
-      dispatch(setLight(route.params.id, response.data.object));
-      navigation.setOptions({
-        headerRight: () => <PowerBulb light={response.data.object} />,
-      });
-      setRefresh(false);
-    });
+    await lights.fetchLight(route.params.id);
+    setRefresh(false);
   };
   const styles = StyleSheet.create({
     container: {
@@ -201,14 +204,14 @@ export default function LightScreen(): JSX.Element {
   });
   return (
     <ScrollView
-      refreshControl={(
+      refreshControl={
         <RefreshControl
           refreshing={refresh}
           onRefresh={fetch}
           tintColor={colors.accent}
           colors={[colors.primary, colors.accent]}
         />
-      )}
+      }
       style={styles.container}
     >
       <ChangeableText
@@ -222,9 +225,9 @@ export default function LightScreen(): JSX.Element {
         <Text style={styles.title}>LEDs</Text>
         <TextInput
           editable={light.isOn}
-          ref={ref}
+          ref={ref as React.RefObject<TextInput>}
           keyboardType="number-pad"
-          onSubmitEditing={({ nativeEvent: { text } }) => changeNumber(text)}
+          onSubmitEditing={({ nativeEvent: { text } }) => changeLedCount(text)}
           textAlign="right"
           style={styles.textinput}
           defaultValue={light.count.toString()}
@@ -265,6 +268,7 @@ export default function LightScreen(): JSX.Element {
       <View style={styles.plain}>
         <PatternComponent pattern={light.leds.pattern} id={light.id} />
       </View>
+
     </ScrollView>
   );
 }
