@@ -1,169 +1,32 @@
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
-  faChevronLeft,
   faCog,
   faHome,
-  faStar,
-  faTimes
+
+  faTags
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import {
-  NavigationContainer,
-  RouteProp,
-  useNavigation
+  NavigationContainer
 } from "@react-navigation/native";
 import {
-  createStackNavigator,
-  StackHeaderLeftButtonProps,
-  StackNavigationProp,
-  TransitionPresets
+  createStackNavigator
 } from "@react-navigation/stack";
 import * as React from "react";
-import { Pressable, StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
-import ColorPicker from "../ColorPicker";
-import Favourite from "../Favourite";
-import Home from "../Home";
-import LightScreen from "../LightScreens";
 import Settings from "../Settings";
-
-export type HomeStackParamList = {
-  home: undefined;
-  light: {
-    id: string;
-  };
-  color_modal: {
-    id: string;
-    index: number;
-  };
-  favourite: undefined;
-};
-
-export type LightScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"light"
->;
-export type HomeScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"home"
->;
-export type ColorModalScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"color_modal"
->;
-
-export type FavouriteScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"favourite"
->;
-
-export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
-export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
-export type ColorModalScreenRouteProp = RouteProp<
-HomeStackParamList,
-"color_modal"
->;
-export type FavouriteScreenRouteProp = RouteProp<
-HomeStackParamList,
-"favourite"
->;
-function Icon(
-  props: StackHeaderLeftButtonProps & {
-    icon: IconProp;
-    color: string;
-    position: "left" | "right";
-  },
-): JSX.Element {
-  const { onPress, icon, color, position } = props;
-  const styles = StyleSheet.create({
-    icon: {
-      marginLeft: position === "left" ? 30 : 0,
-      marginRight: position === "right" ? 30 : 0,
-      marginTop: 20,
-    },
-  });
-  return (
-    <Pressable onPress={onPress}>
-      <FontAwesomeIcon
-        style={styles.icon}
-        color={color}
-        size={30}
-        icon={icon}
-      />
-    </Pressable>
-  );
-}
-
-function HomeStack() {
-  const Stack = createStackNavigator<HomeStackParamList>();
-  const navigation = useNavigation();
-  const theme = useTheme();
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="home"
-        component={Home}
-        options={{
-          title: "Home",
-          headerTitle: "",
-          headerRight: () => (
-            <Icon
-              color="#ffff00"
-              icon={faStar}
-              position="right"
-              onPress={() => navigation.navigate("favourite")}
-            />
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="light"
-        options={() => ({
-          headerBackTitleVisible: false,
-          headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <Icon color={theme.colors.accent} position="left" icon={faChevronLeft} {...props} />
-          ),
-          headerTitle: "",
-          gestureEnabled: true,
-          gestureResponseDistance: 200,
-          ...TransitionPresets.SlideFromRightIOS,
-        })}
-        component={LightScreen}
-      />
-      <Stack.Screen
-        name="color_modal"
-        options={{
-          headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <Icon color={theme.colors.accent} position="left" icon={faTimes} {...props} />
-          ),
-          headerTitle: "",
-        }}
-        component={ColorPicker}
-      />
-      <Stack.Screen
-        options={{
-          headerTitle: "Favourites",
-          headerTitleAlign: "center",
-          headerTitleStyle: {
-            marginTop: 20,
-          },
-          headerLeft: (props: StackHeaderLeftButtonProps) => (
-            <Icon color={theme.colors.accent} icon={faTimes} position="left" {...props} />
-          ),
-        }}
-        name="favourite"
-        component={Favourite}
-      />
-    </Stack.Navigator>
-  );
-}
+import HomeStack from "./LightsNavigator";
+import TagsNavigator from "./TagsNavigator";
 
 function SettingsNavigator() {
   const Stack = createStackNavigator();
   return (
     <Stack.Navigator>
-      <Stack.Screen name="home" options={{ headerTitle: "Settings", headerTitleAlign: "left"}} component={Settings} />
+      <Stack.Screen
+        name="home"
+        options={{ headerTitle: "Settings", headerTitleAlign: "left" }}
+        component={Settings}
+      />
     </Stack.Navigator>
   );
 }
@@ -173,7 +36,11 @@ export default function Navigation(): JSX.Element {
   const Tab = createMaterialBottomTabNavigator();
   return (
     <NavigationContainer theme={theme}>
-      <Tab.Navigator barStyle={{backgroundColor: theme.colors.accent}} labeled={false} initialRouteName="home">
+      <Tab.Navigator
+        barStyle={{ backgroundColor: theme.colors.accent }}
+        labeled={false}
+        initialRouteName="home"
+      >
         <Tab.Screen
           component={HomeStack}
           options={{
@@ -183,6 +50,16 @@ export default function Navigation(): JSX.Element {
             ),
           }}
           name="home"
+        />
+        <Tab.Screen
+          name="tags"
+          component={TagsNavigator}
+          options={{
+            tabBarIcon: (props: { color: string }) => (
+              // eslint-disable-next-line react/destructuring-assignment
+              <FontAwesomeIcon color={props.color} icon={faTags} size={26} />
+            ),
+          }}
         />
         <Tab.Screen
           component={SettingsNavigator}

@@ -201,14 +201,14 @@ export default function LightScreen(): JSX.Element {
   });
   return (
     <ScrollView
-      refreshControl={
+      refreshControl={(
         <RefreshControl
           refreshing={refresh}
           onRefresh={fetch}
           tintColor={colors.accent}
           colors={[colors.primary, colors.accent]}
         />
-      }
+      )}
       style={styles.container}
     >
       <ChangeableText

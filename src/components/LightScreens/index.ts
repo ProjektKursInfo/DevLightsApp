@@ -1,1 +1,1 @@
-export { default } from "./LightScreen";
+export {default} from "./LightScreen";

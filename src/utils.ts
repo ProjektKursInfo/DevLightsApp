@@ -1,9 +1,44 @@
 import { isEqual } from "lodash";
-import { Leds } from "./interfaces";
-import { Gradient } from "./interfaces/store";
+import { Leds, Light } from "./interfaces";
+import { Gradient } from "./store/types/favouriteGradients";
 
 export const ledsEquality = (left: Leds, right: Leds): boolean => (
   isEqual(left.colors, right.colors) || isEqual(left.pattern, right.pattern));
+
+export const tagArrayEquality = (l: string[], r: string[]) => {
+  try {
+    if (l.length !== r.length) return false;
+    for (
+      let i = 0;
+      i < (l.length > r.length ? l.length : r.length);
+      i++
+    ) {
+      if (l[i] !== r[i]) return false;
+    }
+  } catch {
+    return false;
+  }
+  return true;
+}
+
+export const tagsEquality = (left: Light[], right: Light[], count: number, tag: string) : boolean => {
+  try {
+    let tagCount = 0;
+    for (
+      let i = 0;
+      i < (left.length > right.length ? left.length : right.length);
+      i++
+    ) {
+      if (right[i].tags?.includes(tag)) tagCount++;
+      if (right[i].tags !== left[i].tags) return false;
+    }
+
+    if (tagCount !== count) return false;
+  } catch {
+    return false;
+  }
+  return true;
+};
 
 export const favouritesEquality = (
   left: string[],

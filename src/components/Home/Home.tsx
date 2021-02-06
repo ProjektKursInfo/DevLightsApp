@@ -20,6 +20,7 @@ import {
   setFavouriteGradients
 } from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
+import { SET_TAGS } from "../../store/types/types";
 import Card from "../Card";
 
 interface SpinnerProps {
@@ -80,6 +81,9 @@ function Home(): JSX.Element {
       );
     }
     setError(false);
+    axios.get("http://devlight/tags").then((res) => {
+      store.dispatch({ type: SET_TAGS, tags: res.data.object });
+    });
     axios
       .get("http://devlight/lights")
       .then((response: AxiosResponse) => {

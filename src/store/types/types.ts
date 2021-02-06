@@ -6,6 +6,12 @@ export const EDIT_LIGHT_COLOR = "EDIT_LIGHT_COLOR";
 export const EDIT_LED_COUNT = "EDIT_LED_COUNT";
 export const SET_BRIGHTNESS = "SET_BRIGHTNESS";
 export const SET_LIGHT_STATUS = "SET_LIGHT_STATUS";
+
+// Tags
+export const SET_TAGS = "SET_TAGS";
+export const ADD_TAG = "ADD_TAG";
+export const REMOVE_TAG = "REMOVE_TAG";
+
 // Favourite Colors
 export const SET_FAVOURITE_COLORS = "SET_FAVOURITE_COLORS";
 export const REMOVE_FAVOURITE_COLOR = "REMOVE_FAVOURITE_COLOR";

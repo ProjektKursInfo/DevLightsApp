@@ -27,9 +27,8 @@ export default function Card(props: CardProps): JSX.Element {
       zIndex: 1,
     },
     headline: {
-      position: "absolute",
-      top: 16,
-      left: 16,
+      marginTop: theme.spacing(4),
+      marginLeft: theme.spacing(4),
       color: getContrastTextColor(colors[0]),
     },
     touchable: {
