@@ -19,7 +19,7 @@ import { Title, useTheme, Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import Lottie from "lottie-react-native";
 import useSnackbar from "../../hooks/useSnackbar";
-import { Light } from "../../interfaces";
+import Light from "@bit/devlights.types.lightinterface";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
 import { setTags } from "../../store/actions/tags";
@@ -51,6 +51,7 @@ function TagCard(props: TagCardProps) {
       height: 100,
       width: Dimensions.get("window").width * 0.8,
       backgroundColor: theme.colors.lightText,
+      marginTop: 15,
       borderRadius: 12,
     },
     touchable: { height: "100%", width: "100%" },
@@ -133,7 +134,7 @@ function TagCard(props: TagCardProps) {
 function Tags(): JSX.Element {
   const tags = useSelector(
     (state: Store) => state.tags,
-    (l: string[], r: string[]) => !tagArrayEquality(l, r),
+    (l: string[], r: string[]) => tagArrayEquality(l, r),
   );
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const dispatch = useDispatch();
@@ -142,7 +143,7 @@ function Tags(): JSX.Element {
     if (refreshing) setRefresh(true);
     axios.get("http://devlight/tags").then((res: AxiosResponse) => {
       dispatch(setTags(res.data.object));
-      if (refresh) setRefresh(false);
+      if (refreshing) setRefresh(false);
     });
   };
 
@@ -163,7 +164,7 @@ function Tags(): JSX.Element {
     <View style={styles.container}>
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refresh} onRefresh={fetch} />
+          <RefreshControl refreshing={refresh} onRefresh={() => fetch(true)} />
         }
         contentContainerStyle={styles.contentContainerStyle}
       >
@@ -180,7 +181,7 @@ function Tags(): JSX.Element {
               source={require("../../../assets/animations/bulb.json")}
             />
             <Text style={styles.error_text}>
-              Sorry! We couldn`t find any tags in your Network.
+              Sorry! There aren`t any tags yet.
             </Text>
           </>
         ) : (

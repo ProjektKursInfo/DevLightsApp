@@ -1,85 +1,43 @@
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
-import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import Light from "@bit/devlights.types.lightinterface";
+import { Pattern } from "@bit/devlights.types.patterntype";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
-  Pressable,
+  KeyboardAvoidingView,
   RefreshControl,
   ScrollView,
   StyleSheet,
-  TextComponent,
   TextInput,
   View,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
-import { Divider, Text, useTheme } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
+import { Divider, List, Text, useTheme } from "react-native-paper";
+import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
 import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
-import { Light } from "../../interfaces";
-import { Pattern } from "../../interfaces/types";
 import { Store } from "../../store";
-import { setLight } from "../../store/actions/lights";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
-import { LightScreenRouteProp } from "../Navigation/Navigation";
+import { LightScreenRouteProp } from "../Navigation/LightsNavigator";
+import { TagScreenNavigationProp } from "../Navigation/TagsNavigator";
 import PlainComponent from "../PlainComponent";
+import Powerbulb from "../Powerbulb";
 
 function PatternComponent(props: { pattern: string; id: string }): JSX.Element {
-  const { pattern, id } = props;
-  switch (pattern) {
+  switch (props.pattern) {
     case "gradient":
-      return <GradientComponent id={id} />;
+      return <GradientComponent id={props.id} />;
     case "plain":
-      return <PlainComponent id={id} />;
+      return <PlainComponent id={props.id} />;
     default:
       return <Text> Not implemented yet </Text>;
   }
 }
 
-interface PowerBulbProps {
-  id: string;
-}
-export function PowerBulb(props: PowerBulbProps): JSX.Element {
-  const { id } = props;
-  const light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
-    (left: Light, right: Light) => isEqual(left.isOn, right.isOn),
-  );
-  const theme = useTheme();
-  const lights = useLight();
-  const [icon, setIcon] = React.useState<IconDefinition>(
-    light.isOn ? faLightbulb : regular,
-  );
-
-  React.useEffect(() => {
-    setIcon(light.isOn ? faLightbulb : regular);
-  }, [light.isOn]);
-  const styles = StyleSheet.create({
-    pressable: { marginRight: 30, marginTop: 15, alignSelf: "center" },
-  });
-  return (
-    <Pressable
-      onPress={() => {
-        lights.setStatus(light.id, !light.isOn);
-        setIcon(light.isOn ? regular : faLightbulb);
-      }}
-      style={styles.pressable}
-    >
-      <FontAwesomeIcon
-        size={30}
-        color={theme.colors.accent}
-        icon={icon}
-        {...props}
-      />
-    </Pressable>
-  );
-}
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const theme = useTheme();
@@ -87,18 +45,19 @@ export default function LightScreen(): JSX.Element {
   const light = useSelector(
     (state: Store) =>
       state.lights.find((l: Light) => l.id === route.params.id) as Light,
-    (l: Light, r: Light) => !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn),
+    (l: Light, r: Light) => !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn)
   );
+  const tags = useSelector((state: Store) => state.tags);
   const navigation = useNavigation();
   const ref = React.useRef<TextInput>();
   const snackbar = useSnackbar();
   const lights = useLight();
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
+  const [enabled, setEnabled] = React.useState<boolean>(false);
   React.useEffect(() => {
-    setError(false);
     navigation.setOptions({
-      headerRight: () => <PowerBulb id={light.id} />,
+      headerRight: () => <Powerbulb id={light.id} />,
     });
   }, []);
 
@@ -130,6 +89,24 @@ export default function LightScreen(): JSX.Element {
     }
   };
 
+  const addTag = (tag: string) => {
+    const index = tags.findIndex(
+      (t: string) => t.toLowerCase() === tag.toLowerCase()
+    );
+    axios
+      .put(`http://devlight/lights/${light.id}/tags`, {
+        tags: [index >= 0 ? tags[index] : tag],
+      })
+      .then(() => {
+        setEnabled(false);
+        lights.fetchLight(light.id);
+      })
+      .catch((err: AxiosError) => {
+        setEnabled(false);
+        snackbar.makeSnackbar(err.response?.data.message ?? "an error orcurrred", theme.colors.error);
+      });
+  };
+
   const fetch = async () => {
     setRefresh(true);
     await lights.fetchLight(route.params.id);
@@ -137,7 +114,7 @@ export default function LightScreen(): JSX.Element {
   };
   const styles = StyleSheet.create({
     container: {
-      marginTop: 30,
+      marginTop: 0,
     },
     numberContainer: {
       flexDirection: "row",
@@ -201,74 +178,130 @@ export default function LightScreen(): JSX.Element {
       fontSize: 20,
       fontFamily: "TitilliumWeb-Regular",
     },
+    item_container: {
+      marginTop: theme.spacing(3),
+      borderRadius: 12,
+      backgroundColor: theme.colors.grey,
+      width: "90%",
+      alignSelf: "center",
+    },
+    item_headline: {
+      marginLeft: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      fontWeight: "bold",
+    },
+    item_divider: { margin: theme.spacing(2) },
+    list_item: { margin: theme.spacing(2) },
   });
+  const newNav = useNavigation<TagScreenNavigationProp>();
+  const navigateToTag = (tag: string) => {
+    newNav.navigate("tag", { tag });
+  };
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl
-          refreshing={refresh}
-          onRefresh={fetch}
-          tintColor={colors.accent}
-          colors={[colors.primary, colors.accent]}
+    <KeyboardAvoidingView style={{ height: "100%"}} behavior="position" enabled={enabled} keyboardVerticalOffset={170}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refresh}
+            onRefresh={fetch}
+            tintColor={colors.accent}
+            colors={[colors.primary, colors.accent]}
+          />
+        }
+        style={styles.container}
+      >
+        <ChangeableText
+          error={error}
+          value={light.name}
+          onSave={changeName}
+          style={{ marginBottom: theme.spacing(5) }}
         />
-      }
-      style={styles.container}
-    >
-      <ChangeableText
-        error={error}
-        value={light.name}
-        onSave={changeName}
-        style={{ marginBottom: theme.spacing(5) }}
-      />
 
-      <View style={styles.numberContainer}>
-        <Text style={styles.title}>LEDs</Text>
-        <TextInput
-          editable={light.isOn}
-          ref={ref as React.RefObject<TextInput>}
-          keyboardType="number-pad"
-          onSubmitEditing={({ nativeEvent: { text } }) => changeLedCount(text)}
-          textAlign="right"
-          style={styles.textinput}
-          defaultValue={light.count.toString()}
-        />
-      </View>
-      <View style={styles.selectContainer}>
-        <Text style={styles.selectLabel}>Pattern</Text>
-        <DropDownPicker
-          disabled={!light.isOn}
-          items={[
-            {
-              label: "Single Color",
-              value: "plain",
-            },
-            {
-              label: "Gradient",
-              value: "gradient",
-            },
-          ]}
-          defaultValue={light.leds.pattern}
-          containerStyle={styles.dropdownContainer}
-          arrowColor={theme.colors.text}
-          arrowSize={26}
-          style={styles.select}
-          dropDownStyle={styles.selectDropdown}
-          labelStyle={styles.dropdownLabel}
-          itemStyle={styles.dropdownItems}
-          onChangeItem={(item) => changePattern(item.value)}
-        />
-      </View>
+        <View style={styles.numberContainer}>
+          <Text style={styles.title}>LEDs</Text>
+          <TextInput
+            editable={light.isOn}
+            ref={ref as React.RefObject<TextInput>}
+            keyboardType="number-pad"
+            onSubmitEditing={({ nativeEvent: { text } }) => changeLedCount(text)}
+            textAlign="right"
+            style={styles.textinput}
+            defaultValue={light.count.toString()}
+          />
+        </View>
+        <View style={styles.selectContainer}>
+          <Text style={styles.selectLabel}>Pattern</Text>
+          <DropDownPicker
+            disabled={!light.isOn}
+            items={[
+              {
+                label: "Single Color",
+                value: "plain",
+              },
+              {
+                label: "Gradient",
+                value: "gradient",
+              },
+              {
+                label: "Waking",
+                value: "waking",
+              },
+            ]}
+            defaultValue={light.leds.pattern}
+            containerStyle={styles.dropdownContainer}
+            arrowColor={theme.colors.text}
+            arrowSize={26}
+            style={styles.select}
+            dropDownStyle={styles.selectDropdown}
+            labelStyle={styles.dropdownLabel}
+            itemStyle={styles.dropdownItems}
+            onChangeItem={(item) => changePattern(item.value)}
+          />
+        </View>
 
-      <View style={styles.slider_container}>
-        <Text style={styles.slider_text}> Brightness</Text>
-        <BrightnessSlider color={light.leds.colors[0]} id={light.id} />
-      </View>
+        <View style={styles.slider_container}>
+          <Text style={styles.slider_text}> Brightness</Text>
+          <BrightnessSlider color={light.leds.colors[0]} id={light.id} />
+        </View>
 
-      <Divider style={styles.divider} />
-      <View style={styles.plain}>
-        <PatternComponent pattern={light.leds.pattern} id={light.id} />
-      </View>
+        <Divider style={styles.divider} />
+        <View style={styles.plain}>
+          <PatternComponent pattern={light.leds.pattern} id={light.id} />
+        </View>
 
-    </ScrollView>
+        <Divider style={styles.divider} />
+
+        <View style={styles.item_container}>
+          <Text style={styles.item_headline}>Tags</Text>
+          <Divider style={styles.item_divider} />
+          {light.tags?.length > 0
+            ? light.tags?.map((tag: string) => (
+              <>
+                <List.Item
+                  key={tag}
+                  onPress={() => navigateToTag(tag)}
+                  style={styles.list_item}
+                  titleStyle={styles.title}
+                  title={tag}
+                />
+                <Divider />
+              </>
+            ))
+            : undefined}
+
+          <ChangeableText
+            onFocus={() => setEnabled(true)}
+            error={!enabled}
+            value=""
+            textAlign="left"
+            placeholderTextColor={theme.colors.text}
+            inputStyle={{ width: "100%", fontSize: 14, fontWeight: "normal", color: theme.colors.text }}
+            editIcon={faPlus}
+            onSave={addTag}
+            placeholder="Add Tag"
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

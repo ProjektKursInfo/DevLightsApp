@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback
 } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
-import { Light } from "../../interfaces";
+import Light from "@bit/devlights.types.lightinterface";
 import getContrastTextColor from "../textContrast";
 
 export interface CardProps {

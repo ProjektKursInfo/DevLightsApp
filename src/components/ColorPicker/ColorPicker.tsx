@@ -14,7 +14,7 @@ import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
 import useLight from "../../hooks/useLight";
-import { Light } from "../../interfaces";
+import Light from "@bit/devlights.types.lightinterface";
 import { Store } from "../../store";
 import {
   addFavouriteColor,

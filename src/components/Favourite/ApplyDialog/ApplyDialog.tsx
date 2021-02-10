@@ -80,7 +80,6 @@ export const ApplyDialog = React.forwardRef(
               status={values.includes(l.id) ? "checked" : "unchecked"}
             />
           ))}
-
           <Button disabled={values.length === 0} onPress={() => onConfirm()}>
             Apply color
           </Button>

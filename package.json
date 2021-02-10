@@ -9,6 +9,10 @@
     "lint": "watch 'eslint ./src'"
   },
   "dependencies": {
+    "@bit/devlights.types.alarminterface": "^1.0.0",
+    "@bit/devlights.types.ledinterface": "^0.0.1",
+    "@bit/devlights.types.lightinterface": "^0.0.1",
+    "@bit/devlights.types.patterntype": "^0.0.1",
     "@expo-google-fonts/titillium-web": "^0.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-regular-svg-icons": "^5.15.1",

@@ -8,7 +8,7 @@ import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { Light } from "../../interfaces";
+import Light from "@bit/devlights.types.lightinterface";
 import { Gradient } from "../../store/types/favouriteGradients";
 import { Store } from "../../store";
 import {

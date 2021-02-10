@@ -7,7 +7,7 @@ import Slider from "react-native-slider";
 import { useSelector } from "react-redux";
 import tinycolor from "tinycolor2";
 import useLight from "../../hooks/useLight";
-import { Light } from "../../interfaces";
+import Light from "@bit/devlights.types.lightinterface";
 import { Store } from "../../store";
 
 export interface SliderProps {

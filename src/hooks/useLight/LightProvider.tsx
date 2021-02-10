@@ -3,7 +3,7 @@ import Axios, { AxiosError, AxiosResponse } from "axios";
 import * as React from "react";
 import { useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { Pattern } from "../../interfaces/types";
+import { Pattern } from "@bit/devlights.types.patterntype";
 import { editLightName, setLedCount, setLight, setLightBrightness, setLightColor, setLightStatus } from "../../store/actions/lights";
 import useSnackbar from "../useSnackbar";
 

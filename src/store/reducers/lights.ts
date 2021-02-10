@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Light } from "../../interfaces";
+import Light from "@bit/devlights.types.lightinterface";
 import { LightActionTypes } from "../types/lights";
 import {
   EDIT_LED_COUNT,
@@ -27,8 +27,12 @@ function lightsReducer(
     case SET_LIGHT:
       lights = [...state];
       index = lights.findIndex((l: Light) => (l.id === action.id));
-      light = action.light;
-      lights[index] = light;
+      if (index !== undefined) {
+        light = action.light;
+        lights[index] = light;
+      } else {
+        lights = [...state, action.light];
+      }
       return lights;
     case EDIT_LIGHT_NAME:
       lights = [...state];
