@@ -9,7 +9,7 @@ import {
 } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../../hooks/useLight";
-import { Light } from "../../../interfaces";
+import { Light } from "@devlights/types";
 import { Store } from "../../../store";
 
 interface ApplyDialogProps {

@@ -1,4 +1,3 @@
-import Light from "@bit/devlights.types.lightinterface";
 import {
   EditLedCountAction,
   EditLightNameAction,
@@ -8,7 +7,7 @@ import {
   SetLightsAction,
   SetLightStatusAction
 } from "../types/lights";
-import { Pattern } from "@bit/devlights.types.patterntype";
+import { Light, Pattern} from "@devlights/types";
 import {
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,

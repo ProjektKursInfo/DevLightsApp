@@ -7,7 +7,7 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import useSnackbar from "../../../hooks/useSnackbar";
-import { Light } from "../../../interfaces";
+import { Light } from "@devlights/types";
 import { Store } from "../../../store";
 import { setLight } from "../../../store/actions/lights";
 import { removeTag } from "../../../store/actions/tags";

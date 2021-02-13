@@ -1,5 +1,4 @@
-import Light from "@bit/devlights.types.lightinterface";
-import { Pattern } from "@bit/devlights.types.patterntype";
+import { Pattern, Light} from "@devlights/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios, { AxiosError, AxiosResponse } from "axios";

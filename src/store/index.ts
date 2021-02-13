@@ -1,5 +1,5 @@
 import { CombinedState, combineReducers, createStore } from "redux";
-import { Light } from "../interfaces";
+import { Light } from "@devlights/types";
 import lightsReducer from "./reducers/lights";
 import favouriteReducer from "./reducers/favouriteColors";
 import favouriteGradientsReducer, { Gradient } from "./reducers/favouriteGradients";

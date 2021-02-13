@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import * as React from "react";
-import { Pattern } from "@bit/devlights.types.patterntype";
+import { Pattern } from "@devlights/types";
 import { LightContext } from "./LightProvider";
 
 export default function useLight() : React.ContextType<typeof LightContext> {
