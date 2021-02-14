@@ -6,8 +6,8 @@ import { useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Pressable, StyleSheet } from "react-native";
+import { Light } from "@devlights/types";
 import useLight from "../../hooks/useLight";
-import Light from "@bit/devlights.types.lightinterface";
 import { Store } from "../../store";
 
 interface PowerBulbProps {

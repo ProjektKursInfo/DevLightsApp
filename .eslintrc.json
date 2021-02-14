@@ -36,6 +36,7 @@
                 "allowEmptyCatch": true
             }
         ],
+        "import/no-cycle": "off",
         "@typescript-eslint/comma-dangle": [
             "error",
             {

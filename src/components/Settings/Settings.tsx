@@ -1,6 +1,5 @@
 import { faAdjust } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { ScrollView, StatusBar, StyleSheet, View } from "react-native";

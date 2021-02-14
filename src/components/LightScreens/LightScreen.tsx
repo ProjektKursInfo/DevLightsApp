@@ -1,7 +1,7 @@
 import { Pattern, Light} from "@devlights/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -240,10 +240,6 @@ export default function LightScreen(): JSX.Element {
               {
                 label: "Gradient",
                 value: "gradient",
-              },
-              {
-                label: "Waking",
-                value: "waking",
               },
             ]}
             defaultValue={light.leds.pattern}

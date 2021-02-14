@@ -1,12 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
-import {
-  StyleSheet,
-  TouchableWithoutFeedback
-} from "react-native";
+import { StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Headline, useTheme } from "react-native-paper";
-import Light from "@bit/devlights.types.lightinterface";
+import { Light } from "@devlights/types";
 import getContrastTextColor from "../textContrast";
 
 export interface CardProps {
@@ -46,10 +43,7 @@ export default function Card(props: CardProps): JSX.Element {
     <TouchableWithoutFeedback style={styles.touchable} onPress={onPress}>
       <LinearGradient
         style={styles.card}
-        colors={[
-          colors[0],
-          colors[1] ? colors[1] : colors[0],
-        ]}
+        colors={[colors[0], colors[1] ? colors[1] : colors[0]]}
         start={[0.25, 0.25]}
         end={[0.75, 0.75]}
       >

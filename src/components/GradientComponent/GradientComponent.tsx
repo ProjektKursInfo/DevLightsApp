@@ -8,7 +8,7 @@ import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import Light from "@bit/devlights.types.lightinterface";
+import { Light } from "@devlights/types";
 import { Gradient } from "../../store/types/favouriteGradients";
 import { Store } from "../../store";
 import {
@@ -16,7 +16,7 @@ import {
   removeFavouriteGradient
 } from "../../store/actions/favourites";
 import { isFavouriteGradient } from "../../utils";
-import { ColorModalScreenNavigationProp } from "../Navigation/Navigation";
+import { LightScreenNavigationProp } from "../Navigation/LightsNavigator";
 
 export interface GradientComponentProps {
   id: string;
@@ -25,7 +25,7 @@ export interface GradientComponentProps {
 export default function GradientComponent(
   props: GradientComponentProps,
 ): JSX.Element {
-  const navigation = useNavigation<ColorModalScreenNavigationProp>();
+  const navigation = useNavigation<LightScreenNavigationProp>();
   const light: Light = useSelector(
     (state: Store) => (
       state.lights.find((l: Light) => l.id === props.id) as Light),

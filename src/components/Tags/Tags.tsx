@@ -18,8 +18,8 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Title, useTheme, Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import Lottie from "lottie-react-native";
+import { Light } from "@devlights/types";
 import useSnackbar from "../../hooks/useSnackbar";
-import Light from "@bit/devlights.types.lightinterface";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
 import { setTags } from "../../store/actions/tags";
@@ -191,5 +191,4 @@ function Tags(): JSX.Element {
     </View>
   );
 }
-
 export default Tags;

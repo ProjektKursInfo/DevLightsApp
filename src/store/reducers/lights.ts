@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import Light from "@bit/devlights.types.lightinterface";
+import { Light } from "@devlights/types";
 import { LightActionTypes } from "../types/lights";
 import {
   EDIT_LED_COUNT,

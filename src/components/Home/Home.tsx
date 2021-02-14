@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
+import { Light } from "@devlights/types";
 import useNetwork from "../../hooks/useNetwork";
-import Light from "@bit/devlights.types.lightinterface";
 import { Store } from "../../store";
 import {
   setFavouriteColors,

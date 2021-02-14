@@ -13,8 +13,8 @@ import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
+import { Light } from "@devlights/types";
 import useLight from "../../hooks/useLight";
-import Light from "@bit/devlights.types.lightinterface";
 import { Store } from "../../store";
 import {
   addFavouriteColor,
@@ -22,7 +22,7 @@ import {
 } from "../../store/actions/favourites";
 import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
-import { ColorModalScreenRouteProp } from "../Navigation/Navigation";
+import { ColorModalScreenRouteProp } from "../Navigation/LightsNavigator";
 
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();

@@ -6,8 +6,8 @@ import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import useSnackbar from "../../../hooks/useSnackbar";
 import { Light } from "@devlights/types";
+import useSnackbar from "../../../hooks/useSnackbar";
 import { Store } from "../../../store";
 import { setLight } from "../../../store/actions/lights";
 import { removeTag } from "../../../store/actions/tags";
@@ -35,9 +35,7 @@ export default function TagScreen(): JSX.Element {
       })
       .then((res) => {
         dispatch(setLight(id, res.data.object));
-        console.log(lights.length);
         if (lights.length <= 1) {
-          console.log("lenght");
           navigation.goBack();
           dispatch(removeTag(params.tag));
         }

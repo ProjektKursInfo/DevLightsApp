@@ -8,8 +8,8 @@ import {
   RadioButton
 } from "react-native-paper";
 import { useSelector } from "react-redux";
-import useLight from "../../../hooks/useLight";
 import { Light } from "@devlights/types";
+import useLight from "../../../hooks/useLight";
 import { Store } from "../../../store";
 
 interface ApplyDialogProps {

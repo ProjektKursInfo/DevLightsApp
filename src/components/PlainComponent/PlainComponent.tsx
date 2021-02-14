@@ -4,9 +4,9 @@ import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
 import { useSelector } from "react-redux";
-import Light from "@bit/devlights.types.lightinterface";
+import { Light } from "@devlights/types";
 import { Store } from "../../store";
-import { ColorModalScreenNavigationProp } from "../Navigation/Navigation";
+import { LightScreenNavigationProp } from "../Navigation/LightsNavigator";
 
 export interface PlainComponentProps {
   id: string;
@@ -15,7 +15,7 @@ export interface PlainComponentProps {
 export default function PlainComponent(
   props: PlainComponentProps,
 ): JSX.Element {
-  const navigation = useNavigation<ColorModalScreenNavigationProp>();
+  const navigation = useNavigation<LightScreenNavigationProp>();
   const light: Light = useSelector(
     (state: Store) => (
       state.lights.find((l: Light) => l.id === props.id) as Light),
