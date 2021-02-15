@@ -18,6 +18,8 @@ declare global {
       success: string;
       grey: string,
       dark_grey: string,
+      card: string,
+      border: string,
     }
     interface Theme {
       spacing: (value: number) => number;
@@ -83,6 +85,8 @@ export const lightTheme = async () => {
       success: "#2dce89",
       grey: "#cfcfcf",
       dark_grey: "#919191",
+      card: "#fff",
+      border: "#fff",
     },
     fonts: configureFonts(fontConfig),
   };
@@ -109,6 +113,8 @@ export const theme = async () => {
       grey: "#4f4f4f",
       dark_grey: "#393939",
       error: "rgb(178, 0, 35)",
+      card: "#2f2f2f",
+      border: "#2f2f2f",
     },
     fonts: configureFonts(fontConfig),
   };

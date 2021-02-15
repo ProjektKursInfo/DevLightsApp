@@ -1,5 +1,7 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
@@ -12,6 +14,7 @@ import {
 import { Modalize } from "react-native-modalize";
 import { Divider, List, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   removeFavouriteColor,
@@ -58,6 +61,16 @@ export function Color(props: {
     </>
   );
 }
+
+export type FavouriteScreenNavigationProp = StackNavigationProp<
+LightsStackParamList,
+"favourite"
+>;
+
+export type FavouriteScreenRouteProp = RouteProp<
+LightsStackParamList,
+"favourite"
+>;
 
 export default function Favourite(): JSX.Element {
   const colors: string[] = useSelector(

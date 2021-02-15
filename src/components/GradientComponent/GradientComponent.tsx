@@ -16,7 +16,7 @@ import {
   removeFavouriteGradient
 } from "../../store/actions/favourites";
 import { isFavouriteGradient } from "../../utils";
-import { LightScreenNavigationProp } from "../Navigation/LightsNavigator";
+import { LightScreenNavigationProp } from "../LightScreens/LightScreen";
 
 export interface GradientComponentProps {
   id: string;

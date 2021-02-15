@@ -3,7 +3,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -14,6 +14,7 @@ import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
 import { Light } from "@devlights/types";
+import { StackNavigationProp } from "@react-navigation/stack";
 import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
 import {
@@ -22,7 +23,17 @@ import {
 } from "../../store/actions/favourites";
 import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
-import { ColorModalScreenRouteProp } from "../Navigation/LightsNavigator";
+import { LightsStackParamList } from "../../interfaces/types";
+
+export type ColorModalScreenNavigationProp = StackNavigationProp<
+LightsStackParamList,
+"color_modal"
+>;
+
+export type ColorModalScreenRouteProp = RouteProp<
+LightsStackParamList,
+"color_modal"
+>;
 
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();

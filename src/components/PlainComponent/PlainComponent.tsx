@@ -6,7 +6,7 @@ import { Button } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { Light } from "@devlights/types";
 import { Store } from "../../store";
-import { LightScreenNavigationProp } from "../Navigation/LightsNavigator";
+import { LightScreenNavigationProp } from "../LightScreens/LightScreen";
 
 export interface PlainComponentProps {
   id: string;

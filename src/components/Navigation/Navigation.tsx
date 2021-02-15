@@ -15,7 +15,7 @@ import {
 import * as React from "react";
 import { useTheme } from "react-native-paper";
 import Settings from "../Settings";
-import HomeStack from "./LightsNavigator";
+import LightsNavigator from "./LightsNavigator";
 import TagsNavigator from "./TagsNavigator";
 
 function SettingsNavigator() {
@@ -42,7 +42,7 @@ export default function Navigation(): JSX.Element {
         initialRouteName="home"
       >
         <Tab.Screen
-          component={HomeStack}
+          component={LightsNavigator}
           options={{
             tabBarIcon: (props: { color: string }) => (
               // eslint-disable-next-line react/destructuring-assignment

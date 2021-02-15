@@ -1,6 +1,7 @@
 import { Pattern, Light} from "@devlights/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import axios, { AxiosError } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -17,14 +18,20 @@ import { Divider, List, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
 import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
+import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
-import { LightScreenRouteProp } from "../Navigation/LightsNavigator";
-import { TagScreenNavigationProp } from "../Navigation/TagsNavigator";
 import PlainComponent from "../PlainComponent";
 import Powerbulb from "../Powerbulb";
+import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
+
+export type LightScreenNavigationProp = StackNavigationProp<
+LightsStackParamList,
+"light"
+>;
+export type LightScreenRouteProp = RouteProp<LightsStackParamList, "light">;
 
 function PatternComponent(props: { pattern: string; id: string }): JSX.Element {
   switch (props.pattern) {
@@ -106,7 +113,7 @@ export default function LightScreen(): JSX.Element {
       });
   };
 
-  const fetch = async () => {
+  const fetch = async () => {a
     setRefresh(true);
     await lights.fetchLight(route.params.id);
     setRefresh(false);
@@ -194,6 +201,7 @@ export default function LightScreen(): JSX.Element {
   });
   const newNav = useNavigation<TagScreenNavigationProp>();
   const navigateToTag = (tag: string) => {
+    /* navigation.dangerouslyGetParent()?.navigate("tag"); */
     newNav.navigate("tag", { tag });
   };
   return (

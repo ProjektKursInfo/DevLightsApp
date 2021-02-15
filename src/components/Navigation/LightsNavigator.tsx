@@ -1,72 +1,39 @@
-import React from "react";
-import { RouteProp, useNavigation } from "@react-navigation/native";
+import {
+  faChevronLeft,
+  faStar,
+  faTimes
+} from "@fortawesome/free-solid-svg-icons";
+import { useNavigation } from "@react-navigation/native";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
-  StackNavigationProp,
   TransitionPresets
 } from "@react-navigation/stack";
+import React from "react";
+import { Dimensions } from "react-native";
 import { useTheme } from "react-native-paper";
-import { faChevronLeft, faStar, faTimes } from "@fortawesome/free-solid-svg-icons";
-import Icon from "../Icon";
-import Home from "../Home";
-import LightScreens from "../LightScreens";
+import { LightsStackParamList } from "../../interfaces/types";
 import ColorPicker from "../ColorPicker";
 import Favourite from "../Favourite";
+import Home from "../Home";
+import Icon from "../Icon";
+import LightScreens from "../LightScreens";
 
-export type HomeStackParamList = {
-  home: undefined;
-  light: {
-    id: string;
-  };
-  color_modal: {
-    id: string;
-    index: number;
-  };
-  favourite: undefined;
-};
-
-export type LightScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"light"
->;
-export type HomeScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"home"
->;
-export type ColorModalScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"color_modal"
->;
-
-export type FavouriteScreenNavigationProp = StackNavigationProp<
-HomeStackParamList,
-"favourite"
->;
-
-export type HomeScreenRouteProp = RouteProp<HomeStackParamList, "home">;
-export type LightScreenRouteProp = RouteProp<HomeStackParamList, "light">;
-export type ColorModalScreenRouteProp = RouteProp<
-HomeStackParamList,
-"color_modal"
->;
-export type FavouriteScreenRouteProp = RouteProp<
-HomeStackParamList,
-"favourite"
->;
-
-export default function HomeStack(): JSX.Element {
-  const Stack = createStackNavigator<HomeStackParamList>();
+export default function LightsNavigator(): JSX.Element {
+  const Stack = createStackNavigator<LightsStackParamList>();
   const navigation = useNavigation();
   const theme = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{headerStyle: {height: Dimensions.get("window").height * 0.125}}}>
       <Stack.Screen
         name="home"
         component={Home}
         options={{
           title: "Home",
           headerTitle: "",
+          headerStyle: {
+            elevation: 0,
+          },
           headerRight: () => (
             <Icon
               color="#ffff00"
@@ -80,7 +47,9 @@ export default function HomeStack(): JSX.Element {
       <Stack.Screen
         name="light"
         options={() => ({
-          headerBackTitleVisible: false,
+          headerStyle: {
+            elevation: 0,
+          },
           headerLeft: (props: StackHeaderLeftButtonProps) => (
             <Icon
               color={theme.colors.accent}
@@ -91,7 +60,7 @@ export default function HomeStack(): JSX.Element {
           ),
           headerTitle: "",
           gestureEnabled: true,
-          gestureResponseDistance: { vertical: 200},
+          gestureResponseDistance: { vertical: 200 },
           ...TransitionPresets.SlideFromRightIOS,
         })}
         component={LightScreens}
@@ -116,7 +85,7 @@ export default function HomeStack(): JSX.Element {
           headerTitle: "Favourites",
           headerTitleAlign: "center",
           headerTitleStyle: {
-            marginTop: 20,
+            marginTop: 10,
           },
           headerLeft: (props: StackHeaderLeftButtonProps) => (
             <Icon

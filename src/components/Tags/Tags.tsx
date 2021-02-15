@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import axios, { AxiosResponse } from "axios";
 import React from "react";
 import {
@@ -25,6 +25,8 @@ import { setLight } from "../../store/actions/lights";
 import { setTags } from "../../store/actions/tags";
 import { tagArrayEquality } from "../../utils";
 import { TagScreenNavigationProp } from "../Navigation/TagsNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { TagsStackParamList } from "../../interfaces/types";
 
 interface TagCardProps {
   tag: string;
@@ -130,6 +132,12 @@ function TagCard(props: TagCardProps) {
     </Swipeable>
   );
 }
+
+export type HomeScreenNavigationProp = StackNavigationProp<
+TagsStackParamList,
+"home"
+>;
+export type HomeScreenRouteProp = RouteProp<TagsStackParamList, "home">;
 
 function Tags(): JSX.Element {
   const tags = useSelector(

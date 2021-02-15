@@ -1,18 +1,25 @@
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Light } from "@devlights/types";
+import { StackNavigationProp } from "@react-navigation/stack";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { Store } from "../../../store";
 import { setLight } from "../../../store/actions/lights";
 import { removeTag } from "../../../store/actions/tags";
 import { tagsEquality } from "../../../utils";
-import { TagScreenRouteProp } from "../../Navigation/TagsNavigator";
+import { TagsStackParamList } from "../../../interfaces/types";
+
+export type TagScreenNavigationProp = StackNavigationProp<
+TagsStackParamList,
+"tag"
+>;
+export type TagScreenRouteProp = RouteProp<TagsStackParamList, "tag">;
 
 export default function TagScreen(): JSX.Element {
   const { params } = useRoute<TagScreenRouteProp>();
@@ -21,7 +28,7 @@ export default function TagScreen(): JSX.Element {
 
   React.useEffect(() => {
     navigation.setOptions({ headerTitle: params.tag });
-  }, []);
+  }, [params.tag]);
   const lights: Light[] = useSelector(
     (state: Store) => state.lights.filter((l) => l.tags?.includes(params.tag)),
     (l: Light[], r: Light[]) => tagsEquality(l, r, lights.length, params.tag),

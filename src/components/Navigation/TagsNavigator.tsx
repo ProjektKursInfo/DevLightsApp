@@ -1,33 +1,14 @@
-import React from "react";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import {
   createStackNavigator,
-  StackHeaderLeftButtonProps,
-  StackNavigationProp
+  StackHeaderLeftButtonProps
 } from "@react-navigation/stack";
-import { RouteProp } from "@react-navigation/native";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import React from "react";
 import { useTheme } from "react-native-paper";
+import { TagsStackParamList } from "../../interfaces/types";
+import Icon from "../Icon/Icon";
 import Tags from "../Tags";
 import TagScreen from "../Tags/TagScreen";
-import Icon from "../Icon/Icon";
-
-export type TagsStackParamList = {
-  home: undefined;
-  tag: {
-    tag: string;
-  };
-};
-
-export type TagScreenNavigationProp = StackNavigationProp<
-TagsStackParamList,
-"tag"
->;
-export type HomeScreenNavigationProp = StackNavigationProp<
-TagsStackParamList,
-"home"
->;
-export type HomeScreenRouteProp = RouteProp<TagsStackParamList, "home">;
-export type TagScreenRouteProp = RouteProp<TagsStackParamList, "tag">;
 
 export default function TagsNavigator(): JSX.Element {
   const Stack = createStackNavigator<TagsStackParamList>();
@@ -36,7 +17,12 @@ export default function TagsNavigator(): JSX.Element {
     <Stack.Navigator>
       <Stack.Screen
         name="home"
-        options={{ headerTitle: "" }}
+        options={{
+          headerTitle: "",
+          headerStyle: {
+            elevation: 0,
+          },
+        }}
         component={Tags}
       />
       <Stack.Screen
