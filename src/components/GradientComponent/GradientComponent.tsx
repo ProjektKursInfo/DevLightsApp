@@ -1,11 +1,14 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExchangeAlt,
+  faStar as fullstar,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, Pressable, StyleSheet, View, TouchableOpacity } from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Light } from "@devlights/types";
@@ -13,29 +16,33 @@ import { Gradient } from "../../store/types/favouriteGradients";
 import { Store } from "../../store";
 import {
   addFavouriteGradient,
-  removeFavouriteGradient
+  removeFavouriteGradient,
 } from "../../store/actions/favourites";
 import { isFavouriteGradient } from "../../utils";
-import { LightScreenNavigationProp } from "../LightScreens/LightScreen";
+import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
+import useLight from "../../hooks/useLight";
 
 export interface GradientComponentProps {
   id: string;
 }
 
 export default function GradientComponent(
-  props: GradientComponentProps,
+  props: GradientComponentProps
 ): JSX.Element {
-  const navigation = useNavigation<LightScreenNavigationProp>();
+  const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const light: Light = useSelector(
-    (state: Store) => (
-      state.lights.find((l: Light) => l.id === props.id) as Light),
-    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
+    (state: Store) =>
+      state.lights.find((l: Light) => l.id === props.id) as Light,
+    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors)
   );
   const favouriteGradients: Gradient[] = useSelector(
-    (state: Store) => state.favouriteGradients,
+    (state: Store) => state.favouriteGradients
   );
   const dispatch = useDispatch();
   const theme = useTheme();
+  const lights = useLight();
+
+  const {colors} = light.leds;
 
   const onPress = (index: number) => {
     navigation.navigate("color_modal", {
@@ -71,17 +78,23 @@ export default function GradientComponent(
   }, []);
 
   const styles = StyleSheet.create({
-    button: {
-      width: "40%",
-      alignSelf: "center",
-      margin: 20,
+    buttonContainer: {
+      flex: 2,
+    },
+    iconContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
     },
     container: {
+      flex: 1,
+      width: Dimensions.get("window").width - theme.spacing(5) * 2,
+      marginHorizontal: theme.spacing(5),
+      marginTop: theme.spacing(4),
       flexDirection: "row",
-      alignSelf: "center",
       alignContent: "space-between",
     },
-    pressable: {alignSelf: "flex-end", marginRight: 10},
+    pressable: { alignSelf: "flex-end", marginRight: 10 },
   });
   return (
     <>
@@ -89,24 +102,37 @@ export default function GradientComponent(
         <FontAwesomeIcon color={theme.colors.accent} size={30} icon={icon} />
       </Pressable>
       <View style={styles.container}>
-        <Button
-          disabled={!light.isOn}
-          mode="contained"
-          style={styles.button}
-          onPress={() => onPress(0)}
-          color={light.leds.colors[0]}
-        >
-          {light.leds.colors[0]}
-        </Button>
-        <Button
-          disabled={!light.isOn}
-          mode="contained"
-          style={styles.button}
-          onPress={() => onPress(1)}
-          color={light.leds.colors[1]}
-        >
-          {light.leds.colors[1]}
-        </Button>
+        <View style={styles.buttonContainer}>
+          <Button
+            disabled={!light.isOn}
+            mode="contained"
+            onPress={() => onPress(0)}
+            color={light.leds.colors[0]}
+          >
+            {light.leds.colors[0]}
+          </Button>
+        </View>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity
+            onPress={() => lights.setColor(light.id, [colors[1], colors[0]], "gradient")}
+          >
+            <FontAwesomeIcon
+              icon={faExchangeAlt}
+              color={theme.colors.accent}
+              size={30}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            disabled={!light.isOn}
+            mode="contained"
+            onPress={() => onPress(1)}
+            color={light.leds.colors[1]}
+          >
+            {light.leds.colors[1]}
+          </Button>
+        </View>
       </View>
     </>
   );

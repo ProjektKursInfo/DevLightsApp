@@ -98,6 +98,7 @@ function Home(): JSX.Element {
         StatusBar.setTranslucent(false);
       });
     if (refreshing) setRefresh(false);
+    SplashScreen.hideAsync();
   };
   const network = useNetwork();
   React.useEffect(() => {

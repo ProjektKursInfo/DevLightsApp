@@ -1052,10 +1052,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@devlights/types@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@devlights/types/-/types-0.0.1.tgz#6e12b0f05e279408d7109359ee19f1c3cec7db45"
-  integrity sha512-pF2iB0RTwrOm8A/jMIDd8h7arFJP0F54C5VoC1pK35Bllt7FbuW/rEW77MvMg0pssF4+bStQZY9siIHhMHHf4Q==
+"@devlights/types@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@devlights/types/-/types-0.0.2.tgz#2e7cc1886aab37ad8a60281a2d2b300c7664c585"
+  integrity sha512-8Vr/1NszpFOIMe4IM9xllfLnFW1+rkqLZV+70cuSJzWnmklCr23InhMAw7UY0JR25v0b5CRL/bogYK0x/mjYbw==
 
 "@egjs/hammerjs@^2.0.17":
   version "2.0.17"

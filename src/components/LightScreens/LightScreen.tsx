@@ -113,7 +113,7 @@ export default function LightScreen(): JSX.Element {
       });
   };
 
-  const fetch = async () => {a
+  const fetch = async () => {
     setRefresh(true);
     await lights.fetchLight(route.params.id);
     setRefresh(false);
@@ -197,7 +197,7 @@ export default function LightScreen(): JSX.Element {
       fontWeight: "bold",
     },
     item_divider: { margin: theme.spacing(2) },
-    list_item: { margin: theme.spacing(2) },
+    list_item: { padding: theme.spacing(2) },
   });
   const newNav = useNavigation<TagScreenNavigationProp>();
   const navigateToTag = (tag: string) => {

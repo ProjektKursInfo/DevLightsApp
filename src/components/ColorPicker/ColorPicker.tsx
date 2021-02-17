@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { Light } from "@devlights/types";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -13,9 +15,8 @@ import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
-import { Light } from "@devlights/types";
-import { StackNavigationProp } from "@react-navigation/stack";
 import useLight from "../../hooks/useLight";
+import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   addFavouriteColor,
@@ -23,7 +24,6 @@ import {
 } from "../../store/actions/favourites";
 import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
-import { LightsStackParamList } from "../../interfaces/types";
 
 export type ColorModalScreenNavigationProp = StackNavigationProp<
 LightsStackParamList,
@@ -38,7 +38,7 @@ LightsStackParamList,
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
   const { id, index } = route.params;
-  const lights = useLight();
+  const lights = useLight(id);
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (left: Light, right: Light) => !isEqual(left.leds, right.leds),
@@ -54,6 +54,7 @@ export default function ColorPicker(): JSX.Element {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const theme = useTheme();
+
   const { colors } = theme;
   const saveColor = () => {
     if (favouriteColors.includes(tinycolor.fromRatio(hsv).toHexString())) {

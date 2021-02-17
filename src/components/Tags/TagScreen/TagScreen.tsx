@@ -1,7 +1,7 @@
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
@@ -53,7 +53,7 @@ export default function TagScreen(): JSX.Element {
   const onPress = (type: string) => {
     axios
       .patch(`http://devlight/tags/${params.tag}/${type}`)
-      .then((res) => {
+      .then((res: AxiosResponse) => {
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
         const newLights: Light[] = res.data.object as Light[];
         newLights.map((l: Light) => dispatch(setLight(l.id, l)));

@@ -28,6 +28,8 @@ export const ApplyDialog = React.forwardRef(
 
     const [values, setValues] = React.useState<string[]>([]);
 
+    const snapPoint = 150 + lights.length * 30;
+
     const onPress = (id: string) => {
       if (!values.includes(id)) {
         setValues([...values, id]);
@@ -43,6 +45,7 @@ export const ApplyDialog = React.forwardRef(
       props.onConfirm();
       if (values.length > 0) {
         values.forEach((v: string) => {
+          // TODO Axios for all Lights
           light.setColor(v, props.colors, props.colors.length > 1 ? "gradient" : "plain");
         });
       }
@@ -50,7 +53,7 @@ export const ApplyDialog = React.forwardRef(
     return (
       <Portal>
         <Modalize
-          snapPoint={200}
+          snapPoint={snapPoint}
           useNativeDriver
           modalStyle={{
             backgroundColor: theme.colors.background,
