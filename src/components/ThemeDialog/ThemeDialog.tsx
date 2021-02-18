@@ -12,7 +12,7 @@ export interface ThemeDialogProps {
 
 export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
   const { visible } = props;
-  const [value, setValue] = React.useState<ThemeType>("dark");
+  const [value, setValue] = React.useState<ThemeType>("Dark");
   const changeTheme = useThemeChange();
   React.useEffect(() => {
     async function get() {
@@ -61,19 +61,19 @@ export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
               style={styles.radioItem}
               labelStyle={getTextStyle("light")}
               label="Light Theme"
-              value="light"
+              value="Light"
             />
             <RadioButton.Item
               style={styles.radioItem}
               labelStyle={getTextStyle("dark")}
               label="Dark Theme"
-              value="dark"
+              value="Dark"
             />
             <RadioButton.Item
               style={styles.radioItem}
               labelStyle={getTextStyle("system-default")}
               label="System-Default"
-              value="system-default"
+              value="System-Default"
             />
           </RadioButton.Group>
         </Dialog.Content>

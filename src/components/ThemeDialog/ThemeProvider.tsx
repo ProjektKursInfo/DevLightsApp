@@ -30,16 +30,16 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
     StatusBar.setBackgroundColor("transparent");
     SplashScreen.preventAutoHideAsync();
     async function getTheme() {
-      const themeType: ThemeType = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
+      const themeType: ThemeType = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "Dark";
       dispatch(setTheme(themeType));
       if (
-        themeType === "dark" || (themeType === "system-default" && colorScheme === "dark")
+        themeType === "Dark" || (themeType === "System-Default" && colorScheme === "dark")
       ) {
         themeFunction().then((t) => {
           setStateTheme(t);
         });
       } else if (
-        themeType === "light" || (themeType === "system-default" && colorScheme === "light")
+        themeType === "Light" || (themeType === "System-Default" && colorScheme === "light")
       ) {
         lightFunction().then((t) => {
           setStateTheme(t);
@@ -51,14 +51,14 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
 
   const changeTheme = async (type: ThemeType) => {
     if (
-      type === "dark" || (type === "system-default" && colorScheme === "dark")
+      type === "Dark" || (type === "System-Default" && colorScheme === "dark")
     ) {
       themeFunction().then((t) => {
         setStateTheme(t);
       });
       dispatch(setTheme(type));
     } else if (
-      type === "light" || (type === "system-default" && colorScheme === "light")
+      type === "Light" || (type === "System-Default" && colorScheme === "light")
     ) {
       lightFunction().then((t) => {
         setStateTheme(t);

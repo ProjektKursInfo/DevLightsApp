@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
-import { List, useTheme } from "react-native-paper";
+import { List, Title, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { ThemeType } from "../../interfaces/types";
 import { Store } from "../../store";
@@ -16,9 +16,11 @@ export default function Settings(): JSX.Element {
     (state: Store) => state.theme,
     (left: ThemeType, right: ThemeType) => !isEqual(left, right),
   );
+  console.log(themeType);
   const styles = StyleSheet.create({
     container: { width: "100%", height: "100%" },
     title: {
+      textAlign: "center",
       paddingTop: 30,
       marginBottom: 10,
       fontSize: 40,
@@ -48,6 +50,9 @@ export default function Settings(): JSX.Element {
       />
 
       <ScrollView contentContainerStyle={styles.contentContainerStyle}>
+
+        <Title style={styles.title}>Settings</Title>
+
         <List.Section title="Apperance" titleStyle={styles.themeText} />
         <List.Item
           style={styles.listItem}

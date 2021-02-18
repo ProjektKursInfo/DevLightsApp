@@ -1,4 +1,4 @@
-import { Pattern, Light} from "@devlights/types";
+import { Light, Pattern } from "@devlights/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -28,8 +28,8 @@ import Powerbulb from "../Powerbulb";
 import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
 
 export type LightScreenNavigationProp = StackNavigationProp<
-LightsStackParamList,
-"light"
+  LightsStackParamList,
+  "light"
 >;
 export type LightScreenRouteProp = RouteProp<LightsStackParamList, "light">;
 
@@ -51,7 +51,8 @@ export default function LightScreen(): JSX.Element {
   const light = useSelector(
     (state: Store) =>
       state.lights.find((l: Light) => l.id === route.params.id) as Light,
-    (l: Light, r: Light) => !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn)
+    (l: Light, r: Light) =>
+      !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn),
   );
   const tags = useSelector((state: Store) => state.tags);
   const navigation = useNavigation();
@@ -69,7 +70,9 @@ export default function LightScreen(): JSX.Element {
 
   const changeName = (name: string) => {
     const ax = lights.setName(light.id, name);
-    ax.then(() => setError(false));
+    ax.then(() => {
+      setError(false);
+    });
     ax.catch(() => {
       setError(true);
     });
@@ -97,7 +100,7 @@ export default function LightScreen(): JSX.Element {
 
   const addTag = (tag: string) => {
     const index = tags.findIndex(
-      (t: string) => t.toLowerCase() === tag.toLowerCase()
+      (t: string) => t.toLowerCase() === tag.toLowerCase(),
     );
     axios
       .put(`http://devlight/lights/${light.id}/tags`, {
@@ -109,7 +112,10 @@ export default function LightScreen(): JSX.Element {
       })
       .catch((err: AxiosError) => {
         setEnabled(false);
-        snackbar.makeSnackbar(err.response?.data.message ?? "an error orcurrred", theme.colors.error);
+        snackbar.makeSnackbar(
+          err.response?.data.message ?? "an error orcurrred",
+          theme.colors.error,
+        );
       });
   };
 
@@ -120,7 +126,9 @@ export default function LightScreen(): JSX.Element {
   };
   const styles = StyleSheet.create({
     container: {
+      height: "100%",
       marginTop: 0,
+      paddingBottom: 100
     },
     numberContainer: {
       flexDirection: "row",
@@ -201,11 +209,15 @@ export default function LightScreen(): JSX.Element {
   });
   const newNav = useNavigation<TagScreenNavigationProp>();
   const navigateToTag = (tag: string) => {
-    /* navigation.dangerouslyGetParent()?.navigate("tag"); */
     newNav.navigate("tag", { tag });
   };
   return (
-    <KeyboardAvoidingView style={{ height: "100%"}} behavior="position" enabled={enabled} keyboardVerticalOffset={170}>
+    <KeyboardAvoidingView
+      style={{ height: "100%" }}
+      behavior="position"
+      enabled={enabled}
+      keyboardVerticalOffset={170}
+    >
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -216,6 +228,7 @@ export default function LightScreen(): JSX.Element {
           />
         }
         style={styles.container}
+        contentContainerStyle={{paddingBottom: theme.spacing(4)}}
       >
         <ChangeableText
           error={error}
@@ -230,7 +243,9 @@ export default function LightScreen(): JSX.Element {
             editable={light.isOn}
             ref={ref as React.RefObject<TextInput>}
             keyboardType="number-pad"
-            onSubmitEditing={({ nativeEvent: { text } }) => changeLedCount(text)}
+            onSubmitEditing={({ nativeEvent: { text } }) =>
+              changeLedCount(text)
+            }
             textAlign="right"
             style={styles.textinput}
             defaultValue={light.count.toString()}
@@ -279,26 +294,32 @@ export default function LightScreen(): JSX.Element {
           <Divider style={styles.item_divider} />
           {light.tags?.length > 0
             ? light.tags?.map((tag: string) => (
-              <>
-                <List.Item
-                  key={tag}
-                  onPress={() => navigateToTag(tag)}
-                  style={styles.list_item}
-                  titleStyle={styles.title}
-                  title={tag}
-                />
-                <Divider />
-              </>
-            ))
+                <>
+                  <List.Item
+                    key={tag}
+                    onPress={() => navigateToTag(tag)}
+                    style={styles.list_item}
+                    titleStyle={styles.title}
+                    title={tag}
+                  />
+                  <Divider />
+                </>
+              ))
             : undefined}
 
           <ChangeableText
             onFocus={() => setEnabled(true)}
+            /* onBlur={() => setEnabled(false)} */
             error={!enabled}
             value=""
             textAlign="left"
-            placeholderTextColor={theme.colors.text}
-            inputStyle={{ width: "100%", fontSize: 14, fontWeight: "normal", color: theme.colors.text }}
+            placeholderTextColor={theme.colors.lightText}
+            inputStyle={{
+              width: "100%",
+              fontSize: 14,
+              fontWeight: "normal",
+              color: theme.colors.text,
+            }}
             editIcon={faPlus}
             onSave={addTag}
             placeholder="Add Tag"

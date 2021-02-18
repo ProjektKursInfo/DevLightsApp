@@ -1,4 +1,4 @@
-export type ThemeType = "light" | "dark" | "system-default";
+export type ThemeType = "Light" | "Dark" | "System-Default";
 
 /**
  * Types for the LightsNavigator

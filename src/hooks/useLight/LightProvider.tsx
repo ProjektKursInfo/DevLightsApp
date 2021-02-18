@@ -3,32 +3,38 @@ import Axios, { AxiosError, AxiosResponse } from "axios";
 import * as React from "react";
 import { useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { Pattern } from "@devlights/types";
-import { editLightName, setLedCount, setLight, setLightBrightness, setLightColor, setLightStatus } from "../../store/actions/lights";
+import { Light, Pattern, Response } from "@devlights/types";
+import {
+  editLightName,
+  setLedCount,
+  setLight,
+  setLightBrightness,
+  setLightColor,
+  setLightStatus,
+} from "../../store/actions/lights";
 import useSnackbar from "../useSnackbar";
 
+export type LightResponse = AxiosResponse<Response<Light>>;
+
 export const LightContext = React.createContext<{
-  fetchLight(id: string): Promise<AxiosResponse<unknown>>;
-  setStatus(id: string, status: boolean): Promise<AxiosResponse<unknown>>
-  setName(id: string, name: string): Promise<AxiosResponse<unknown>>;
-  setCount(id: string, count: number): Promise<AxiosResponse<unknown>>;
+  fetchLight(id: string): Promise<LightResponse>;
+  setStatus(id: string, status: boolean): Promise<LightResponse>;
+  setName(id: string, name: string): Promise<LightResponse>;
+  setCount(id: string, count: number): Promise<LightResponse>;
   setColor(
     id: string,
     colors: string[],
-    pattern?: Pattern
-  ): Promise<AxiosResponse<unknown>>;
-  setBrightness(
-    id: string,
-    brightness: number
-  ): Promise<AxiosResponse<unknown>>;
+    pattern?: Pattern,
+  ): Promise<LightResponse>;
+  setBrightness(id: string, brightness: number): Promise<LightResponse>;
 }>({
-      fetchLight: () => new Promise<AxiosResponse>((): void => {}),
-      setStatus: () => new Promise<AxiosResponse>((): void => {}),
-      setName: () => new Promise<AxiosResponse>((): void => {}),
-      setCount: () => new Promise<AxiosResponse>((): void => {}),
-      setColor: () => new Promise<AxiosResponse>((): void => {}),
-      setBrightness: () => new Promise<AxiosResponse>((): void => {}),
-    });
+  fetchLight: () => new Promise<AxiosResponse>((): void => {}),
+  setStatus: () => new Promise<AxiosResponse>((): void => {}),
+  setName: () => new Promise<AxiosResponse>((): void => {}),
+  setCount: () => new Promise<AxiosResponse>((): void => {}),
+  setColor: () => new Promise<AxiosResponse>((): void => {}),
+  setBrightness: () => new Promise<AxiosResponse>((): void => {}),
+});
 
 export interface LightProviderProps {
   children?: JSX.Element;
@@ -39,17 +45,22 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   const snackbar = useSnackbar();
   const theme = useTheme();
 
-  async function fetchLight(id: string) {
+  async function fetchLight(id: string): Promise<LightResponse> {
     const ax = Axios.get(`http://devlight/lights/${id}`);
-    ax.then((res: AxiosResponse) => {
+    ax.then((res: LightResponse) => {
       dispatch(setLight(id, res.data.object));
     });
     return await ax;
   }
 
-  async function setStatus(id: string, status: boolean) : Promise<AxiosResponse> {
-    const ax = Axios.patch(`http://devlight/lights/${id}/${status ? "on" : "off"}`);
-    ax.then((res: AxiosResponse) => {
+  async function setStatus(
+    id: string,
+    status: boolean,
+  ): Promise<LightResponse> {
+    const ax = Axios.patch(
+      `http://devlight/lights/${id}/${status ? "on" : "off"}`,
+    );
+    ax.then((res: LightResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.success);
       dispatch(setLightStatus(id, status));
     });
@@ -59,31 +70,37 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     return await ax;
   }
 
-  async function setName(id: string, name: string): Promise<AxiosResponse> {
+  async function setName(id: string, name: string): Promise<LightResponse> {
     const ax = Axios.patch(`http://devlight/lights/${id}/update`, {
       name,
     });
-    ax.then((res: AxiosResponse) => {
+    ax.then((res: LightResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.success);
       dispatch(editLightName(id, name));
     });
 
     ax.catch((err: AxiosError) => {
-      snackbar.makeSnackbar(err?.response?.data.message ?? "Unexpected Error", theme.colors.error);
+      snackbar.makeSnackbar(
+        err?.response?.data.message ?? "Unexpected Error",
+        theme.colors.error,
+      );
     });
     return await ax;
   }
 
-  async function setCount(id: string, count: number): Promise<AxiosResponse> {
+  async function setCount(id: string, count: number): Promise<LightResponse> {
     const ax = Axios.patch(`http://devlight/lights/${id}/count`, {
       count,
     });
-    ax.then((res: AxiosResponse) => {
+    ax.then((res: LightResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.success);
       dispatch(setLedCount(id, count));
     });
     ax.catch((err: AxiosError) => {
-      snackbar.makeSnackbar(err?.response?.data.message ?? "Unexpected Error", theme.colors.error);
+      snackbar.makeSnackbar(
+        err?.response?.data.message ?? "Unexpected Error",
+        theme.colors.error,
+      );
     });
     return await ax;
   }
@@ -92,7 +109,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     id: string,
     colors: string[],
     pattern?: Pattern,
-  ): Promise<AxiosResponse<unknown>> {
+  ): Promise<LightResponse> {
     const ax = Axios.patch(
       `http://devlight/lights/${id}/color`,
       {
@@ -103,7 +120,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         timeout: 3000,
       },
     );
-    ax.then((res: AxiosResponse) => {
+    ax.then((res: LightResponse) => {
       if (res.status === 304) {
         snackbar.makeSnackbar("Nothing changed", theme.colors.error);
       } else if (res.status === 200) {
@@ -123,7 +140,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   async function setBrightness(
     id: string,
     brightness: number,
-  ): Promise<AxiosResponse> {
+  ): Promise<LightResponse> {
     const ax = Axios.patch(`http://devlight/lights/${id}/brightness`, {
       brightness: Math.round(brightness),
     });

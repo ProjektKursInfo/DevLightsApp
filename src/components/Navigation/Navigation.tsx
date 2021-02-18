@@ -1,17 +1,8 @@
-import {
-  faCog,
-  faHome,
-
-  faTags
-} from "@fortawesome/free-solid-svg-icons";
+import { faCog, faHome, faTags } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import {
-  NavigationContainer
-} from "@react-navigation/native";
-import {
-  createStackNavigator
-} from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { useTheme } from "react-native-paper";
 import Settings from "../Settings";
@@ -24,7 +15,13 @@ function SettingsNavigator() {
     <Stack.Navigator>
       <Stack.Screen
         name="home"
-        options={{ headerTitle: "Settings", headerTitleAlign: "left" }}
+        options={{
+          headerTitle: "",
+          headerTitleAlign: "left",
+          headerStyle: {
+            elevation: 0,
+          },
+        }}
         component={Settings}
       />
     </Stack.Navigator>

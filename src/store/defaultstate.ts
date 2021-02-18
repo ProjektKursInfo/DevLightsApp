@@ -3,5 +3,5 @@ export default {
   favouriteGradients: [],
   lights: [],
   tags: [],
-  theme: "dark",
+  theme: "Dark",
 };

@@ -21,7 +21,7 @@ import {
 } from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
 import { SET_TAGS } from "../../store/types/types";
-import Card from "../Card";
+import LightCard from "../LightCard";
 
 interface SpinnerProps {
   visible: boolean;
@@ -148,7 +148,7 @@ function Home(): JSX.Element {
         <Spinner visible={loading} />
 
         {lights.length > 0 && !error && !loading ? (
-          lights.map((light: Light) => <Card key={light.id} light={light} />)
+          lights.map((light: Light) => <LightCard key={light.id} light={light} />)
         ) : (
           <>
             {loading ? (

@@ -68,6 +68,9 @@ export default function LightsNavigator(): JSX.Element {
       <Stack.Screen
         name="color_modal"
         options={{
+          headerStyle: {
+            elevation: 0,
+          },
           headerLeft: (props: StackHeaderLeftButtonProps) => (
             <Icon
               color={theme.colors.accent}

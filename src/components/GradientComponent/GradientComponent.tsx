@@ -8,7 +8,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { Dimensions, Pressable, StyleSheet, View, TouchableOpacity } from "react-native";
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { Button, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Light } from "@devlights/types";
@@ -42,7 +48,7 @@ export default function GradientComponent(
   const theme = useTheme();
   const lights = useLight();
 
-  const {colors} = light.leds;
+  const { colors } = light.leds;
 
   const onPress = (index: number) => {
     navigation.navigate("color_modal", {
@@ -114,11 +120,14 @@ export default function GradientComponent(
         </View>
         <View style={styles.iconContainer}>
           <TouchableOpacity
-            onPress={() => lights.setColor(light.id, [colors[1], colors[0]], "gradient")}
+            disabled={!light.isOn}
+            onPress={() =>
+              lights.setColor(light.id, [colors[1], colors[0]], "gradient")
+            }
           >
             <FontAwesomeIcon
               icon={faExchangeAlt}
-              color={theme.colors.accent}
+              color={light.isOn ? theme.colors.accent : theme.colors.disabled}
               size={30}
             />
           </TouchableOpacity>
