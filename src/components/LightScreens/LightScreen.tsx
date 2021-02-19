@@ -64,7 +64,9 @@ export default function LightScreen(): JSX.Element {
   const [enabled, setEnabled] = React.useState<boolean>(false);
   React.useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Powerbulb id={light.id} />,
+      headerRight: () => (
+        <Powerbulb style={{ marginRight: 10, marginTop: 5, alignSelf: "center" }} id={light.id} />
+      ),
     });
   }, []);
 
@@ -128,7 +130,7 @@ export default function LightScreen(): JSX.Element {
     container: {
       height: "100%",
       marginTop: 0,
-      paddingBottom: 100
+      paddingBottom: 100,
     },
     numberContainer: {
       flexDirection: "row",
@@ -228,7 +230,7 @@ export default function LightScreen(): JSX.Element {
           />
         }
         style={styles.container}
-        contentContainerStyle={{paddingBottom: theme.spacing(4)}}
+        contentContainerStyle={{ paddingBottom: theme.spacing(4) }}
       >
         <ChangeableText
           error={error}
@@ -253,7 +255,7 @@ export default function LightScreen(): JSX.Element {
         </View>
         <View style={styles.selectContainer}>
           <Text style={styles.selectLabel}>Pattern</Text>
-          <DropDownPicker
+           <DropDownPicker
             disabled={!light.isOn}
             items={[
               {

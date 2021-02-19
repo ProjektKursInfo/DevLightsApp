@@ -8,7 +8,7 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  View
+  View,
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
@@ -17,7 +17,7 @@ import useNetwork from "../../hooks/useNetwork";
 import { Store } from "../../store";
 import {
   setFavouriteColors,
-  setFavouriteGradients
+  setFavouriteGradients,
 } from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
 import { SET_TAGS } from "../../store/types/types";
@@ -133,7 +133,6 @@ function Home(): JSX.Element {
 
       <ScrollView
         refreshControl={
-          // eslint-disable-next-line react/jsx-wrap-multilines
           <RefreshControl
             refreshing={refresh}
             onRefresh={() => fetch(true)}
@@ -148,7 +147,9 @@ function Home(): JSX.Element {
         <Spinner visible={loading} />
 
         {lights.length > 0 && !error && !loading ? (
-          lights.map((light: Light) => <LightCard key={light.id} light={light} />)
+          lights.map((light: Light) => (
+            <LightCard key={light.id} light={light} />
+          ))
         ) : (
           <>
             {loading ? (
