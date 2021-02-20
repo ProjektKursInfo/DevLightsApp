@@ -28,8 +28,8 @@ import Powerbulb from "../Powerbulb";
 import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
 
 export type LightScreenNavigationProp = StackNavigationProp<
-  LightsStackParamList,
-  "light"
+LightsStackParamList,
+"light"
 >;
 export type LightScreenRouteProp = RouteProp<LightsStackParamList, "light">;
 
@@ -65,7 +65,10 @@ export default function LightScreen(): JSX.Element {
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Powerbulb style={{ marginRight: 10, marginTop: 5, alignSelf: "center" }} id={light.id} />
+        <Powerbulb
+          style={{ marginRight: 10, marginTop: 5, alignSelf: "center" }}
+          id={light.id}
+        />
       ),
     });
   }, []);
@@ -255,7 +258,7 @@ export default function LightScreen(): JSX.Element {
         </View>
         <View style={styles.selectContainer}>
           <Text style={styles.selectLabel}>Pattern</Text>
-           <DropDownPicker
+          <DropDownPicker
             disabled={!light.isOn}
             items={[
               {
@@ -296,17 +299,17 @@ export default function LightScreen(): JSX.Element {
           <Divider style={styles.item_divider} />
           {light.tags?.length > 0
             ? light.tags?.map((tag: string) => (
-                <>
-                  <List.Item
-                    key={tag}
-                    onPress={() => navigateToTag(tag)}
-                    style={styles.list_item}
-                    titleStyle={styles.title}
-                    title={tag}
-                  />
-                  <Divider />
-                </>
-              ))
+              <>
+                <List.Item
+                  key={tag}
+                  onPress={() => navigateToTag(tag)}
+                  style={styles.list_item}
+                  titleStyle={styles.title}
+                  title={tag}
+                />
+                <Divider />
+              </>
+            ))
             : undefined}
 
           <ChangeableText

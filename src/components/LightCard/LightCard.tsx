@@ -68,6 +68,12 @@ export default function LightCard(props: CardProps): JSX.Element {
     button: { alignItems: "center", justifyContent: "center", flex: 1 },
   });
 
+  const awonPress = () => {
+    console.log("pressss");
+    
+    swipeableRef.current?.close();
+  }
+
   const renderRightAction = (
     x: number,
     progress: Animated.AnimatedInterpolation,
@@ -82,7 +88,7 @@ export default function LightCard(props: CardProps): JSX.Element {
           style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
         >
           <Powerbulb
-            onPress={() => swipeableRef.current?.close()}
+            onBulbPress={awonPress}
             id={light.id}
           />
         </Animated.View>

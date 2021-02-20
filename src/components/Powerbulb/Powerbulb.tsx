@@ -1,7 +1,7 @@
 import React from "react";
 import { faLightbulb, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
-import { isEqual } from "lodash";
+import { delay, isEqual } from "lodash";
 import { useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -13,7 +13,7 @@ import { Store } from "../../store";
 interface PowerBulbProps {
   id: string;
   style?: StyleProp<ViewStyle>;
-  onPress?: () => void;
+  onBulbPress?: () => void;
 }
 export default function PowerBulb(props: PowerBulbProps): JSX.Element {
   const { id, style } = props;
@@ -31,27 +31,19 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
     setIcon(light.isOn ? faLightbulb : regular);
   }, [light.isOn]);
 
-  const onPress = async() => {
-    console.log("pres");
+  const onPress = () => {
     const ax = lights.setStatus(light.id, !light.isOn);
     ax.then(() => {
       setIcon(light.isOn ? regular : faLightbulb);
     });
     ax.catch(() => {
       setIcon(light.isOn ? faLightbulb : regular);
-     
     });
-    setIcon(light.isOn ? regular : faLightbulb);
-    setTimeout(() => props.onPress ? props.onPress() : null, 10000);
+    if (props.onBulbPress) props.onBulbPress();
   };
   return (
     <Pressable onPress={onPress} style={style}>
-      <FontAwesomeIcon
-        size={30}
-        color={theme.colors.accent}
-        icon={icon}
-        {...props}
-      />
+      <FontAwesomeIcon size={30} color={theme.colors.accent} icon={icon} />
     </Pressable>
   );
 }

@@ -1,19 +1,73 @@
 {
-    "env": {
+  "env": {
       "es2021": true
   },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "@react-native-community",
-        "airbnb-typescript",
-        "prettier"
-    ],
-    "plugins": ["prettier"],
-    "rules": {
-      "prettier/prettier": "error",
-      "arrow-body-style": "off",
-      "prefer-arrow-callback": "off"
-    }
+  "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:@typescript-eslint/recommended",
+      "@react-native-community",
+      "airbnb-typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+      "ecmaFeatures": {
+          "jsx": true
+      },
+      "ecmaVersion": 12,
+      "sourceType": "module",
+      "project": "./tsconfig.json"
+  },
+  "plugins": [
+      "react",
+      "react-native",
+      "@typescript-eslint"
+  ],
+  "rules": {
+      "object-curly-spacing": "off",
+      "object-curly-newline": "off",
+      "prettier/prettier": "off",
+      "require-jsdoc": "off",
+      "react/jsx-props-no-spreading": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "quotes": "off",
+      "no-plusplus": "off",
+      "no-empty": [
+          "error",{
+              "allowEmptyCatch": true
+          }
+      ],
+      "@typescript-eslint/comma-dangle": [
+          "error",
+          {
+              "imports": "always-multiline",
+              "arrays": "always-multiline",
+              "objects": "always-multiline",
+              "exports": "always-multiline",
+              "functions": "always-multiline"
+          }
+      ],
+      "import/no-extraneous-dependencies": [
+          "off",
+          {
+              "packageDir": "./node_modules"
+          }
+      ],
+      "@typescript-eslint/indent": [
+          "error",
+          2
+      ],
+      "linebreak-style": [
+          "error",
+          "unix"
+      ],
+      "@typescript-eslint/quotes": [
+          "error",
+          "double"
+      ],
+      "@typescript-eslint/semi": [
+          "error",
+          "always"
+      ]
   }
+}

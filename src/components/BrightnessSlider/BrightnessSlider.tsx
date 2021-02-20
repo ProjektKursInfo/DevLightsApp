@@ -42,11 +42,10 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
       trackStyle={styles.trackStyle}
       thumbStyle={styles.thumbStyle}
       onValueChange={(value: number) => setBrightness(value)}
-      onSlidingComplete={(value: number) =>
+      onSlidingComplete={(value: number) => (
         lights.setBrightness(light.id, value).catch(() => {
           setBrightness(light.brightness);
-        })
-      }
+        }))}
     />
   );
 }
