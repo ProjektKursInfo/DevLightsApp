@@ -5,7 +5,7 @@ import { delay, isEqual } from "lodash";
 import { useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Pressable, StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Pressable, StyleProp, ViewStyle } from "react-native";
 import { Light } from "@devlights/types";
 import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
@@ -39,6 +39,7 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
     ax.catch(() => {
       setIcon(light.isOn ? faLightbulb : regular);
     });
+    setIcon(light.isOn ? regular : faLightbulb);
     if (props.onBulbPress) props.onBulbPress();
   };
   return (

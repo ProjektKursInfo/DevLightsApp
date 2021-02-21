@@ -6,6 +6,7 @@ import axios, { AxiosError } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
+  Button,
   KeyboardAvoidingView,
   RefreshControl,
   ScrollView,
@@ -13,7 +14,9 @@ import {
   TextInput,
   View,
 } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+import DropDownPicker, {
+  DropDownPickerProps,
+} from "react-native-dropdown-picker";
 import { Divider, List, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
@@ -28,8 +31,8 @@ import Powerbulb from "../Powerbulb";
 import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
 
 export type LightScreenNavigationProp = StackNavigationProp<
-LightsStackParamList,
-"light"
+  LightsStackParamList,
+  "light"
 >;
 export type LightScreenRouteProp = RouteProp<LightsStackParamList, "light">;
 
@@ -59,10 +62,27 @@ export default function LightScreen(): JSX.Element {
   const ref = React.useRef<TextInput>();
   const snackbar = useSnackbar();
   const lights = useLight();
+  let dropdown = null;
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
+  const [items, setItems] = React.useState<DropDownPickerProps["items"]>([
+    {
+      label: "Single Color",
+      value: "plain",
+    },
+    {
+      label: "Gradient",
+      value: "gradient",
+    },
+  ]);
+
   React.useEffect(() => {
+    if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
+      setItems([...items, { label: light.leds.pattern, value: "unkown" }]);
+    } else {
+      dropdown.select(light.leds.pattern);
+    }
     navigation.setOptions({
       headerRight: () => (
         <Powerbulb
@@ -72,6 +92,27 @@ export default function LightScreen(): JSX.Element {
       ),
     });
   }, []);
+
+  React.useEffect(() => {
+    if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
+      console.log("props");
+      setItems([...items, { label: light.leds.pattern, value: "unkown" }]);
+      dropdown.selectItem("unkown");
+      console.log(items);
+    } else {
+      setItems([
+        {
+          label: "Single Color",
+          value: "plain",
+        },
+        {
+          label: "Gradient",
+          value: "gradient",
+        },
+      ]);
+      dropdown.selectItem(light.leds.pattern);
+    }
+  }, [light.leds.pattern]);
 
   const changeName = (name: string) => {
     const ax = lights.setName(light.id, name);
@@ -94,12 +135,15 @@ export default function LightScreen(): JSX.Element {
     lights.setCount(light.id, parseInt(count, 10));
   };
   const changePattern = (pattern: string) => {
-    if (pattern !== light.leds.pattern) {
-      const newColors: string[] = [light.leds.colors[0]];
-      if (pattern === "gradient") {
-        newColors.push(light.leds.colors[0]);
+    if (pattern !== "unkown" && pattern !== undefined) {
+      if (pattern !== light.leds.pattern) {
+        console.log("MOOOIN");
+        const newColors: string[] = [light.leds.colors[0]];
+        if (pattern === "gradient") {
+          newColors.push(light.leds.colors[0]);
+        }
+        lights.setColor(light.id, newColors, pattern as Pattern);
       }
-      lights.setColor(light.id, newColors, pattern as Pattern);
     }
   };
 
@@ -212,6 +256,7 @@ export default function LightScreen(): JSX.Element {
     item_divider: { margin: theme.spacing(2) },
     list_item: { padding: theme.spacing(2) },
   });
+
   const newNav = useNavigation<TagScreenNavigationProp>();
   const navigateToTag = (tag: string) => {
     newNav.navigate("tag", { tag });
@@ -259,19 +304,11 @@ export default function LightScreen(): JSX.Element {
         <View style={styles.selectContainer}>
           <Text style={styles.selectLabel}>Pattern</Text>
           <DropDownPicker
+            controller={(instance: object) => (dropdown = instance)}
             disabled={!light.isOn}
-            items={[
-              {
-                label: "Single Color",
-                value: "plain",
-              },
-              {
-                label: "Gradient",
-                value: "gradient",
-              },
-            ]}
-            defaultValue={light.leds.pattern}
-            containerStyle={styles.dropdownContainer}
+            items={items}
+            /* defaultValue={light.leds.pattern !== "gradient" && light.leds.pattern !== "plain" ? "unkown" : light.leds.pattern}
+             */ containerStyle={styles.dropdownContainer}
             arrowColor={theme.colors.text}
             arrowSize={26}
             style={styles.select}
@@ -299,17 +336,17 @@ export default function LightScreen(): JSX.Element {
           <Divider style={styles.item_divider} />
           {light.tags?.length > 0
             ? light.tags?.map((tag: string) => (
-              <>
-                <List.Item
-                  key={tag}
-                  onPress={() => navigateToTag(tag)}
-                  style={styles.list_item}
-                  titleStyle={styles.title}
-                  title={tag}
-                />
-                <Divider />
-              </>
-            ))
+                <>
+                  <List.Item
+                    key={tag}
+                    onPress={() => navigateToTag(tag)}
+                    style={styles.list_item}
+                    titleStyle={styles.title}
+                    title={tag}
+                  />
+                  <Divider />
+                </>
+              ))
             : undefined}
 
           <ChangeableText

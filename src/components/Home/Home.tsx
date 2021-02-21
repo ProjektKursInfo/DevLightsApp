@@ -85,7 +85,7 @@ function Home(): JSX.Element {
       store.dispatch({ type: SET_TAGS, tags: res.data.object });
     });
     axios
-      .get("http://devlight/lights")
+      .get("http://devlight/lights", {timeout: 2000})
       .then((response: AxiosResponse) => {
         store.dispatch(setAllLights(response.data.object));
         setLoading(false);
@@ -95,15 +95,17 @@ function Home(): JSX.Element {
         setLoading(false);
         setError(true);
         SplashScreen.hideAsync();
-        StatusBar.setTranslucent(false);
       });
     if (refreshing) setRefresh(false);
-    SplashScreen.hideAsync();
   };
   const network = useNetwork();
   React.useEffect(() => {
-    if (network) fetch();
-    else setError(true);
+    if (network) {
+      fetch();
+    } else {
+      setError(true);
+      SplashScreen.hideAsync();
+    }
   }, [network]);
 
   const { colors } = useTheme();
@@ -132,14 +134,14 @@ function Home(): JSX.Element {
       />
 
       <ScrollView
-        refreshControl={
+        refreshControl={(
           <RefreshControl
             refreshing={refresh}
             onRefresh={() => fetch(true)}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
-        }
+        )}
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>

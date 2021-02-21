@@ -69,10 +69,8 @@ export default function LightCard(props: CardProps): JSX.Element {
   });
 
   const awonPress = () => {
-    console.log("pressss");
-    
     swipeableRef.current?.close();
-  }
+  };
 
   const renderRightAction = (
     x: number,
