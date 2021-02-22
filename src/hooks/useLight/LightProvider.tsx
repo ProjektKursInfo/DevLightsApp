@@ -27,6 +27,8 @@ export const LightContext = React.createContext<{
     pattern?: Pattern,
   ): Promise<LightResponse>;
   setBrightness(id: string, brightness: number): Promise<LightResponse>;
+  addTags(id: string, tags: string[]): Promise<LightResponse>;
+  removeTags(id: string, tags: string[]): Promise<LightResponse>;
 }>({
   fetchLight: () => new Promise<AxiosResponse>((): void => {}),
   setStatus: () => new Promise<AxiosResponse>((): void => {}),
@@ -34,6 +36,8 @@ export const LightContext = React.createContext<{
   setCount: () => new Promise<AxiosResponse>((): void => {}),
   setColor: () => new Promise<AxiosResponse>((): void => {}),
   setBrightness: () => new Promise<AxiosResponse>((): void => {}),
+  addTags: () => new Promise<AxiosResponse>((): void => {}),
+  removeTags: () => new Promise<AxiosResponse>((): void => {}),
 });
 
 export interface LightProviderProps {
@@ -150,6 +154,46 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     return await ax;
   }
 
+  async function addTags(id: string, tags: string[]): Promise<LightResponse> {
+    const ax = Axios.put(`http://devlight/lights/${id}/tags`, {
+      tags,
+    });
+    ax.then(() => {
+      fetchLight(id);
+    });
+    ax.catch((err: AxiosError) => {
+      snackbar.makeSnackbar(
+        err.response?.data.message ?? "an error orcurrred",
+        theme.colors.error,
+      );
+    });
+
+    return await ax;
+  }
+
+  async function removeTags(
+    id: string,
+    tags: string[],
+  ): Promise<LightResponse> {
+    const ax = Axios.delete(
+      `http://devlight/lights/${id}/tags`,
+      {
+        data: { tags},
+      },
+    );
+    ax.then(() => {
+      fetchLight(id);
+    });
+    ax.catch((err: AxiosError) => {
+      snackbar.makeSnackbar(
+        err.response?.data.message ?? "an error orcurrred",
+        theme.colors.error,
+      );
+    });
+
+    return await ax;
+  }
+
   const { children } = props;
   return (
     <LightContext.Provider
@@ -160,6 +204,8 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         setCount,
         setColor,
         setBrightness,
+        addTags,
+        removeTags,
       }}
     >
       {children}

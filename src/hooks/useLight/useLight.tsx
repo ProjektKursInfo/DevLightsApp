@@ -14,5 +14,7 @@ export default function useLight() : React.ContextType<typeof LightContext> {
       pattern?: Pattern
     ): Promise<LightResponse>;
     setBrightness(id: string, brightness: number): Promise<LightResponse>;
+    addTags(id: string, tags: string[]) :Promise<LightResponse>;
+    removeTags(id: string, tags: string[]) : Promise<LightResponse>;
   }>(LightContext);
 }

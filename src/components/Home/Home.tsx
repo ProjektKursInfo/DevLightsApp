@@ -50,8 +50,8 @@ export function Spinner(props: SpinnerProps): JSX.Element {
           <ActivityIndicator style={styles.indicator} size={60} />
         </View>
       ) : (
-          <View />
-        )}
+        <View />
+      )}
     </>
   );
 }
@@ -63,7 +63,6 @@ function Home(): JSX.Element {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
-
 
   const themeChange = useThemeChange();
 
@@ -163,29 +162,29 @@ function Home(): JSX.Element {
             <LightCard key={light.id} light={light} />
           ))
         ) : (
-            <>
-              {loading ? (
-                <Text> </Text>
-              ) : (
-                  <>
-                    <Lottie
-                      duration={4000}
-                      autoPlay
-                      hardwareAccelerationAndroid
-                      loop={false}
-                      autoSize
-                      // eslint-disable-next-line global-require
-                      source={require("../../../assets/animations/bulb.json")}
-                    />
-                    <Text style={styles.error_text}>
-                      Sorry! We couldn`t find any lights in your Network.
+          <>
+            {loading ? (
+              <Text> </Text>
+            ) : (
+              <>
+                <Lottie
+                  duration={4000}
+                  autoPlay
+                  hardwareAccelerationAndroid
+                  loop={false}
+                  autoSize
+                  // eslint-disable-next-line global-require
+                  source={require("../../../assets/animations/bulb.json")}
+                />
+                <Text style={styles.error_text}>
+                  Sorry! We couldn`t find any lights in your Network.
                   {"\n"}
                   Plug some in and they will appear here.
                 </Text>
-                  </>
-                )}
-            </>
-          )}
+              </>
+            )}
+          </>
+        )}
       </ScrollView>
     </View>
   );

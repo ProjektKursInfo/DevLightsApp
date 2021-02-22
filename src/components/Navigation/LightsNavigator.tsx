@@ -1,13 +1,13 @@
 import {
   faChevronLeft,
   faStar,
-  faTimes
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
-  TransitionPresets
+  TransitionPresets,
 } from "@react-navigation/stack";
 import React from "react";
 import { Dimensions } from "react-native";
@@ -24,7 +24,11 @@ export default function LightsNavigator(): JSX.Element {
   const navigation = useNavigation();
   const theme = useTheme();
   return (
-    <Stack.Navigator screenOptions={{headerStyle: {height: Dimensions.get("window").height * 0.125}}}>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { height: Dimensions.get("window").height * 0.125 },
+      }}
+    >
       <Stack.Screen
         name="home"
         component={Home}

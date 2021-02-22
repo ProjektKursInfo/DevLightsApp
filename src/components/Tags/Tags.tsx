@@ -1,34 +1,16 @@
-import { RouteProp, useNavigation } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import axios, { AxiosResponse } from "axios";
-import React from "react";
-import {
-  Animated,
-  Dimensions,
-  I18nManager,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View
-} from "react-native";
-import {
-  RectButton,
-  TouchableWithoutFeedback
-} from "react-native-gesture-handler";
-import Swipeable from "react-native-gesture-handler/Swipeable";
-import { Title, useTheme, Text } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
 import Lottie from "lottie-react-native";
-import { Light } from "@devlights/types";
-import useSnackbar from "../../hooks/useSnackbar";
+import React from "react";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { Text, Title } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { TagsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
-import { setLight } from "../../store/actions/lights";
 import { setTags } from "../../store/actions/tags";
 import { tagArrayEquality } from "../../utils";
-import { TagScreenNavigationProp } from "./TagScreen/TagScreen";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { TagsStackParamList } from "../../interfaces/types";
 import TagCard from "../TagCard";
-
 
 export type HomeScreenNavigationProp = StackNavigationProp<
 TagsStackParamList,
@@ -37,12 +19,12 @@ TagsStackParamList,
 export type HomeScreenRouteProp = RouteProp<TagsStackParamList, "home">;
 
 function Tags(): JSX.Element {
+  const dispatch = useDispatch();
   const tags = useSelector(
     (state: Store) => state.tags,
     (l: string[], r: string[]) => tagArrayEquality(l, r),
   );
   const [refresh, setRefresh] = React.useState<boolean>(false);
-  const dispatch = useDispatch();
 
   const fetch = (refreshing = false) => {
     if (refreshing) setRefresh(true);

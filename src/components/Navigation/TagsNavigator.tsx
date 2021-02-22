@@ -1,7 +1,7 @@
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import {
   createStackNavigator,
-  StackHeaderLeftButtonProps
+  StackHeaderLeftButtonProps,
 } from "@react-navigation/stack";
 import React from "react";
 import { useTheme } from "react-native-paper";

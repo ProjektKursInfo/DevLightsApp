@@ -29,6 +29,7 @@ import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import Powerbulb from "../Powerbulb";
 import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
+import TagsList from "../TagsList/TagsList";
 
 export type LightScreenNavigationProp = StackNavigationProp<
   LightsStackParamList,
@@ -57,7 +58,6 @@ export default function LightScreen(): JSX.Element {
     (l: Light, r: Light) =>
       !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn),
   );
-  const tags = useSelector((state: Store) => state.tags);
   const navigation = useNavigation();
   const ref = React.useRef<TextInput>();
   const snackbar = useSnackbar();
@@ -80,6 +80,7 @@ export default function LightScreen(): JSX.Element {
   React.useEffect(() => {
     if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
       setItems([...items, { label: light.leds.pattern, value: "unkown" }]);
+      dropdown.select("unkown");
     } else {
       dropdown.select(light.leds.pattern);
     }
@@ -95,10 +96,8 @@ export default function LightScreen(): JSX.Element {
 
   React.useEffect(() => {
     if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
-      console.log("props");
       setItems([...items, { label: light.leds.pattern, value: "unkown" }]);
       dropdown.selectItem("unkown");
-      console.log(items);
     } else {
       setItems([
         {
@@ -137,7 +136,6 @@ export default function LightScreen(): JSX.Element {
   const changePattern = (pattern: string) => {
     if (pattern !== "unkown" && pattern !== undefined) {
       if (pattern !== light.leds.pattern) {
-        console.log("MOOOIN");
         const newColors: string[] = [light.leds.colors[0]];
         if (pattern === "gradient") {
           newColors.push(light.leds.colors[0]);
@@ -145,27 +143,6 @@ export default function LightScreen(): JSX.Element {
         lights.setColor(light.id, newColors, pattern as Pattern);
       }
     }
-  };
-
-  const addTag = (tag: string) => {
-    const index = tags.findIndex(
-      (t: string) => t.toLowerCase() === tag.toLowerCase(),
-    );
-    axios
-      .put(`http://devlight/lights/${light.id}/tags`, {
-        tags: [index >= 0 ? tags[index] : tag],
-      })
-      .then(() => {
-        setEnabled(false);
-        lights.fetchLight(light.id);
-      })
-      .catch((err: AxiosError) => {
-        setEnabled(false);
-        snackbar.makeSnackbar(
-          err.response?.data.message ?? "an error orcurrred",
-          theme.colors.error,
-        );
-      });
   };
 
   const fetch = async () => {
@@ -248,19 +225,8 @@ export default function LightScreen(): JSX.Element {
       width: "90%",
       alignSelf: "center",
     },
-    item_headline: {
-      marginLeft: theme.spacing(2),
-      marginTop: theme.spacing(2),
-      fontWeight: "bold",
-    },
-    item_divider: { margin: theme.spacing(2) },
-    list_item: { padding: theme.spacing(2) },
   });
 
-  const newNav = useNavigation<TagScreenNavigationProp>();
-  const navigateToTag = (tag: string) => {
-    newNav.navigate("tag", { tag });
-  };
   return (
     <KeyboardAvoidingView
       style={{ height: "100%" }}
@@ -307,8 +273,7 @@ export default function LightScreen(): JSX.Element {
             controller={(instance: object) => (dropdown = instance)}
             disabled={!light.isOn}
             items={items}
-            /* defaultValue={light.leds.pattern !== "gradient" && light.leds.pattern !== "plain" ? "unkown" : light.leds.pattern}
-             */ containerStyle={styles.dropdownContainer}
+            containerStyle={styles.dropdownContainer}
             arrowColor={theme.colors.text}
             arrowSize={26}
             style={styles.select}
@@ -332,40 +297,7 @@ export default function LightScreen(): JSX.Element {
         <Divider style={styles.divider} />
 
         <View style={styles.item_container}>
-          <Text style={styles.item_headline}>Tags</Text>
-          <Divider style={styles.item_divider} />
-          {light.tags?.length > 0
-            ? light.tags?.map((tag: string) => (
-                <>
-                  <List.Item
-                    key={tag}
-                    onPress={() => navigateToTag(tag)}
-                    style={styles.list_item}
-                    titleStyle={styles.title}
-                    title={tag}
-                  />
-                  <Divider />
-                </>
-              ))
-            : undefined}
-
-          <ChangeableText
-            onFocus={() => setEnabled(true)}
-            /* onBlur={() => setEnabled(false)} */
-            error={!enabled}
-            value=""
-            textAlign="left"
-            placeholderTextColor={theme.colors.lightText}
-            inputStyle={{
-              width: "100%",
-              fontSize: 14,
-              fontWeight: "normal",
-              color: theme.colors.text,
-            }}
-            editIcon={faPlus}
-            onSave={addTag}
-            placeholder="Add Tag"
-          />
+          <TagsList enabled={enabled} setEnabled={setEnabled} light={light} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
