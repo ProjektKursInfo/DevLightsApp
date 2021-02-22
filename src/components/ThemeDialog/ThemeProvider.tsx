@@ -26,27 +26,7 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
   const colorScheme = Appearance.getColorScheme();
   const dispatch = useDispatch();
   React.useEffect(() => {
-    StatusBar.setTranslucent(true);
-    StatusBar.setBackgroundColor("transparent");
-    SplashScreen.preventAutoHideAsync();
-    async function getTheme() {
-      const themeType: ThemeType = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "Dark";
-      dispatch(setTheme(themeType));
-      if (
-        themeType === "Dark" || (themeType === "System-Default" && colorScheme === "dark")
-      ) {
-        themeFunction().then((t) => {
-          setStateTheme(t);
-        });
-      } else if (
-        themeType === "Light" || (themeType === "System-Default" && colorScheme === "light")
-      ) {
-        lightFunction().then((t) => {
-          setStateTheme(t);
-        });
-      }
-    }
-    getTheme();
+     SplashScreen.preventAutoHideAsync();
   }, []);
 
   const changeTheme = async (type: ThemeType) => {

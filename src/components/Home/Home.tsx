@@ -22,6 +22,8 @@ import {
 import { setAllLights } from "../../store/actions/lights";
 import { SET_TAGS } from "../../store/types/types";
 import LightCard from "../LightCard";
+import { useThemeChange } from "../ThemeDialog";
+import { ThemeType } from "../../interfaces/types";
 
 interface SpinnerProps {
   visible: boolean;
@@ -48,8 +50,8 @@ export function Spinner(props: SpinnerProps): JSX.Element {
           <ActivityIndicator style={styles.indicator} size={60} />
         </View>
       ) : (
-        <View />
-      )}
+          <View />
+        )}
     </>
   );
 }
@@ -61,6 +63,10 @@ function Home(): JSX.Element {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
+
+
+  const themeChange = useThemeChange();
+
   const fetch = async (refreshing = false) => {
     setLoading(true);
     if (refreshing) setRefresh(refreshing);
@@ -70,6 +76,10 @@ function Home(): JSX.Element {
     const favouriteGradients: string | null = await AsyncStorage.getItem(
       "favouriteGradients",
     );
+
+    const themeType: ThemeType = await AsyncStorage.getItem("themeType") as ThemeType ?? "Dark";
+    await themeChange.changeTheme(themeType);
+
     if (favouriteColors != null) {
       store.dispatch(
         setFavouriteColors(Array.from(JSON.parse(favouriteColors))),
@@ -84,8 +94,8 @@ function Home(): JSX.Element {
     axios.get("http://devlight/tags").then((res) => {
       store.dispatch({ type: SET_TAGS, tags: res.data.object });
     });
-    axios
-      .get("http://devlight/lights", {timeout: 2000})
+    await axios
+      .get("http://devlight/lights", { timeout: 2000 })
       .then((response: AxiosResponse) => {
         store.dispatch(setAllLights(response.data.object));
         setLoading(false);
@@ -153,29 +163,29 @@ function Home(): JSX.Element {
             <LightCard key={light.id} light={light} />
           ))
         ) : (
-          <>
-            {loading ? (
-              <Text> </Text>
-            ) : (
-              <>
-                <Lottie
-                  duration={4000}
-                  autoPlay
-                  hardwareAccelerationAndroid
-                  loop={false}
-                  autoSize
-                  // eslint-disable-next-line global-require
-                  source={require("../../../assets/animations/bulb.json")}
-                />
-                <Text style={styles.error_text}>
-                  Sorry! We couldn`t find any lights in your Network.
+            <>
+              {loading ? (
+                <Text> </Text>
+              ) : (
+                  <>
+                    <Lottie
+                      duration={4000}
+                      autoPlay
+                      hardwareAccelerationAndroid
+                      loop={false}
+                      autoSize
+                      // eslint-disable-next-line global-require
+                      source={require("../../../assets/animations/bulb.json")}
+                    />
+                    <Text style={styles.error_text}>
+                      Sorry! We couldn`t find any lights in your Network.
                   {"\n"}
                   Plug some in and they will appear here.
                 </Text>
-              </>
-            )}
-          </>
-        )}
+                  </>
+                )}
+            </>
+          )}
       </ScrollView>
     </View>
   );
