@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import NetInfo, { NetInfoState } from "@react-native-community/netinfo";
 
 export default function useNetwork(): boolean {
-  const [hasNetwork, setNetwork] = useState<boolean>(false);
+  const [hasNetwork, setNetwork] = useState<boolean>(true);
   useEffect(() => {
     function setNetworkStatus(status: NetInfoState) {
       // console.log(status);
@@ -20,6 +20,6 @@ export default function useNetwork(): boolean {
     NetInfo.addEventListener((state) => {
       setNetworkStatus(state);
     });
-  });
+  }, [hasNetwork]);
   return hasNetwork;
 }

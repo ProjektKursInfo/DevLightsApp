@@ -25,22 +25,19 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
   const [theme, setStateTheme] = React.useState<ReactNativePaper.Theme>();
   const colorScheme = Appearance.getColorScheme();
   const dispatch = useDispatch();
-  React.useEffect(() => {
-     SplashScreen.preventAutoHideAsync();
-  }, []);
 
   const changeTheme = async (type: ThemeType) => {
     if (
       type === "Dark" || (type === "System-Default" && colorScheme === "dark")
     ) {
-      themeFunction().then((t) => {
+      await themeFunction().then((t) => {
         setStateTheme(t);
       });
       dispatch(setTheme(type));
     } else if (
       type === "Light" || (type === "System-Default" && colorScheme === "light")
     ) {
-      lightFunction().then((t) => {
+      await lightFunction().then((t) => {
         setStateTheme(t);
       });
       dispatch(setTheme(type));

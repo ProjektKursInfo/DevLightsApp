@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
-import { Light } from "@devlights/types";
+import { Light, Response } from "@devlights/types";
+import allSettled from "promise.allsettled";
 import useNetwork from "../../hooks/useNetwork";
 import { Store } from "../../store";
 import {
@@ -20,10 +21,11 @@ import {
   setFavouriteGradients,
 } from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
-import { SET_TAGS } from "../../store/types/types";
+import { SET_ALL_LIGHTS, SET_TAGS } from "../../store/types/types";
 import LightCard from "../LightCard";
 import { useThemeChange } from "../ThemeDialog";
 import { ThemeType } from "../../interfaces/types";
+import { setTags } from "../../store/actions/tags";
 
 interface SpinnerProps {
   visible: boolean;
@@ -65,20 +67,54 @@ function Home(): JSX.Element {
   const [error, setError] = React.useState<boolean>(false);
 
   const themeChange = useThemeChange();
+  const network = useNetwork();
 
-  const fetch = async (refreshing = false) => {
+  const fetchTheme = async () => {
+    console.log("exeucte");
+    const themeType: ThemeType =
+      ((await AsyncStorage.getItem("themeType")) as ThemeType) ?? "Dark";
+    await themeChange.changeTheme(themeType);
+    return theme;
+  };
+
+  const fetch = async () => {
     setLoading(true);
-    if (refreshing) setRefresh(refreshing);
+    setError(false);
+    const fetching = fetchTheme();
+    const lightPromise: Promise<AxiosResponse<Response<Light[]>>> = axios.get(
+      "http://devlight/lights",
+    );
+    const tagsPromise = axios.get("http://devlight/tags");
+    const promises: Promise<any>[] = [];
+    promises.push(fetching);
+    if (network) {
+      promises.push(lightPromise);
+      promises.push(tagsPromise);
+    }
+    allSettled(promises).then((val) => {
+      try {
+        if (val[1]) {
+          const newLights = val[1].value.data.object;
+          store.dispatch(setAllLights(newLights));
+        } else {
+          setError(true);
+        }
+        if (val[2]) {
+          store.dispatch(setTags(val[2].value.data.object));
+        }
+      } catch {
+        setError(true);
+      }
+      setLoading(false);
+      SplashScreen.hideAsync();
+    });
+
     const favouriteColors: string | null = await AsyncStorage.getItem(
       "favouriteColors",
     );
     const favouriteGradients: string | null = await AsyncStorage.getItem(
       "favouriteGradients",
     );
-
-    const themeType: ThemeType = await AsyncStorage.getItem("themeType") as ThemeType ?? "Dark";
-    await themeChange.changeTheme(themeType);
-
     if (favouriteColors != null) {
       store.dispatch(
         setFavouriteColors(Array.from(JSON.parse(favouriteColors))),
@@ -89,31 +125,13 @@ function Home(): JSX.Element {
         setFavouriteGradients(Array.from(JSON.parse(favouriteGradients))),
       );
     }
-    setError(false);
-    axios.get("http://devlight/tags").then((res) => {
-      store.dispatch({ type: SET_TAGS, tags: res.data.object });
-    });
-    await axios
-      .get("http://devlight/lights", { timeout: 2000 })
-      .then((response: AxiosResponse) => {
-        store.dispatch(setAllLights(response.data.object));
-        setLoading(false);
-        SplashScreen.hideAsync();
-      })
-      .catch(() => {
-        setLoading(false);
-        setError(true);
-        SplashScreen.hideAsync();
-      });
-    if (refreshing) setRefresh(false);
   };
-  const network = useNetwork();
+
   React.useEffect(() => {
     if (network) {
       fetch();
     } else {
       setError(true);
-      SplashScreen.hideAsync();
     }
   }, [network]);
 
@@ -143,14 +161,14 @@ function Home(): JSX.Element {
       />
 
       <ScrollView
-        refreshControl={(
+        refreshControl={
           <RefreshControl
             refreshing={refresh}
             onRefresh={() => fetch(true)}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
-        )}
+        }
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>
