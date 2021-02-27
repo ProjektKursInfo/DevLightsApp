@@ -67,6 +67,3 @@ web-build/
 .eslintrc.json.save
 
 .watchmanconfig
-
-# Own parts
-android.sh

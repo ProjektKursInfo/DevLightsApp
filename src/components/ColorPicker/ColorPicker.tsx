@@ -20,7 +20,7 @@ import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   addFavouriteColor,
-  removeFavouriteColor
+  removeFavouriteColor,
 } from "../../store/actions/favourites";
 import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
@@ -38,7 +38,7 @@ LightsStackParamList,
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
   const { id, index } = route.params;
-  const lights = useLight(id);
+  const lights = useLight();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (left: Light, right: Light) => !isEqual(left.leds, right.leds),
@@ -78,10 +78,6 @@ export default function ColorPicker(): JSX.Element {
   });
 
   React.useEffect(() => {
-    if (favouriteColors.includes(light.leds.colors[index])) setIcon(fullstar);
-  }, []);
-
-  React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Pressable style={styles.icon} onPress={() => saveColor()}>
@@ -91,39 +87,24 @@ export default function ColorPicker(): JSX.Element {
     });
   }, [icon]);
 
+  React.useEffect(() => {
+    if (favouriteColors.includes(tinycolor.fromRatio(hsv).toHexString())) {
+      setIcon(fullstar);
+    } else {
+      setIcon(faStar);
+    }
+  }, [hsv]);
+
+  const onSatValChange = ({saturation, value} : {saturation: number, value: number}) => {
+    setHsv({...hsv, s: saturation, v: value});
+  };
+
   const onPress = (prop: string) => {
     const { h, s, v } = tinycolor.fromRatio(prop).toHsv();
     setHsv({ h, s, v });
     if (icon === faStar) setIcon(fullstar);
   };
 
-  const onHueChange = ({ hue }: { hue: number }) => {
-    setHsv({ ...hsv, h: hue });
-    if (
-      favouriteColors.includes(
-        tinycolor.fromRatio({ ...hsv, h: hue }).toHexString(),
-      )
-    ) {
-      setIcon(fullstar);
-    } else if (icon === fullstar) setIcon(faStar);
-  };
-
-  const onSatValChange = ({
-    saturation,
-    value,
-  }: {
-    saturation: number;
-    value: number;
-  }) => {
-    setHsv({ ...hsv, s: saturation, v: value });
-    if (
-      favouriteColors.includes(
-        tinycolor.fromRatio({ ...hsv, s: saturation, v: value }).toHexString(),
-      )
-    ) {
-      setIcon(fullstar);
-    } else if (icon === fullstar) setIcon(faStar);
-  };
   const onSubmit = async () => {
     const oldColor = light.leds.colors[index];
     const newColors = makeValidColorArray(
@@ -152,17 +133,15 @@ export default function ColorPicker(): JSX.Element {
         satValPickerValue={hsv.v}
         satValPickerSize={270}
         satValPickerSliderSize={30}
-        onHuePickerDragMove={onHueChange}
-        onHuePickerPress={onHueChange}
+        onHuePickerDragMove={({ hue }: { hue: number }) => setHsv({ ...hsv, h: hue })}
+        onHuePickerPress={({ hue }: { hue: number }) => setHsv({ ...hsv, h: hue })}
         onSatValPickerDragMove={onSatValChange}
         onSatValPickerPress={onSatValChange}
       />
-      {/** @ts-ignore */}
       <Text>
         Current color:
         {tinycolor.fromRatio(hsv).toHexString()}
       </Text>
-      {/** @ts-ignore */}
       <Button
         disabled={
           tinycolor.fromRatio(hsv).toHexString() === light.leds.colors[index]

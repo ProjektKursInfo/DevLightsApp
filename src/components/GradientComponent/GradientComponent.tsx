@@ -33,7 +33,7 @@ export interface GradientComponentProps {
 }
 
 export default function GradientComponent(
-  props: GradientComponentProps
+  props: GradientComponentProps,
 ): JSX.Element {
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const light: Light = useSelector(
@@ -81,7 +81,7 @@ export default function GradientComponent(
     ) {
       setIcon(fullstar);
     } else setIcon(faStar);
-  }, []);
+  }, [light.leds.colors]);
 
   const styles = StyleSheet.create({
     buttonContainer: {

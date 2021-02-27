@@ -1,12 +1,9 @@
 import { Light, Pattern } from "@devlights/types";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import axios, { AxiosError } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
-  Button,
   KeyboardAvoidingView,
   RefreshControl,
   ScrollView,
@@ -17,7 +14,7 @@ import {
 import DropDownPicker, {
   DropDownPickerProps,
 } from "react-native-dropdown-picker";
-import { Divider, List, Text, useTheme } from "react-native-paper";
+import { Divider, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
 import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
@@ -28,7 +25,6 @@ import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import Powerbulb from "../Powerbulb";
-import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
 import TagsList from "../TagsList/TagsList";
 
 export type LightScreenNavigationProp = StackNavigationProp<
@@ -44,7 +40,12 @@ function PatternComponent(props: { pattern: string; id: string }): JSX.Element {
     case "plain":
       return <PlainComponent id={props.id} />;
     default:
-      return <Text> Not implemented yet </Text>;
+      return (
+        <Text>
+          The Light is currently in a mode where changing the Color is not
+          supported
+        </Text>
+      );
   }
 }
 
@@ -66,7 +67,7 @@ export default function LightScreen(): JSX.Element {
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
-  const [items, setItems] = React.useState<DropDownPickerProps["items"]>([
+  const defaultItems = [
     {
       label: "Single Color",
       value: "plain",
@@ -75,15 +76,39 @@ export default function LightScreen(): JSX.Element {
       label: "Gradient",
       value: "gradient",
     },
-  ]);
+  ];
+  const getRightString = (): string => {
+    switch (light.leds.pattern) {
+      case "waking":
+        return "Waking";
+      case "fading":
+        return "Fading";
+      case "blinking":
+        return "Blinking";
+      default:
+        return light.leds.pattern;
+    }
+  };
+
+  const [items, setItems] = React.useState<DropDownPickerProps["items"]>(
+    light.leds.pattern !== "waking"
+      ? defaultItems
+      : [
+        ...defaultItems,
+        {
+          label: getRightString(),
+          value: "unkown",
+        },
+      ],
+  );
 
   React.useEffect(() => {
-    if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
-      setItems([...items, { label: light.leds.pattern, value: "unkown" }]);
+    /* if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
+       setItems([...items, { label: light.leds.pattern, value: "unkown" }]); 
       dropdown.select("unkown");
     } else {
       dropdown.select(light.leds.pattern);
-    }
+    } */
     navigation.setOptions({
       headerRight: () => (
         <Powerbulb
@@ -96,7 +121,7 @@ export default function LightScreen(): JSX.Element {
 
   React.useEffect(() => {
     if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
-      setItems([...items, { label: light.leds.pattern, value: "unkown" }]);
+      setItems([...items, { label: getRightString(), value: "unkown" }]);
       dropdown.selectItem("unkown");
     } else {
       setItems([
@@ -276,6 +301,12 @@ export default function LightScreen(): JSX.Element {
             containerStyle={styles.dropdownContainer}
             arrowColor={theme.colors.text}
             arrowSize={26}
+            defaultValue={
+              light.leds.pattern !== "plain" &&
+              light.leds.pattern !== "gradient"
+                ? "unkown"
+                : light.leds.pattern
+            }
             style={styles.select}
             dropDownStyle={styles.selectDropdown}
             labelStyle={styles.dropdownLabel}

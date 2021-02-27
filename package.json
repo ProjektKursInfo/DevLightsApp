@@ -1,7 +1,7 @@
 {
   "main": "index.js",
   "scripts": {
-    "android": "react-native run-android",
+    "android": "./android.sh",
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "start": "eslint ./src || react-native start",

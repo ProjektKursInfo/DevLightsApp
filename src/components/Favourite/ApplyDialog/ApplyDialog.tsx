@@ -5,7 +5,7 @@ import {
   Portal,
   Title,
   useTheme,
-  RadioButton
+  RadioButton,
 } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { Light } from "@devlights/types";
