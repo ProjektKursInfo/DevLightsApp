@@ -70,9 +70,8 @@ function Home(): JSX.Element {
   const network = useNetwork();
 
   const fetchTheme = async () => {
-    console.log("exeucte");
     const themeType: ThemeType =
-      ((await AsyncStorage.getItem("themeType")) as ThemeType) ?? "Dark";
+      ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "Dark";
     await themeChange.changeTheme(themeType);
     return theme;
   };

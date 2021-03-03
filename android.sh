@@ -9,7 +9,7 @@ adb start-server
 timeout 5 adb wait-for-usb-device && adb reverse tcp:8081 tcp:8081 || echo "Connecting with android device failed"
 
 #Checking if NodeJS Server is Running and if not starting it.
-pgrep node && echo "Server is already running" || yarn start && echo "Starting Metro Development Server..."
+yarn start && echo "Starting Metro Development Server..."
 
 #Install Debug App if not installed
 adb shell pm list packages | grep com.devlights.debug && echo "App is already installed" || react-native run-android &
