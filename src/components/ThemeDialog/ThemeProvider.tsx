@@ -1,12 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
-import { Appearance, StatusBar } from "react-native";
+import { Appearance } from "react-native";
 import { Provider } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { ThemeType } from "../../interfaces/types";
-import { lightTheme as lightFunction, theme as themeFunction } from "../theme";
 import setTheme from "../../store/actions/theme";
+import { lightTheme as lightFunction, darkTheme as darkFunction } from "../theme";
 
 export interface ThemeProviderProps {
   children: JSX.Element;
@@ -30,7 +28,7 @@ export default function ThemeProvider(props: ThemeProviderProps): JSX.Element {
     if (
       type === "Dark" || (type === "System-Default" && colorScheme === "dark")
     ) {
-      await themeFunction().then((t) => {
+      await darkFunction().then((t) => {
         setStateTheme(t);
       });
       dispatch(setTheme(type));

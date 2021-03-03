@@ -14,9 +14,8 @@ export default function Settings(): JSX.Element {
   const [visible, setVisible] = React.useState<boolean>(false);
   const themeType = useSelector(
     (state: Store) => state.theme,
-    (left: ThemeType, right: ThemeType) => !isEqual(left, right),
+    (left: ThemeType, right: ThemeType) => isEqual(left, right),
   );
-  console.log(themeType);
   const styles = StyleSheet.create({
     container: { width: "100%", height: "100%" },
     title: {
@@ -50,25 +49,25 @@ export default function Settings(): JSX.Element {
       />
 
       <ScrollView contentContainerStyle={styles.contentContainerStyle}>
-
         <Title style={styles.title}>Settings</Title>
 
-        <List.Section title="Apperance" titleStyle={styles.themeText} />
-        <List.Item
-          style={styles.listItem}
-          title="Theme"
-          description={themeType}
-          titleStyle={styles.listItemTitle}
-          onPress={() => setVisible(true)}
-          left={() => (
-            <FontAwesomeIcon
-              color={theme.colors.text}
-              style={styles.listIcon}
-              icon={faAdjust}
-            />
-          )}
-        />
-        <ThemeDialog visible={visible} onDismiss={() => setVisible(false)} />
+        <List.Section title="Apperance" titleStyle={styles.themeText}>
+          <List.Item
+            style={styles.listItem}
+            title="Theme"
+            description={themeType}
+            titleStyle={styles.listItemTitle}
+            onPress={() => setVisible(true)}
+            left={() => (
+              <FontAwesomeIcon
+                color={theme.colors.text}
+                style={styles.listIcon}
+                icon={faAdjust}
+              />
+            )}
+          />
+          <ThemeDialog visible={visible} onDismiss={() => setVisible(false)} />
+        </List.Section>
       </ScrollView>
     </View>
   );

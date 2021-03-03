@@ -21,11 +21,11 @@ import {
   setFavouriteGradients,
 } from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
-import { SET_ALL_LIGHTS, SET_TAGS } from "../../store/types/types";
 import LightCard from "../LightCard";
 import { useThemeChange } from "../ThemeDialog";
 import { ThemeType } from "../../interfaces/types";
 import { setTags } from "../../store/actions/tags";
+import { LightResponse } from "../../hooks/useLight/LightProvider";
 
 interface SpinnerProps {
   visible: boolean;
@@ -58,12 +58,11 @@ export function Spinner(props: SpinnerProps): JSX.Element {
   );
 }
 
-function Home(): JSX.Element {
+export default function Home(): JSX.Element {
   const theme = useTheme();
   const store = useStore();
   const lights: Light[] = useSelector((state: Store) => state.lights);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
 
   const themeChange = useThemeChange();
@@ -84,7 +83,7 @@ function Home(): JSX.Element {
       "http://devlight/lights",
     );
     const tagsPromise = axios.get("http://devlight/tags");
-    const promises: Promise<any>[] = [];
+    const promises: Promise<AxiosResponse<LightResponse> | unknown>[] = [];
     promises.push(fetching);
     if (network) {
       promises.push(lightPromise);
@@ -96,10 +95,13 @@ function Home(): JSX.Element {
           const newLights = val[1].value.data.object;
           store.dispatch(setAllLights(newLights));
         } else {
+          store.dispatch(setAllLights([]));
           setError(true);
         }
         if (val[2]) {
           store.dispatch(setTags(val[2].value.data.object));
+        } else {
+          store.dispatch(setTags([]));
         }
       } catch {
         setError(true);
@@ -162,8 +164,8 @@ function Home(): JSX.Element {
       <ScrollView
         refreshControl={
           <RefreshControl
-            refreshing={refresh}
-            onRefresh={() => fetch(true)}
+            refreshing={false}
+            onRefresh={() => fetch()}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
@@ -206,4 +208,3 @@ function Home(): JSX.Element {
     </View>
   );
 }
-export default Home;

@@ -4,7 +4,7 @@ import {
   TitilliumWeb_400Regular_Italic,
   TitilliumWeb_600SemiBold,
   TitilliumWeb_700Bold,
-  TitilliumWeb_700Bold_Italic
+  TitilliumWeb_700Bold_Italic,
 } from "@expo-google-fonts/titillium-web";
 import * as Font from "expo-font";
 import { configureFonts, DarkTheme, DefaultTheme } from "react-native-paper";
@@ -93,7 +93,7 @@ export const lightTheme = async () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const theme = async () => {
+export const darkTheme = async () => {
   await loadFonts();
   return {
     ...DarkTheme,

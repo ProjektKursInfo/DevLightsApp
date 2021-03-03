@@ -1,8 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { isEqual } from "lodash";
 import React from "react";
 import { StyleProp, StyleSheet, TextStyle } from "react-native";
 import { Button, Dialog, Portal, RadioButton } from "react-native-paper";
+import { useSelector } from "react-redux";
 import { ThemeType } from "../../interfaces/types";
+import { Store } from "../../store";
 import { useThemeChange } from "./ThemeProvider";
 
 export interface ThemeDialogProps {
@@ -12,15 +14,12 @@ export interface ThemeDialogProps {
 
 export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
   const { visible } = props;
-  const [value, setValue] = React.useState<ThemeType>("Dark");
+  const theme = useSelector(
+    (state: Store) => state.theme,
+    (l: ThemeType, r: ThemeType) => isEqual(l, r),
+  );
+  const [value, setValue] = React.useState<ThemeType>(theme);
   const changeTheme = useThemeChange();
-  React.useEffect(() => {
-    async function get() {
-      const themeType: ThemeType = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
-      setValue(themeType);
-    }
-    get();
-  }, []);
 
   const onConfirm = async () => {
     changeTheme.changeTheme(value);
@@ -29,8 +28,7 @@ export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
 
   const onDismiss = async () => {
     props.onDismiss();
-    const item = ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "dark";
-    setValue(item);
+    setValue(theme);
   };
 
   const styles = StyleSheet.create({
@@ -52,9 +50,9 @@ export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
         <Dialog.Title>Choose Theme</Dialog.Title>
         <Dialog.Content>
           <RadioButton.Group
-            onValueChange={(newValue: string) => (
-              setValue(newValue as ThemeType)
-            )}
+            onValueChange={(newValue: string) => {
+              setValue(newValue as ThemeType);
+            }}
             value={value}
           >
             <RadioButton.Item

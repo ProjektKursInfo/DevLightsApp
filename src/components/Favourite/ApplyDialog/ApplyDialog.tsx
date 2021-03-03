@@ -1,4 +1,5 @@
 import * as React from "react";
+import { StyleSheet } from "react-native";
 import { Modalize } from "react-native-modalize";
 import {
   Button,
@@ -6,6 +7,7 @@ import {
   Title,
   useTheme,
   RadioButton,
+  List,
 } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { Light } from "@devlights/types";
@@ -45,31 +47,38 @@ export const ApplyDialog = React.forwardRef(
       props.onConfirm();
       if (values.length > 0) {
         values.forEach((v: string) => {
-          // TODO Axios for all Lights
           light.setColor(v, props.colors, props.colors.length > 1 ? "gradient" : "plain");
         });
       }
     };
+
+    const styles = StyleSheet.create({
+      modal: {
+        backgroundColor: theme.colors.background,
+      },
+      title: {
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+      },
+      item_text: {
+        textAlign: "center",
+      },
+    });
     return (
       <Portal>
         <Modalize
           snapPoint={snapPoint}
           useNativeDriver
-          modalStyle={{
-            backgroundColor: theme.colors.background,
-          }}
+          modalStyle={styles.modal}
           ref={ref}
           onClose={() => setValues([])}
         >
           <Title
-            style={{
-              marginTop: theme.spacing(2),
-              marginLeft: theme.spacing(2),
-            }}
+            style={styles.title}
           >
             Apply favourite color on Light
           </Title>
-          {lights.map((l: Light) => (
+          {lights.length > 0 ? lights.map((l: Light) => (
             <RadioButton.Item
               key={l.id}
               disabled={!l.isOn}
@@ -82,8 +91,8 @@ export const ApplyDialog = React.forwardRef(
               onPress={() => onPress(l.id)}
               status={values.includes(l.id) ? "checked" : "unchecked"}
             />
-          ))}
-          <Button disabled={values.length === 0} onPress={() => onConfirm()}>
+          )) : <List.Item titleStyle={styles.item_text} title="There arent any lights."> </List.Item>}
+          <Button disabled={values.length === 0 || lights.length === 0} onPress={() => onConfirm()}>
             Apply color
           </Button>
         </Modalize>
