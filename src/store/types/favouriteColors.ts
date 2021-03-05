@@ -1,7 +1,7 @@
 import {
   ADD_FAVOURITE_COLOR,
   REMOVE_FAVOURITE_COLOR,
-  SET_FAVOURITE_COLORS
+  SET_FAVOURITE_COLORS,
 } from "./types";
 
 export interface SetFavouriteColorsAction {

@@ -1,4 +1,4 @@
-import { faCog, faHome, faTags } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faCog, faHome, faTags } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { useTheme } from "react-native-paper";
 import Settings from "../Settings";
+import AlarmNavigator from "./AlarmNavigator";
 import LightsNavigator from "./LightsNavigator";
 import TagsNavigator from "./TagsNavigator";
 
@@ -57,6 +58,16 @@ export default function Navigation(): JSX.Element {
               <FontAwesomeIcon color={props.color} icon={faTags} size={26} />
             ),
           }}
+        />
+        <Tab.Screen
+          component={AlarmNavigator}
+          options={{
+            tabBarIcon: (props: { color: string }) => (
+              // eslint-disable-next-line react/destructuring-assignment
+              <FontAwesomeIcon color={props.color} icon={faClock} size={26} />
+            ),
+          }}
+          name="alarms"
         />
         <Tab.Screen
           component={SettingsNavigator}
