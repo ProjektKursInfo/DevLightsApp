@@ -27,6 +27,8 @@ import {
 import { isFavouriteGradient } from "../../utils";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
 import useLight from "../../hooks/useLight";
+import Circle from "../Circle";
+import FavouriteGradientList from "../FavouriteGradientList";
 
 export interface GradientComponentProps {
   id: string;
@@ -104,6 +106,7 @@ export default function GradientComponent(
   });
   return (
     <>
+      <FavouriteGradientList id={light.id} />
       <Pressable style={styles.pressable} onPress={() => saveColor()}>
         <FontAwesomeIcon color={theme.colors.accent} size={30} icon={icon} />
       </Pressable>
@@ -119,6 +122,7 @@ export default function GradientComponent(
           </Button>
         </View>
         <View style={styles.iconContainer}>
+          
           <TouchableOpacity
             disabled={!light.isOn}
             onPress={() =>

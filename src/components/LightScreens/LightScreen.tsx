@@ -22,6 +22,7 @@ import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
+import FavouriteGradientList from "../FavouriteGradientList";
 import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import Powerbulb from "../Powerbulb";
@@ -78,7 +79,12 @@ export default function LightScreen(): JSX.Element {
     },
   ];
   const getRightString = (): string => {
+    // TODO Add Runner and Rainbow to Types Package
     switch (light.leds.pattern) {
+      case "runner":
+        return "Running";
+      case "rainbow":
+        return "Rainbow";
       case "waking":
         return "Waking";
       case "fading":
@@ -91,7 +97,7 @@ export default function LightScreen(): JSX.Element {
   };
 
   const [items, setItems] = React.useState<DropDownPickerProps["items"]>(
-    light.leds.pattern !== "waking"
+    light.leds.pattern === "gradient" || light.leds.pattern === "plain"
       ? defaultItems
       : [
         ...defaultItems,
@@ -233,6 +239,15 @@ export default function LightScreen(): JSX.Element {
     dropdownContainer: {
       height: 45,
     },
+    favouriteGradientContainer: {
+      marginTop: theme.spacing(4),
+      marginLeft: theme.spacing(6),
+      marginRight: theme.spacing(6),
+    },
+    favouriteGradientsList: {
+      marginTop: theme.spacing(2),
+      alignSelf: "center",
+    },
     plain: { zIndex: -1 },
     slider_container: {
       marginTop: 10,
@@ -318,6 +333,10 @@ export default function LightScreen(): JSX.Element {
         <View style={styles.slider_container}>
           <Text style={styles.slider_text}> Brightness</Text>
           <BrightnessSlider color={light.leds.colors[0]} id={light.id} />
+        </View>
+
+        <View style={styles.favouriteGradientContainer}>
+          <Text style={styles.slider_text}> Favourite Gradients </Text>
         </View>
 
         <Divider style={styles.divider} />
