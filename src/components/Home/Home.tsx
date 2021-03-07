@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
-import { Light, Response } from "@devlights/types";
+import { Alarm, Light, Response } from "@devlights/types";
 import allSettled from "promise.allsettled";
 import useNetwork from "../../hooks/useNetwork";
 import { Store } from "../../store";
@@ -26,6 +26,7 @@ import { useThemeChange } from "../ThemeDialog";
 import { ThemeType } from "../../interfaces/types";
 import { setTags } from "../../store/actions/tags";
 import { LightResponse } from "../../hooks/useLight/LightProvider";
+import { setAlarms } from "../../store/actions/alarms";
 
 interface SpinnerProps {
   visible: boolean;
@@ -82,12 +83,14 @@ export default function Home(): JSX.Element {
     const lightPromise: Promise<AxiosResponse<Response<Light[]>>> = axios.get(
       "http://devlight/lights",
     );
-    const tagsPromise = axios.get("http://devlight/tags");
+    const alarmPromise : Promise<AxiosResponse<Response<Alarm[]>>> = axios.get("http://devlight/alarm");
+    const tagsPromise : Promise<AxiosResponse<Response<string[]>>> = axios.get("http://devlight/tags");
     const promises: Promise<AxiosResponse<LightResponse> | unknown>[] = [];
     promises.push(fetching);
     if (network) {
       promises.push(lightPromise);
       promises.push(tagsPromise);
+      promises.push(alarmPromise);
     }
     allSettled(promises).then((val) => {
       try {
@@ -102,6 +105,11 @@ export default function Home(): JSX.Element {
           store.dispatch(setTags(val[2].value.data.object));
         } else {
           store.dispatch(setTags([]));
+        }
+        if (val[3]) {
+          store.dispatch(setAlarms(val[3].value.data.object));
+        } else {
+          store.dispatch(setAlarms([]));
         }
       } catch {
         setError(true);

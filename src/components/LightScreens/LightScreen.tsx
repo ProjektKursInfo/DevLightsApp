@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import DropDownPicker, {
-  DropDownPickerProps,
+  DropDownPickerProps
 } from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
@@ -22,7 +22,6 @@ import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import BrightnessSlider from "../BrightnessSlider";
 import ChangeableText from "../ChangeableText";
-import FavouriteGradientList from "../FavouriteGradientList";
 import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import Powerbulb from "../Powerbulb";
@@ -64,6 +63,7 @@ export default function LightScreen(): JSX.Element {
   const ref = React.useRef<TextInput>();
   const snackbar = useSnackbar();
   const lights = useLight();
+  // @ts-ignore
   let dropdown = null;
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
@@ -109,12 +109,6 @@ export default function LightScreen(): JSX.Element {
   );
 
   React.useEffect(() => {
-    /* if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
-       setItems([...items, { label: light.leds.pattern, value: "unkown" }]); 
-      dropdown.select("unkown");
-    } else {
-      dropdown.select(light.leds.pattern);
-    } */
     navigation.setOptions({
       headerRight: () => (
         <Powerbulb
@@ -128,6 +122,7 @@ export default function LightScreen(): JSX.Element {
   React.useEffect(() => {
     if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
       setItems([...items, { label: getRightString(), value: "unkown" }]);
+      // @ts-ignore
       dropdown.selectItem("unkown");
     } else {
       setItems([
@@ -140,6 +135,7 @@ export default function LightScreen(): JSX.Element {
           value: "gradient",
         },
       ]);
+      // @ts-ignore
       dropdown.selectItem(light.leds.pattern);
     }
   }, [light.leds.pattern]);
@@ -239,15 +235,6 @@ export default function LightScreen(): JSX.Element {
     dropdownContainer: {
       height: 45,
     },
-    favouriteGradientContainer: {
-      marginTop: theme.spacing(4),
-      marginLeft: theme.spacing(6),
-      marginRight: theme.spacing(6),
-    },
-    favouriteGradientsList: {
-      marginTop: theme.spacing(2),
-      alignSelf: "center",
-    },
     plain: { zIndex: -1 },
     slider_container: {
       marginTop: 10,
@@ -299,9 +286,7 @@ export default function LightScreen(): JSX.Element {
             editable={light.isOn}
             ref={ref as React.RefObject<TextInput>}
             keyboardType="number-pad"
-            onSubmitEditing={({ nativeEvent: { text } }) =>
-              changeLedCount(text)
-            }
+            onSubmitEditing={({ nativeEvent: { text } }) => changeLedCount(text)}
             textAlign="right"
             style={styles.textinput}
             defaultValue={light.count.toString()}
@@ -333,10 +318,6 @@ export default function LightScreen(): JSX.Element {
         <View style={styles.slider_container}>
           <Text style={styles.slider_text}> Brightness</Text>
           <BrightnessSlider color={light.leds.colors[0]} id={light.id} />
-        </View>
-
-        <View style={styles.favouriteGradientContainer}>
-          <Text style={styles.slider_text}> Favourite Gradients </Text>
         </View>
 
         <Divider style={styles.divider} />

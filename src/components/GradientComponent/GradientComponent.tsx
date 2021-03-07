@@ -1,3 +1,4 @@
+import { Light } from "@devlights/types";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -12,22 +13,19 @@ import {
   Dimensions,
   Pressable,
   StyleSheet,
-  View,
-  TouchableOpacity,
+  TouchableOpacity, View,
 } from "react-native";
-import { Button, useTheme } from "react-native-paper";
+import { Button, useTheme, Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { Light } from "@devlights/types";
-import { Gradient } from "../../store/types/favouriteGradients";
+import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
 import {
   addFavouriteGradient,
   removeFavouriteGradient,
 } from "../../store/actions/favourites";
+import { Gradient } from "../../store/types/favouriteGradients";
 import { isFavouriteGradient } from "../../utils";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
-import useLight from "../../hooks/useLight";
-import Circle from "../Circle";
 import FavouriteGradientList from "../FavouriteGradientList";
 
 export interface GradientComponentProps {
@@ -39,12 +37,11 @@ export default function GradientComponent(
 ): JSX.Element {
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const light: Light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === props.id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors)
+    (state: Store) => state.lights.find((l: Light) => l.id === props.id) as Light,
+    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
   );
   const favouriteGradients: Gradient[] = useSelector(
-    (state: Store) => state.favouriteGradients
+    (state: Store) => state.favouriteGradients,
   );
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -103,10 +100,23 @@ export default function GradientComponent(
       alignContent: "space-between",
     },
     pressable: { alignSelf: "flex-end", marginRight: 10 },
+    text: {
+      fontSize: 20,
+      fontFamily: "TitilliumWeb-Regular",
+      marginLeft: theme.spacing(6),
+    },
+    list: {
+      marginLeft: theme.spacing(7),
+    },
   });
   return (
     <>
-      <FavouriteGradientList id={light.id} />
+      {favouriteGradients.length !== 0 ? (
+        <>
+          <Text style={styles.text}> Favourite Gradients </Text>
+          <FavouriteGradientList style={styles.list} id={light.id} />
+        </>
+      ) : null}
       <Pressable style={styles.pressable} onPress={() => saveColor()}>
         <FontAwesomeIcon color={theme.colors.accent} size={30} icon={icon} />
       </Pressable>
@@ -122,12 +132,9 @@ export default function GradientComponent(
           </Button>
         </View>
         <View style={styles.iconContainer}>
-          
           <TouchableOpacity
             disabled={!light.isOn}
-            onPress={() =>
-              lights.setColor(light.id, [colors[1], colors[0]], "gradient")
-            }
+            onPress={() => lights.setColor(light.id, [colors[1], colors[0]], "gradient")}
           >
             <FontAwesomeIcon
               icon={faExchangeAlt}

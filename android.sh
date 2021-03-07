@@ -14,9 +14,7 @@ yarn start && echo "Starting Metro Development Server..." &
 #Install Debug App if not installed
 adb shell pm list packages | grep com.devlights.debug && echo "App is already installed" || react-native run-android &
 
-sleep 10
-
 #Starting the App
-adb shell am start -n com.devlights.debug/com.devlights.MainActivity
+sleep 15 && adb shell am start -n com.devlights.debug/com.devlights.MainActivity
 ###################
 

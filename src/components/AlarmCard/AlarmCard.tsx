@@ -1,15 +1,12 @@
 import { Alarm } from "@devlights/types";
-import { LinearGradient } from "expo-linear-gradient";
 import * as React from "react";
 import {
-    Dimensions,
-    I18nManager,
-    StyleSheet,
-    Text,
-    TouchableWithoutFeedback
+  Dimensions,
+  I18nManager,
+  StyleSheet,
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import { Headline, useTheme } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
 import getContrastTextColor from "../textContrast";
 
 export interface AlarmCardProps {
@@ -21,12 +18,10 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   const { alarm } = props;
   const { color, date } = alarm;
   const swipeableRef = React.useRef<Swipeable>(null);
-  const getTime = () : string  => {
-    let oldDate = new Date(date);
-    
-
-    return oldDate.getHours() + ":" + oldDate.getMinutes();
-  }
+  const getTime = (): string => {
+    const oldDate = new Date(date);
+    return `${oldDate.getHours()}:${oldDate.getMinutes()}`;
+  };
   const styles = StyleSheet.create({
     card: {
       width: "100%",
@@ -37,7 +32,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     headline: {
       marginTop: theme.spacing(4),
       marginLeft: theme.spacing(4),
-      color:  getContrastTextColor(color),
+      color: getContrastTextColor(color),
     },
     touchable: {
       width: "100%",
@@ -46,48 +41,41 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     },
     animated_view: {
       flex: 1,
-      backgroundColor: theme.colors.grey,
       alignItems: "center",
       alignContent: "center",
       justifyContent: "center",
     },
     text: {
-      color: "white",
+      color: theme.colors.lightText,
       fontSize: 16,
       backgroundColor: "transparent",
-      padding: 10,
+      padding: 5,
+    },
+    title: {
+      color: theme.colors.text,
+      fontSize: 20,
+      padding: 5,
     },
     action_container: {
       width: 80,
       flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     },
     swipeable: {
-      height: 120,
-      width: Dimensions.get("window").width * 0.8,
-      backgroundColor: theme.colors.grey,
+      height: 80,
+      width: Dimensions.get("window").width,
       marginTop: 15,
       borderRadius: 12,
     },
     button: { alignItems: "center", justifyContent: "center", flex: 1 },
   });
   return (
-    <Swipeable
-      ref={swipeableRef}
-      containerStyle={styles.swipeable}
-    >
-      <TouchableWithoutFeedback style={styles.touchable} onPress={() => console.log("moin")}>
-        <LinearGradient
-          style={styles.card}
-          colors={
-            [color, color]
-          }
-          start={[0.25, 0.25]}
-          end={[0.75, 0.75]}
-        >
-          <Headline style={styles.headline}>{getTime()}</Headline>
-          <Text> </Text>
-        </LinearGradient>
-      </TouchableWithoutFeedback>
+    <Swipeable ref={swipeableRef} containerStyle={styles.swipeable}>
+      <List.Item
+        title={getTime()}
+        titleStyle={styles.title}
+        description={alarm.date}
+        descriptionStyle={styles.text}
+      />
     </Swipeable>
   );
 }
