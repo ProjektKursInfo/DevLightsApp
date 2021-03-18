@@ -30,15 +30,15 @@ export const LightContext = React.createContext<{
   addTags(id: string, tags: string[]): Promise<LightResponse>;
   removeTags(id: string, tags: string[]): Promise<LightResponse>;
 }>({
-  fetchLight: () => new Promise<AxiosResponse>((): void => {}),
-  setStatus: () => new Promise<AxiosResponse>((): void => {}),
-  setName: () => new Promise<AxiosResponse>((): void => {}),
-  setCount: () => new Promise<AxiosResponse>((): void => {}),
-  setColor: () => new Promise<AxiosResponse>((): void => {}),
-  setBrightness: () => new Promise<AxiosResponse>((): void => {}),
-  addTags: () => new Promise<AxiosResponse>((): void => {}),
-  removeTags: () => new Promise<AxiosResponse>((): void => {}),
-});
+      fetchLight: () => new Promise<AxiosResponse>((): void => {}),
+      setStatus: () => new Promise<AxiosResponse>((): void => {}),
+      setName: () => new Promise<AxiosResponse>((): void => {}),
+      setCount: () => new Promise<AxiosResponse>((): void => {}),
+      setColor: () => new Promise<AxiosResponse>((): void => {}),
+      setBrightness: () => new Promise<AxiosResponse>((): void => {}),
+      addTags: () => new Promise<AxiosResponse>((): void => {}),
+      removeTags: () => new Promise<AxiosResponse>((): void => {}),
+    });
 
 export interface LightProviderProps {
   children?: JSX.Element;
@@ -175,12 +175,9 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     id: string,
     tags: string[],
   ): Promise<LightResponse> {
-    const ax = Axios.delete(
-      `http://devlight/lights/${id}/tags`,
-      {
-        data: { tags},
-      },
-    );
+    const ax = Axios.delete(`http://devlight/lights/${id}/tags`, {
+      data: { tags },
+    });
     ax.then(() => {
       fetchLight(id);
     });

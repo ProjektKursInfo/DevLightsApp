@@ -89,6 +89,9 @@ export default function LightsNavigator(): JSX.Element {
       />
       <Stack.Screen
         options={{
+          headerStyle: {
+            elevation: 0,
+          },
           headerTitle: "Favourites",
           headerTitleAlign: "center",
           headerTitleStyle: {
