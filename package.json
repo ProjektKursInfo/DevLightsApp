@@ -1,5 +1,6 @@
 {
   "main": "index.js",
+  "license": "",
   "scripts": {
     "android": "./android.sh",
     "ios": "react-native run-ios",

@@ -1,4 +1,4 @@
-import { Light, Pattern } from "@devlights/types";
+import { Light, Pattern, USER_PATTERNS } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { isEqual } from "lodash";
@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import DropDownPicker, {
-  DropDownPickerProps
+  DropDownPickerProps,
 } from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
@@ -25,6 +25,7 @@ import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import Powerbulb from "../Powerbulb";
+import RunnerComponent from "../RunnerComponent";
 import TagsList from "../TagsList/TagsList";
 
 export type LightScreenNavigationProp = StackNavigationProp<
@@ -33,17 +34,22 @@ export type LightScreenNavigationProp = StackNavigationProp<
 >;
 export type LightScreenRouteProp = RouteProp<LightsStackParamList, "light">;
 
-function PatternComponent(props: { pattern: string; id: string }): JSX.Element {
+function PatternComponent(props: {
+  pattern: Pattern;
+  id: string;
+}): JSX.Element {
   switch (props.pattern) {
     case "gradient":
       return <GradientComponent id={props.id} />;
     case "plain":
       return <PlainComponent id={props.id} />;
+    case "runner":
+      return <RunnerComponent id={props.id} />;
     default:
       return (
-        <Text>
+        <Text style={{textAlign: "center"}}>
           The Light is currently in a mode where changing the Color is not
-          supported
+          supported.
         </Text>
       );
   }
@@ -77,12 +83,14 @@ export default function LightScreen(): JSX.Element {
       label: "Gradient",
       value: "gradient",
     },
+    {
+      label: "Running",
+      value: "runner",
+    },
   ];
   const getRightString = (): string => {
     // TODO Add Runner and Rainbow to Types Package
     switch (light.leds.pattern) {
-      case "runner":
-        return "Running";
       case "rainbow":
         return "Rainbow";
       case "waking":
@@ -97,15 +105,15 @@ export default function LightScreen(): JSX.Element {
   };
 
   const [items, setItems] = React.useState<DropDownPickerProps["items"]>(
-    light.leds.pattern === "gradient" || light.leds.pattern === "plain"
+    USER_PATTERNS.includes(light.leds.pattern)
       ? defaultItems
       : [
-        ...defaultItems,
-        {
-          label: getRightString(),
-          value: "unkown",
-        },
-      ],
+          ...defaultItems,
+          {
+            label: getRightString(),
+            value: "unkown",
+          },
+        ],
   );
 
   React.useEffect(() => {
@@ -119,26 +127,17 @@ export default function LightScreen(): JSX.Element {
     });
   }, []);
 
-  React.useEffect(() => {
-    if (light.leds.pattern !== "plain" && light.leds.pattern !== "gradient") {
+  const handlePatternChange = () => {
+    if (!USER_PATTERNS.includes(light.leds.pattern)) {
       setItems([...items, { label: getRightString(), value: "unkown" }]);
       // @ts-ignore
       dropdown.selectItem("unkown");
     } else {
-      setItems([
-        {
-          label: "Single Color",
-          value: "plain",
-        },
-        {
-          label: "Gradient",
-          value: "gradient",
-        },
-      ]);
+      setItems(defaultItems);
       // @ts-ignore
       dropdown.selectItem(light.leds.pattern);
     }
-  }, [light.leds.pattern]);
+  };
 
   const changeName = (name: string) => {
     const ax = lights.setName(light.id, name);
@@ -167,7 +166,7 @@ export default function LightScreen(): JSX.Element {
         if (pattern === "gradient") {
           newColors.push(light.leds.colors[0]);
         }
-        lights.setColor(light.id, newColors, pattern as Pattern);
+        lights.setColor(light.id, newColors, pattern as Pattern, pattern === "runner" ? 1 : undefined);
       }
     }
   };
@@ -175,6 +174,7 @@ export default function LightScreen(): JSX.Element {
   const fetch = async () => {
     setRefresh(true);
     await lights.fetchLight(route.params.id);
+    handlePatternChange();
     setRefresh(false);
   };
   const styles = StyleSheet.create({
@@ -286,7 +286,9 @@ export default function LightScreen(): JSX.Element {
             editable={light.isOn}
             ref={ref as React.RefObject<TextInput>}
             keyboardType="number-pad"
-            onSubmitEditing={({ nativeEvent: { text } }) => changeLedCount(text)}
+            onSubmitEditing={({ nativeEvent: { text } }) =>
+              changeLedCount(text)
+            }
             textAlign="right"
             style={styles.textinput}
             defaultValue={light.count.toString()}
@@ -296,14 +298,13 @@ export default function LightScreen(): JSX.Element {
           <Text style={styles.selectLabel}>Pattern</Text>
           <DropDownPicker
             controller={(instance: object) => (dropdown = instance)}
-            disabled={!light.isOn}
+            disabled={!light.isOn || light.leds.pattern === "waking"}
             items={items}
             containerStyle={styles.dropdownContainer}
             arrowColor={theme.colors.text}
             arrowSize={26}
             defaultValue={
-              light.leds.pattern !== "plain" &&
-              light.leds.pattern !== "gradient"
+              !USER_PATTERNS.includes(light.leds.pattern)
                 ? "unkown"
                 : light.leds.pattern
             }

@@ -25,6 +25,7 @@ export const LightContext = React.createContext<{
     id: string,
     colors: string[],
     pattern?: Pattern,
+    timeout?: number
   ): Promise<LightResponse>;
   setBrightness(id: string, brightness: number): Promise<LightResponse>;
   addTags(id: string, tags: string[]): Promise<LightResponse>;
@@ -113,12 +114,19 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     id: string,
     colors: string[],
     pattern?: Pattern,
+    timeout?: number,
   ): Promise<LightResponse> {
+    console.log({
+      colors,
+      pattern,
+      timeout,
+    });
     const ax = Axios.patch(
       `http://devlight/lights/${id}/color`,
       {
         colors,
         pattern,
+        timeout,
       },
       {
         timeout: 3000,

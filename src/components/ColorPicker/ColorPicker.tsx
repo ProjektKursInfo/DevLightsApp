@@ -112,7 +112,7 @@ export default function ColorPicker(): JSX.Element {
       light.leds.colors,
       index,
     );
-    const ax = lights.setColor(id, newColors, light.leds.pattern);
+    const ax = lights.setColor(id, newColors, light.leds.pattern, light.leds.timeout);
     ax.then((response: AxiosResponse) => {
       if (response.status === 200) {
         navigation.goBack();

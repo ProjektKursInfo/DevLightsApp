@@ -17,10 +17,11 @@ import { setAlarms } from "../../store/actions/alarms";
 import AlarmCard from "../AlarmCard/AlarmCard";
 
 export default function Alarms(): JSX.Element {
-  const alarms: Alarm[] = useSelector(
-    (state: Store) => state.alarms,
-    (l: Alarm[], r: Alarm[]) => isEqual(l, r),
-  ) || [];
+  const alarms: Alarm[] =
+    useSelector(
+      (state: Store) => state.alarms,
+      (l: Alarm[], r: Alarm[]) => isEqual(l, r),
+    ) || [];
   const [activeSections, setActiveSections] = React.useState<number[]>([]);
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -43,9 +44,7 @@ export default function Alarms(): JSX.Element {
   });
 
   const Header = (props: { id: string }) => (
-    <Text
-      style={styles.headerText}
-    >
+    <Text style={styles.headerText}>
       {moment(find(alarms, { id: props.id })?.date)
         .locale("de")
         .format("HH:mm")}
@@ -65,22 +64,26 @@ export default function Alarms(): JSX.Element {
       contentContainerStyle={styles.contentContainerStyle}
     >
       <Title style={styles.title}>Alarms</Title>
-
-      <Accordion
-        containerStyle={styles.container}
-        sectionContainerStyle={{
-          width: Dimensions.get("window").width,
-          marginLeft: theme.spacing(2),
-        }}
-        underlayColor="rgba(255,255,255,0.3)"
-        onChange={(indexes: number[]) => setActiveSections(indexes)}
-        activeSections={activeSections}
-        renderHeader={(content: string) => <Header id={content} />}
-        renderContent={(content: string) => (
-          <AlarmCard alarm={find(alarms, { id: content }) as Alarm} />
-        )}
-        sections={map(alarms, "id")}
-      />
+      {alarms.length > 0 ? (
+        <Accordion
+          activeSections={activeSections}
+          containerStyle={styles.container}
+          sectionContainerStyle={{
+            width: Dimensions.get("window").width,
+            marginLeft: theme.spacing(2),
+          }}
+          expandMultiple
+          underlayColor="rgba(255,255,255,0.3)"
+          onChange={(indexes: number[]) => setActiveSections(indexes)}
+          renderHeader={(content: string) => <Header id={content} />}
+          renderContent={(content: string) => (
+            <AlarmCard alarm={find(alarms, { id: content }) as Alarm} />
+          )}
+          sections={map(alarms, "id")}
+        />
+      ) : (
+        <Text> Sorry! There arent any alarms yet</Text>
+      )}
     </ScrollView>
   );
 }
