@@ -2,6 +2,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
+  TransitionPresets,
 } from "@react-navigation/stack";
 import React from "react";
 import { useTheme } from "react-native-paper";
@@ -14,14 +15,15 @@ export default function TagsNavigator(): JSX.Element {
   const Stack = createStackNavigator<TagsStackParamList>();
   const theme = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { height: 100, elevation: 0 },
+      }}
+    >
       <Stack.Screen
         name="home"
         options={{
           headerTitle: "",
-          headerStyle: {
-            elevation: 0,
-          },
         }}
         component={Tags}
       />
@@ -38,6 +40,7 @@ export default function TagsNavigator(): JSX.Element {
               {...props}
             />
           ),
+          ...TransitionPresets.ScaleFromCenterAndroid,
         }}
         component={TagScreen}
       />

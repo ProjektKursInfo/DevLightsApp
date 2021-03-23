@@ -1,18 +1,16 @@
-import React from "react";
-import { faLightbulb, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { Light } from "@devlights/types";
 import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
-import { delay, isEqual } from "lodash";
+import { faLightbulb, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { isEqual } from "lodash";
+import React from "react";
 import { useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { Pressable, StyleProp, ViewStyle } from "react-native";
-import { Light } from "@devlights/types";
 import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
+import Icon from "../Icon";
 
 interface PowerBulbProps {
   id: string;
-  style?: StyleProp<ViewStyle>;
   onBulbPress?: () => void;
 }
 export default function PowerBulb(props: PowerBulbProps): JSX.Element {
@@ -43,8 +41,11 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
     if (props.onBulbPress) props.onBulbPress();
   };
   return (
-    <Pressable onPress={onPress} style={style}>
-      <FontAwesomeIcon size={30} color={theme.colors.accent} icon={icon} />
-    </Pressable>
+    <Icon
+      position="right"
+      color={theme.colors.accent}
+      icon={icon}
+      onPress={onPress}
+    />
   );
 }

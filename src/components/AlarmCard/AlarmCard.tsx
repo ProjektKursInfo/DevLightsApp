@@ -48,11 +48,14 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   });
 
   const handleDelete = () => {
-    axios.delete(`http://devlight/alarm/${alarm.id}`).then((res: AxiosResponse<Response<Alarm>>) => {
-      dispatch(removeAlarm(res.data.object));
-    }).catch(() => {
-      // console.log("an error orrcurred while deleting alarm");
-    });
+    axios
+      .delete(`http://devlight/alarm/${alarm.id}`)
+      .then((res: AxiosResponse<Response<Alarm>>) => {
+        dispatch(removeAlarm(res.data.object));
+      })
+      .catch(() => {
+        // console.log("an error orrcurred while deleting alarm");
+      });
   };
 
   const handleCheckedChange = (day: number, checked: boolean): void => {
@@ -108,7 +111,19 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
         <Button color={alarm.color}>{alarm.color}</Button>
       </View>
       <Divider style={styles.divider} />
-      <List.Item onPress={handleDelete} style={styles.delete_item} title="Delete Alarm" left={() => <FontAwesomeIcon style={styles.icon} icon={faTrash} size={26} color={theme.colors.primary} />} />
+      <List.Item
+        onPress={handleDelete}
+        style={styles.delete_item}
+        title="Delete Alarm"
+        left={() => (
+          <FontAwesomeIcon
+            style={styles.icon}
+            icon={faTrash}
+            size={26}
+            color={theme.colors.primary}
+          />
+        )}
+      />
     </View>
   );
 }

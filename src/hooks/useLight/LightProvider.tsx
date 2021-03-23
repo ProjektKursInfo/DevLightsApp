@@ -1,9 +1,9 @@
 /* eslint-disable no-return-await */
+import { Light, Pattern, Response } from "@devlights/types";
 import Axios, { AxiosError, AxiosResponse } from "axios";
 import * as React from "react";
 import { useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { Light, Pattern, Response } from "@devlights/types";
 import {
   editLightName,
   setLedCount,
@@ -25,21 +25,21 @@ export const LightContext = React.createContext<{
     id: string,
     colors: string[],
     pattern?: Pattern,
-    timeout?: number
+    timeout?: number,
   ): Promise<LightResponse>;
   setBrightness(id: string, brightness: number): Promise<LightResponse>;
   addTags(id: string, tags: string[]): Promise<LightResponse>;
   removeTags(id: string, tags: string[]): Promise<LightResponse>;
 }>({
-      fetchLight: () => new Promise<AxiosResponse>((): void => {}),
-      setStatus: () => new Promise<AxiosResponse>((): void => {}),
-      setName: () => new Promise<AxiosResponse>((): void => {}),
-      setCount: () => new Promise<AxiosResponse>((): void => {}),
-      setColor: () => new Promise<AxiosResponse>((): void => {}),
-      setBrightness: () => new Promise<AxiosResponse>((): void => {}),
-      addTags: () => new Promise<AxiosResponse>((): void => {}),
-      removeTags: () => new Promise<AxiosResponse>((): void => {}),
-    });
+  fetchLight: () => new Promise<AxiosResponse>((): void => {}),
+  setStatus: () => new Promise<AxiosResponse>((): void => {}),
+  setName: () => new Promise<AxiosResponse>((): void => {}),
+  setCount: () => new Promise<AxiosResponse>((): void => {}),
+  setColor: () => new Promise<AxiosResponse>((): void => {}),
+  setBrightness: () => new Promise<AxiosResponse>((): void => {}),
+  addTags: () => new Promise<AxiosResponse>((): void => {}),
+  removeTags: () => new Promise<AxiosResponse>((): void => {}),
+});
 
 export interface LightProviderProps {
   children?: JSX.Element;
@@ -116,11 +116,6 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     pattern?: Pattern,
     timeout?: number,
   ): Promise<LightResponse> {
-    console.log({
-      colors,
-      pattern,
-      timeout,
-    });
     const ax = Axios.patch(
       `http://devlight/lights/${id}/color`,
       {

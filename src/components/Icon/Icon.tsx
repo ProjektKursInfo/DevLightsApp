@@ -16,7 +16,6 @@ export default function Icon(
     icon: {
       marginLeft: position === "left" ? 30 : 0,
       marginRight: position === "right" ? 30 : 0,
-      marginTop: 10,
     },
   });
   return (

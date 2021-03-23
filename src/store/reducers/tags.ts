@@ -18,9 +18,7 @@ export default function tagsReducer(
     case "REMOVE_TAG":
       tags = [...state];
       index = tags.findIndex((f) => f === action.tag);
-      console.log(index);
       if (index !== undefined) tags.splice(index, 1);
-      console.log(tags);
       return tags;
     default:
       return [...state];

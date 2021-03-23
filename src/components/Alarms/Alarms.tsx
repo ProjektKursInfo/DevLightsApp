@@ -1,6 +1,7 @@
 import { Alarm } from "@devlights/types";
 import axios, { AxiosResponse } from "axios";
 import { find, isEqual, map } from "lodash";
+import moment from "moment";
 import React from "react";
 import {
   Dimensions,
@@ -9,9 +10,8 @@ import {
   StyleSheet,
 } from "react-native";
 import Accordion from "react-native-collapsible/Accordion";
-import { Title, Text, useTheme } from "react-native-paper";
+import { Text, Title, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
 import { Store } from "../../store";
 import { setAlarms } from "../../store/actions/alarms";
 import AlarmCard from "../AlarmCard/AlarmCard";
@@ -69,8 +69,8 @@ export default function Alarms(): JSX.Element {
           activeSections={activeSections}
           containerStyle={styles.container}
           sectionContainerStyle={{
-            width: Dimensions.get("window").width,
-            marginLeft: theme.spacing(2),
+            width: Dimensions.get("window").width - theme.spacing(2),
+            marginHorizontal: theme.spacing(1),
           }}
           expandMultiple
           underlayColor="rgba(255,255,255,0.3)"

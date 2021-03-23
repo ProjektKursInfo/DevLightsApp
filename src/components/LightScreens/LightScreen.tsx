@@ -47,7 +47,7 @@ function PatternComponent(props: {
       return <RunnerComponent id={props.id} />;
     default:
       return (
-        <Text style={{textAlign: "center"}}>
+        <Text style={{ textAlign: "center" }}>
           The Light is currently in a mode where changing the Color is not
           supported.
         </Text>
@@ -74,6 +74,7 @@ export default function LightScreen(): JSX.Element {
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
+  const [pickerOpen, setPickerOpen] = React.useState<boolean>(false);
   const defaultItems = [
     {
       label: "Single Color",
@@ -118,12 +119,7 @@ export default function LightScreen(): JSX.Element {
 
   React.useEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <Powerbulb
-          style={{ marginRight: 10, marginTop: 5, alignSelf: "center" }}
-          id={light.id}
-        />
-      ),
+      headerRight: () => <Powerbulb id={light.id} />,
     });
   }, []);
 
@@ -160,13 +156,21 @@ export default function LightScreen(): JSX.Element {
     lights.setCount(light.id, parseInt(count, 10));
   };
   const changePattern = (pattern: string) => {
+    console.log("pattern changed");
     if (pattern !== "unkown" && pattern !== undefined) {
       if (pattern !== light.leds.pattern) {
         const newColors: string[] = [light.leds.colors[0]];
         if (pattern === "gradient") {
           newColors.push(light.leds.colors[0]);
         }
-        lights.setColor(light.id, newColors, pattern as Pattern, pattern === "runner" ? 1 : undefined);
+        lights.setColor(
+          light.id,
+          // replace with one parameter of type Partial<Leds>
+          newColors,
+          pattern as Pattern,
+          // man muss die zahl an 2 stellen ändern
+          pattern === "runner" ? 100 : undefined,
+        );
       }
     }
   };
@@ -253,13 +257,12 @@ export default function LightScreen(): JSX.Element {
       alignSelf: "center",
     },
   });
-
   return (
     <KeyboardAvoidingView
       style={{ height: "100%" }}
-      behavior="position"
+      behavior="height"
       enabled={enabled}
-      keyboardVerticalOffset={170}
+      keyboardVerticalOffset={100}
     >
       <ScrollView
         refreshControl={
@@ -312,7 +315,11 @@ export default function LightScreen(): JSX.Element {
             dropDownStyle={styles.selectDropdown}
             labelStyle={styles.dropdownLabel}
             itemStyle={styles.dropdownItems}
-            onChangeItem={(item) => changePattern(item.value)}
+            onOpen={() => setPickerOpen(true)}
+            onClose={() => setPickerOpen(false)}
+            onChangeItem={(item) => {
+              pickerOpen ? changePattern(item.value) : undefined;
+            }}
           />
         </View>
 

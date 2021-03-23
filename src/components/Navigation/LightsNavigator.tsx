@@ -10,7 +10,6 @@ import {
   TransitionPresets,
 } from "@react-navigation/stack";
 import React from "react";
-import { Dimensions } from "react-native";
 import { useTheme } from "react-native-paper";
 import { LightsStackParamList } from "../../interfaces/types";
 import ColorPicker from "../ColorPicker";
@@ -26,7 +25,7 @@ export default function LightsNavigator(): JSX.Element {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { height: Dimensions.get("window").height * 0.125 },
+        headerStyle: { height: 100, elevation: 0 },
       }}
     >
       <Stack.Screen
@@ -35,9 +34,6 @@ export default function LightsNavigator(): JSX.Element {
         options={{
           title: "Home",
           headerTitle: "",
-          headerStyle: {
-            elevation: 0,
-          },
           headerRight: () => (
             <Icon
               color="#ffff00"
@@ -51,9 +47,6 @@ export default function LightsNavigator(): JSX.Element {
       <Stack.Screen
         name="light"
         options={() => ({
-          headerStyle: {
-            elevation: 0,
-          },
           headerLeft: (props: StackHeaderLeftButtonProps) => (
             <Icon
               color={theme.colors.accent}
@@ -72,9 +65,6 @@ export default function LightsNavigator(): JSX.Element {
       <Stack.Screen
         name="color_modal"
         options={{
-          headerStyle: {
-            elevation: 0,
-          },
           headerLeft: (props: StackHeaderLeftButtonProps) => (
             <Icon
               color={theme.colors.accent}
@@ -84,14 +74,12 @@ export default function LightsNavigator(): JSX.Element {
             />
           ),
           headerTitle: "",
+          ...TransitionPresets.ModalSlideFromBottomIOS,
         }}
         component={ColorPicker}
       />
       <Stack.Screen
         options={{
-          headerStyle: {
-            elevation: 0,
-          },
           headerTitle: "Favourites",
           headerTitleAlign: "center",
           headerTitleStyle: {

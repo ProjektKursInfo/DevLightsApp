@@ -1,14 +1,14 @@
+import { Light } from "@devlights/types";
 import { useNavigation } from "@react-navigation/native";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
-import { Light } from "@devlights/types";
-import { TextInput } from "react-native-gesture-handler";
+import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
-import useLight from "../../hooks/useLight";
 
 export interface RunnerComponentProps {
   id: string;
@@ -36,9 +36,9 @@ export default function RunnerComponent(
     });
   };
 
+  // maybe number as parameter
   const changeTimeout = (timeout: string) => {
     if (parseInt(timeout, 10) !== light.leds.timeout) {
-      console.log(typeof parseInt(timeout, 10));
       lights
         .setColor(
           light.id,
@@ -49,13 +49,8 @@ export default function RunnerComponent(
         .catch(() => {
           /* ref.current?.setNativeProps({ text: light.leds.timeout?.toString() }); */
         });
-    } else {
     }
   };
-
-  React.useEffect(() => {
-    console.log(light.leds.timeout);
-  }, [light.leds.timeout]);
 
   const styles = StyleSheet.create({
     button: {
@@ -93,7 +88,7 @@ export default function RunnerComponent(
           onSubmitEditing={({ nativeEvent: { text } }) => changeTimeout(text)}
           textAlign="right"
           style={styles.textinput}
-          defaultValue={light.leds.timeout?.toString() ?? "1"}
+          defaultValue={light.leds.timeout?.toString() ?? "100"}
         />
       </View>
       <Button

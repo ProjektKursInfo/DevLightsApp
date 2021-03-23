@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Light } from "@devlights/types";
+import defaultstate from "../defaultstate";
 import { LightActionTypes } from "../types/lights";
 import {
   EDIT_LED_COUNT,
@@ -8,9 +9,8 @@ import {
   SET_ALL_LIGHTS,
   SET_BRIGHTNESS,
   SET_LIGHT,
-  SET_LIGHT_STATUS
+  SET_LIGHT_STATUS,
 } from "../types/types";
-import defaultstate from "../defaultstate";
 
 function lightsReducer(
   // @ts-ignore
@@ -26,7 +26,7 @@ function lightsReducer(
       return lights;
     case SET_LIGHT:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.id === action.id));
+      index = lights.findIndex((l: Light) => l.id === action.id);
       if (index !== undefined) {
         light = action.light;
         lights[index] = light;
@@ -36,14 +36,14 @@ function lightsReducer(
       return lights;
     case EDIT_LIGHT_NAME:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.id === action.id));
+      index = lights.findIndex((l: Light) => l.id === action.id);
       light = lights[index];
       light.name = action.name;
       lights[index] = light;
       return lights;
     case EDIT_LIGHT_COLOR:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.id === action.id));
+      index = lights.findIndex((l: Light) => l.id === action.id);
       light = lights[index];
       light.leds = {
         colors: action.colors,
@@ -53,21 +53,21 @@ function lightsReducer(
       return lights;
     case EDIT_LED_COUNT:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.id === action.id));
+      index = lights.findIndex((l: Light) => l.id === action.id);
       light = lights[index];
       light.count = action.count;
       lights[index] = light;
       return lights;
     case SET_BRIGHTNESS:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.id === action.id));
+      index = lights.findIndex((l: Light) => l.id === action.id);
       light = lights[index];
       light.brightness = action.brightness;
       lights[index] = light;
       return lights;
     case SET_LIGHT_STATUS:
       lights = [...state];
-      index = lights.findIndex((l: Light) => (l.id === action.id));
+      index = lights.findIndex((l: Light) => l.id === action.id);
       light = lights[index];
       light.isOn = action.isOn;
       lights[index] = light;

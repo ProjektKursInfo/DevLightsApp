@@ -1,20 +1,19 @@
-import React from "react";
 import { Light } from "@devlights/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { StyleSheet } from "react-native";
 import { Divider, List, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
 import ChangeableText from "../ChangeableText";
-import { ChangeableTextProps } from "../ChangeableText/ChangeableText";
 import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
-import { StyleSheet } from "react-native";
 
 export interface TagsListProps {
   light: Light;
   setEnabled: (enabled: boolean) => void;
-  enabled: boolean,
+  enabled: boolean;
 }
 
 export default function TagsList(props: TagsListProps): JSX.Element {
@@ -42,7 +41,7 @@ export default function TagsList(props: TagsListProps): JSX.Element {
       marginTop: theme.spacing(2),
       fontWeight: "bold",
     },
-    item_divider: { margin: theme.spacing(2) },
+    item_divider: { margin: theme.spacing(2), marginBottom: 0 },
     list_item: { padding: theme.spacing(2) },
     title: {
       flex: 3,
@@ -62,17 +61,17 @@ export default function TagsList(props: TagsListProps): JSX.Element {
       <Divider style={styles.item_divider} />
       {light.tags?.length > 0
         ? light.tags?.map((tag: string) => (
-          <>
-            <List.Item
-              key={tag}
-              onPress={() => navigateToTag(tag)}
-              style={styles.list_item}
-              titleStyle={styles.title}
-              title={tag}
-            />
-            <Divider />
-          </>
-        ))
+            <>
+              <List.Item
+                key={tag}
+                onPress={() => navigateToTag(tag)}
+                style={styles.list_item}
+                titleStyle={styles.title}
+                title={tag}
+              />
+              <Divider />
+            </>
+          ))
         : undefined}
 
       <ChangeableText
