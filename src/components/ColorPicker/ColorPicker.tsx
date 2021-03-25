@@ -26,13 +26,13 @@ import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
 
 export type ColorModalScreenNavigationProp = StackNavigationProp<
-LightsStackParamList,
-"color_modal"
+  LightsStackParamList,
+  "color_modal"
 >;
 
 export type ColorModalScreenRouteProp = RouteProp<
-LightsStackParamList,
-"color_modal"
+  LightsStackParamList,
+  "color_modal"
 >;
 
 export default function ColorPicker(): JSX.Element {
@@ -95,8 +95,14 @@ export default function ColorPicker(): JSX.Element {
     }
   }, [hsv]);
 
-  const onSatValChange = ({saturation, value} : {saturation: number, value: number}) => {
-    setHsv({...hsv, s: saturation, v: value});
+  const onSatValChange = ({
+    saturation,
+    value,
+  }: {
+    saturation: number;
+    value: number;
+  }) => {
+    setHsv({ ...hsv, s: saturation, v: value });
   };
 
   const onPress = (prop: string) => {
@@ -112,7 +118,12 @@ export default function ColorPicker(): JSX.Element {
       light.leds.colors,
       index,
     );
-    const ax = lights.setColor(id, newColors, light.leds.pattern, light.leds.timeout);
+    const ax = lights.setColor(
+      id,
+      newColors,
+      light.leds.pattern,
+      light.leds.timeout,
+    );
     ax.then((response: AxiosResponse) => {
       if (response.status === 200) {
         navigation.goBack();
@@ -133,8 +144,12 @@ export default function ColorPicker(): JSX.Element {
         satValPickerValue={hsv.v}
         satValPickerSize={270}
         satValPickerSliderSize={30}
-        onHuePickerDragMove={({ hue }: { hue: number }) => setHsv({ ...hsv, h: hue })}
-        onHuePickerPress={({ hue }: { hue: number }) => setHsv({ ...hsv, h: hue })}
+        onHuePickerDragMove={({ hue }: { hue: number }) =>
+          setHsv({ ...hsv, h: hue })
+        }
+        onHuePickerPress={({ hue }: { hue: number }) =>
+          setHsv({ ...hsv, h: hue })
+        }
         onSatValPickerDragMove={onSatValChange}
         onSatValPickerPress={onSatValChange}
       />

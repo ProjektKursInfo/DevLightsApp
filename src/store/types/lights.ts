@@ -6,7 +6,7 @@ import {
   SET_ALL_LIGHTS,
   SET_BRIGHTNESS,
   SET_LIGHT,
-  SET_LIGHT_STATUS
+  SET_LIGHT_STATUS,
 } from "./types";
 
 export interface SetLightsAction {
@@ -49,6 +49,7 @@ export interface SetLightColorAction {
   id: string;
   pattern: Pattern;
   colors: string[];
+  timeout?: number;
 }
 
 export type LightActionTypes =

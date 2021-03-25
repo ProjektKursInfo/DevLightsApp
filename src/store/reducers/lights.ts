@@ -48,6 +48,7 @@ function lightsReducer(
       light.leds = {
         colors: action.colors,
         pattern: action.pattern ?? light.leds.pattern,
+        timeout: action.timeout ?? undefined,
       };
       lights[index] = light;
       return lights;

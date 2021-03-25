@@ -132,7 +132,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         snackbar.makeSnackbar("Nothing changed", theme.colors.error);
       } else if (res.status === 200) {
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
-        dispatch(setLightColor(id, pattern ?? "plain", colors));
+        dispatch(setLightColor(id, pattern ?? "plain", colors, timeout));
       }
     });
     ax.catch((err: AxiosError) => {
