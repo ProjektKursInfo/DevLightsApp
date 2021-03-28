@@ -9,11 +9,13 @@ import ThemeProvider from "./components/ThemeDialog/ThemeProvider";
 import { LightProvider } from "./hooks/useLight";
 import SnackbarProvider from "./hooks/useSnackbar/SnackbarProvider";
 import store from "./store";
+import "intl";
+import "intl/locale-data/jsonp/en";
 
 export default function App(): JSX.Element {
   React.useEffect(() => {
     SplashScreen.preventAutoHideAsync();
- }, []);
+  }, []);
   return (
     <>
       <Provider store={store}>

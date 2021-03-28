@@ -1,13 +1,13 @@
-import { Alarm, Response } from "@devlights/types";
+import { Alarm, PartialLight, Response } from "@devlights/types";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import axios, { AxiosResponse } from "axios";
-import { remove } from "lodash";
+import { map, remove } from "lodash";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, Divider, List, useTheme } from "react-native-paper";
+import { Button, Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { removeAlarm } from "../../store/actions/alarms";
+import { editAlarm, removeAlarm } from "../../store/actions/alarms";
 import Circle from "../Circle";
 import DayChip from "../DayChip";
 
@@ -58,14 +58,31 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
       });
   };
 
-  const handleCheckedChange = (day: number, checked: boolean): void => {
+  const handleAlarmEdit = (data: any, key: string): boolean => {
+    let success = true;
+    axios
+      .patch(`http://devlight/alarm/${alarm.id}`, {
+        [key]: data,
+      })
+      .then((res: AxiosResponse<Response<Alarm>>) => {
+        dispatch(editAlarm(res.data.object));
+      })
+      .catch(() => {
+        success = false;
+      });
+    return success;
+  };
+
+  const handleCheckedChange = async (day: number, checked: boolean): void => {
     const wDays = [...days];
+    const old = wDays;
     if (checked) {
       wDays.push(day);
     } else {
       remove(wDays, (d: number) => d === day);
     }
     setDays(wDays);
+    if (!handleAlarmEdit(wDays, "days")) setDays(old);
   };
   return (
     <View>
@@ -124,6 +141,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
           />
         )}
       />
+      <Divider style={styles.divider} />
     </View>
   );
 }

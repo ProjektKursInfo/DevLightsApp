@@ -15,6 +15,7 @@ export const REMOVE_TAG = "REMOVE_TAG";
 // Alarms
 export const SET_ALARMS = "SET_ALARMS";
 export const ADD_ALARM = "ADD_ALARM";
+export const EDIT_ALARM = "EDIT_ALARM";
 export const REMOVE_ALARM = "REMOVE_ALARM";
 
 // Favourite Colors

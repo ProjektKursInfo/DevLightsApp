@@ -1,4 +1,4 @@
-import { Alarm } from "@devlights/types";
+import { Alarm, Response } from "@devlights/types";
 import axios, { AxiosResponse } from "axios";
 import { find, isEqual, map } from "lodash";
 import moment from "moment";
@@ -8,13 +8,63 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import Accordion from "react-native-collapsible/Accordion";
-import { Text, Title, useTheme } from "react-native-paper";
+import { Switch, Text, Title, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Store } from "../../store";
-import { setAlarms } from "../../store/actions/alarms";
+import { editAlarm, setAlarms } from "../../store/actions/alarms";
 import AlarmCard from "../AlarmCard/AlarmCard";
+
+export function Header(props: { id: string }): JSX.Element {
+  const { id } = props;
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const alarm = useSelector(
+    (state: Store) => state.alarms.find((a: Alarm) => a.id === id) as Alarm,
+    (l: Alarm, r: Alarm) => isEqual(l.isOn, r.isOn),
+  );
+  const [isOn, setIsOn] = React.useState<boolean>(alarm.isOn);
+  const [visible, setVisible] = React.useState<boolean>(false);
+  const handleValueChange = (value: boolean) => {
+    const old = alarm.isOn;
+    setIsOn(value);
+    axios
+      .patch(`http://devlight/alarm/${id}`, {
+        isOn: value,
+      })
+      .then((res: AxiosResponse<Response<Alarm>>) => {
+        dispatch(editAlarm(res.data.object));
+      })
+      .catch((err) => {
+        setIsOn(old);
+        console.log(err.response.status);
+      });
+  };
+
+  const styles = StyleSheet.create({
+    headerText: {
+      fontSize: 30,
+      marginLeft: theme.spacing(5),
+      paddingVertical: theme.spacing(2),
+    },
+  });
+  return (
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <TouchableWithoutFeedback onLongPress={() => setVisible(true)}>
+        <Text style={styles.headerText}>{alarm?.time ?? "UNDEFINED"}</Text>
+      </TouchableWithoutFeedback>
+      <Switch
+        onValueChange={(value: boolean) => handleValueChange(value)}
+        style={{ alignItems: "center" }}
+        value={isOn}
+        disabled={alarm === undefined}
+      />
+    </View>
+  );
+}
 
 export default function Alarms(): JSX.Element {
   const alarms: Alarm[] =
@@ -22,6 +72,7 @@ export default function Alarms(): JSX.Element {
       (state: Store) => state.alarms,
       (l: Alarm[], r: Alarm[]) => isEqual(l, r),
     ) || [];
+  const dispatch = useDispatch();
   const [activeSections, setActiveSections] = React.useState<number[]>([]);
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -43,14 +94,6 @@ export default function Alarms(): JSX.Element {
     },
   });
 
-  const Header = (props: { id: string }) => (
-    <Text style={styles.headerText}>
-      {moment(find(alarms, { id: props.id })?.date)
-        .locale("de")
-        .format("HH:mm")}
-    </Text>
-  );
-  const dispatch = useDispatch();
   const fetchAlarms = () => {
     axios.get("http://devlight/alarm").then((res: AxiosResponse) => {
       dispatch(setAlarms(res.data.object));
@@ -72,7 +115,6 @@ export default function Alarms(): JSX.Element {
             width: Dimensions.get("window").width - theme.spacing(2),
             marginHorizontal: theme.spacing(1),
           }}
-          expandMultiple
           underlayColor="rgba(255,255,255,0.3)"
           onChange={(indexes: number[]) => setActiveSections(indexes)}
           renderHeader={(content: string) => <Header id={content} />}
