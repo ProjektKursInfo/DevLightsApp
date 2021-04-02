@@ -40,7 +40,6 @@ export function Header(props: { id: string }): JSX.Element {
       })
       .catch((err) => {
         setIsOn(old);
-        console.log(err.response.status);
       });
   };
 
@@ -118,9 +117,7 @@ export default function Alarms(): JSX.Element {
           underlayColor="rgba(255,255,255,0.3)"
           onChange={(indexes: number[]) => setActiveSections(indexes)}
           renderHeader={(content: string) => <Header id={content} />}
-          renderContent={(content: string) => (
-            <AlarmCard alarm={find(alarms, { id: content }) as Alarm} />
-          )}
+          renderContent={(content: string) => <AlarmCard id={content} />}
           sections={map(alarms, "id")}
         />
       ) : (

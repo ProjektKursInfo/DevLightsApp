@@ -156,7 +156,6 @@ export default function LightScreen(): JSX.Element {
     lights.setCount(light.id, parseInt(count, 10));
   };
   const changePattern = (pattern: string) => {
-    console.log("pattern changed");
     if (pattern !== "unkown" && pattern !== undefined) {
       if (pattern !== light.leds.pattern) {
         const newColors: string[] = [light.leds.colors[0]];

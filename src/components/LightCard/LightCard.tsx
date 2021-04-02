@@ -7,7 +7,7 @@ import {
   Dimensions,
   I18nManager,
   StyleSheet,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
   View,
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
@@ -85,10 +85,7 @@ export default function LightCard(props: CardProps): JSX.Element {
         <Animated.View
           style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
         >
-          <Powerbulb
-            onBulbPress={awonPress}
-            id={light.id}
-          />
+          <Powerbulb onBulbPress={awonPress} id={light.id} />
         </Animated.View>
       </View>
     );
@@ -108,7 +105,7 @@ export default function LightCard(props: CardProps): JSX.Element {
         renderRightAction(80, progress)
       }
     >
-      <TouchableWithoutFeedback style={styles.touchable} onPress={onPress}>
+      <TouchableOpacity style={styles.touchable} onPress={onPress}>
         <LinearGradient
           style={styles.card}
           colors={
@@ -123,7 +120,7 @@ export default function LightCard(props: CardProps): JSX.Element {
             {light.name ?? "Name not avaible"}
           </Headline>
         </LinearGradient>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </Swipeable>
   );
 }

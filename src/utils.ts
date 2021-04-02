@@ -1,27 +1,38 @@
 import { isEqual } from "lodash";
-import { Leds, Light } from "@devlights/types";
+import { Alarm, Leds, Light } from "@devlights/types";
 import { Gradient } from "./store/types/favouriteGradients";
 
-export const ledsEquality = (left: Leds, right: Leds): boolean => (
-  isEqual(left.colors, right.colors) || isEqual(left.pattern, right.pattern));
+export const ledsEquality = (left: Leds, right: Leds): boolean =>
+  isEqual(left.colors, right.colors) || isEqual(left.pattern, right.pattern);
 
 export const tagArrayEquality = (l: string[], r: string[]) => {
   try {
     if (l.length !== r.length) return false;
-    for (
-      let i = 0;
-      i < (l.length > r.length ? l.length : r.length);
-      i++
-    ) {
+    for (let i = 0; i < (l.length > r.length ? l.length : r.length); i++) {
       if (l[i] !== r[i]) return false;
     }
   } catch {
     return false;
   }
   return true;
-}
+};
 
-export const tagsEquality = (left: Light[], right: Light[], count: number, tag: string) : boolean => {
+export const checkAlarmEquality = (l: Alarm, r: Alarm): boolean => {
+  return (
+    isEqual(l.color, r.color) &&
+    isEqual(l.days, r.days) &&
+    isEqual(l.isOn, r.isOn) &&
+    isEqual(l.lights, r.lights) &&
+    isEqual(l.name, r.name) &&
+    isEqual(l.time, r.time)
+  );
+};
+export const tagsEquality = (
+  left: Light[],
+  right: Light[],
+  count: number,
+  tag: string,
+): boolean => {
   try {
     let tagCount = 0;
     for (
@@ -58,7 +69,10 @@ export const favouritesEquality = (
   return true;
 };
 
-export const favouriteGradientsEquality = (left: Gradient[], right: Gradient[]) : boolean => {
+export const favouriteGradientsEquality = (
+  left: Gradient[],
+  right: Gradient[],
+): boolean => {
   try {
     for (
       let i = 0;
@@ -78,7 +92,7 @@ export const makeValidColorArray = (
   colorArray: string[],
   index: number,
 ): string[] => {
-  const newArray : string[] = [...colorArray];
+  const newArray: string[] = [...colorArray];
   newArray[index] = new_color;
   return newArray;
 };

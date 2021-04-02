@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { Light } from "@devlights/types";
 import { Store } from "../../store";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
+import useLight from "../../hooks/useLight";
+import { makeValidColorArray } from "../../utils";
 
 export interface PlainComponentProps {
   id: string;
@@ -16,16 +18,37 @@ export default function PlainComponent(
   props: PlainComponentProps,
 ): JSX.Element {
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
+  const lights = useLight();
   const light: Light = useSelector(
-    (state: Store) => (
-      state.lights.find((l: Light) => l.id === props.id) as Light),
-    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
+    (state: Store) =>
+      state.lights.find((l: Light) => l.id === props.id) as Light,
+    (left: Light, right: Light) =>
+      !isEqual(left.leds.colors, right.leds.colors),
   );
+
+  const onSubmit = async (color: string): Promise<boolean> => {
+    let success = true;
+    const newColors = makeValidColorArray(color, light.leds.colors, 0);
+    const ax = lights.setColor(
+      light.id,
+      newColors,
+      light.leds.pattern,
+      light.leds.timeout,
+    );
+    await ax.then((response: AxiosResponse) => {
+      success = true;
+    });
+    await ax.catch(() => {
+      success = false;
+    });
+
+    return success;
+  };
 
   const onPress = () => {
     navigation.navigate("color_modal", {
-      id: props.id,
-      index: 0,
+      color: light.leds.colors[0],
+      onSubmit,
     });
   };
 

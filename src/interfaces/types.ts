@@ -9,8 +9,9 @@ export type LightsStackParamList = {
     id: string;
   };
   color_modal: {
-    id: string;
-    index: number;
+    color: string;
+    onSubmit: (color: string) => Promise<boolean>;
+    index?: number;
   };
   favourite: undefined;
 };
@@ -19,8 +20,19 @@ export type LightsStackParamList = {
  * Types for the Tags Navigator
  */
 export type TagsStackParamList = {
-    home: undefined;
-    tag: {
-      tag: string;
-    };
+  home: undefined;
+  tag: {
+    tag: string;
   };
+};
+/**
+ * Types for Alarm Navigator
+ */
+export type AlarmStackParamList = {
+  home: undefined;
+  color_modal: {
+    color: string;
+    onSubmit: (color: string) => Promise<boolean>;
+    index?: number;
+  };
+};

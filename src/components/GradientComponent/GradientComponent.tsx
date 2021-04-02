@@ -13,7 +13,8 @@ import {
   Dimensions,
   Pressable,
   StyleSheet,
-  TouchableOpacity, View,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Button, useTheme, Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +25,7 @@ import {
   removeFavouriteGradient,
 } from "../../store/actions/favourites";
 import { Gradient } from "../../store/types/favouriteGradients";
-import { isFavouriteGradient } from "../../utils";
+import { isFavouriteGradient, makeValidColorArray } from "../../utils";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
 import FavouriteGradientList from "../FavouriteGradientList";
 
@@ -37,25 +38,47 @@ export default function GradientComponent(
 ): JSX.Element {
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const light: Light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.id === props.id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds.colors, right.leds.colors),
+    (state: Store) =>
+      state.lights.find((l: Light) => l.id === props.id) as Light,
+    (left: Light, right: Light) =>
+      !isEqual(left.leds.colors, right.leds.colors),
   );
   const favouriteGradients: Gradient[] = useSelector(
     (state: Store) => state.favouriteGradients,
   );
+  const [icon, setIcon] = React.useState<IconProp>(faStar);
   const dispatch = useDispatch();
   const theme = useTheme();
   const lights = useLight();
 
   const { colors } = light.leds;
 
+  const onSubmit = async (color: string, index?: number): Promise<boolean> => {
+    let success = true;
+    const newColors = makeValidColorArray(color, light.leds.colors, index ?? 0);
+    const ax = lights.setColor(
+      light.id,
+      newColors,
+      light.leds.pattern,
+      light.leds.timeout,
+    );
+    await ax.then((response: AxiosResponse) => {
+      success = true;
+    });
+    await ax.catch(() => {
+      success = false;
+    });
+
+    return success;
+  };
+
   const onPress = (index: number) => {
     navigation.navigate("color_modal", {
-      id: props.id,
+      color: light.leds.colors[index],
+      onSubmit,
       index,
     });
   };
-  const [icon, setIcon] = React.useState<IconProp>(faStar);
 
   const saveColor = () => {
     const gradient: Gradient = {
@@ -134,7 +157,9 @@ export default function GradientComponent(
         <View style={styles.iconContainer}>
           <TouchableOpacity
             disabled={!light.isOn}
-            onPress={() => lights.setColor(light.id, [colors[1], colors[0]], "gradient")}
+            onPress={() =>
+              lights.setColor(light.id, [colors[1], colors[0]], "gradient")
+            }
           >
             <FontAwesomeIcon
               icon={faExchangeAlt}

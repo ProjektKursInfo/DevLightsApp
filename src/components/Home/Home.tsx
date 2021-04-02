@@ -5,10 +5,11 @@ import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
   RefreshControl,
-  ScrollView,
   StatusBar,
   StyleSheet,
   View,
+  ScrollView,
+  Dimensions,
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
@@ -83,8 +84,12 @@ export default function Home(): JSX.Element {
     const lightPromise: Promise<AxiosResponse<Response<Light[]>>> = axios.get(
       "http://devlight/lights",
     );
-    const alarmPromise : Promise<AxiosResponse<Response<Alarm[]>>> = axios.get("http://devlight/alarm");
-    const tagsPromise : Promise<AxiosResponse<Response<string[]>>> = axios.get("http://devlight/tags");
+    const alarmPromise: Promise<AxiosResponse<Response<Alarm[]>>> = axios.get(
+      "http://devlight/alarm",
+    );
+    const tagsPromise: Promise<AxiosResponse<Response<string[]>>> = axios.get(
+      "http://devlight/tags",
+    );
     const promises: Promise<AxiosResponse<LightResponse> | unknown>[] = [];
     promises.push(fetching);
     if (network) {
@@ -154,8 +159,9 @@ export default function Home(): JSX.Element {
     },
     contentContainerStyle: {
       alignItems: "center",
-      width: "100%",
-      height: "100%",
+      height: loading
+        ? "100%"
+        : Dimensions.get("window").height * 0.2 + lights.length * 140,
     },
     error_text: {
       textAlign: "center",
@@ -170,6 +176,7 @@ export default function Home(): JSX.Element {
       />
 
       <ScrollView
+        style={styles.container}
         refreshControl={
           <RefreshControl
             refreshing={false}

@@ -19,7 +19,9 @@ export default function alarmsReducer(
     case "EDIT_ALARM":
       alarms = [...state];
       alarm = alarms.find((f) => f.id === action.alarm.id);
-      if (alarm !== undefined) alarm = action.alarm;
+      if (alarm !== undefined) {
+        alarm = action.alarm;
+      }
       return alarms;
     case "REMOVE_ALARM":
       alarms = [...state];

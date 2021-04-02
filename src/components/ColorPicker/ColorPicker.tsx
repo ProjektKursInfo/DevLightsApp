@@ -37,18 +37,13 @@ export type ColorModalScreenRouteProp = RouteProp<
 
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
-  const { id, index } = route.params;
-  const lights = useLight();
-  const light: Light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
-    (left: Light, right: Light) => !isEqual(left.leds, right.leds),
-  );
+  const { color } = route.params;
   const favouriteColors: string[] = useSelector(
     (state: Store) => state.favouriteColors,
     isEqual,
   );
   const [hsv, setHsv] = React.useState<ColorFormats.HSV>(
-    tinycolor(light.leds.colors[index]).toHsv(),
+    tinycolor(color).toHsv(),
   );
   const [icon, setIcon] = React.useState<IconProp>(faStar);
   const navigation = useNavigation();
@@ -112,26 +107,16 @@ export default function ColorPicker(): JSX.Element {
   };
 
   const onSubmit = async () => {
-    const oldColor = light.leds.colors[index];
-    const newColors = makeValidColorArray(
+    const success = await route.params.onSubmit(
       tinycolor.fromRatio(hsv).toHexString(),
-      light.leds.colors,
-      index,
+      //@ts-ignore
+      route.params.index,
     );
-    const ax = lights.setColor(
-      id,
-      newColors,
-      light.leds.pattern,
-      light.leds.timeout,
-    );
-    ax.then((response: AxiosResponse) => {
-      if (response.status === 200) {
-        navigation.goBack();
-      }
-    });
-    ax.catch(() => {
-      setHsv(tinycolor(oldColor).toHsv());
-    });
+    if (success) {
+      navigation.goBack();
+    } else {
+      setHsv(tinycolor(color).toHsv());
+    }
   };
   return (
     <View style={styles.container}>
@@ -158,14 +143,12 @@ export default function ColorPicker(): JSX.Element {
         {tinycolor.fromRatio(hsv).toHexString()}
       </Text>
       <Button
-        disabled={
-          tinycolor.fromRatio(hsv).toHexString() === light.leds.colors[index]
-        }
+        disabled={tinycolor.fromRatio(hsv).toHexString() === color}
         style={styles.button}
         color={
           tinycolor.fromRatio(hsv).toHexString() !== ""
             ? tinycolor.fromRatio(hsv).toHexString()
-            : light.leds.colors[0]
+            : color
         }
         onPress={onSubmit}
         mode="contained"

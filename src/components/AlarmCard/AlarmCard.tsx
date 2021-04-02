@@ -1,25 +1,33 @@
 import { Alarm, PartialLight, Response } from "@devlights/types";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useNavigation } from "@react-navigation/core";
 import axios, { AxiosResponse } from "axios";
-import { map, remove } from "lodash";
+import { isEqual, map, remove } from "lodash";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Store } from "../../store";
 import { editAlarm, removeAlarm } from "../../store/actions/alarms";
+import { checkAlarmEquality } from "../../utils";
 import Circle from "../Circle";
 import DayChip from "../DayChip";
 
 export interface AlarmCardProps {
-  alarm: Alarm;
+  id: string;
 }
 
 export default function AlarmCard(props: AlarmCardProps): JSX.Element {
-  const { alarm } = props;
+  const { id } = props;
+  const alarm = useSelector(
+    (state: Store) => state.alarms.find((a: Alarm) => a.id === id) as Alarm,
+    (l: Alarm, r: Alarm) => checkAlarmEquality(l, r),
+  );
   const dispatch = useDispatch();
   const [days, setDays] = React.useState<number[]>(alarm.days);
-
+  const [color, setColor] = React.useState<string>(alarm.color);
+  const navigation = useNavigation();
   const theme: ReactNativePaper.Theme = useTheme();
 
   const styles = StyleSheet.create({
@@ -58,20 +66,24 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
       });
   };
 
-  const handleAlarmEdit = (data: any, key: string): boolean => {
+  const handleAlarmEdit = async (data: any, key: string): Promise<boolean> => {
     let success = true;
-    axios
-      .patch(`http://devlight/alarm/${alarm.id}`, {
-        [key]: data,
-      })
-      .then((res: AxiosResponse<Response<Alarm>>) => {
-        dispatch(editAlarm(res.data.object));
-      })
-      .catch(() => {
-        success = false;
-      });
+    const ax = axios.patch(`http://devlight/alarm/${alarm.id}`, {
+      [key]: data,
+    });
+    ax.then((res: AxiosResponse<Response<Alarm>>) => {
+      success = true;
+      setColor(res.data.object.color);
+      dispatch(editAlarm(res.data.object));
+    });
+    ax.catch(() => {
+      success = false;
+    });
     return success;
   };
+
+  const onSubmit = async (color: string): Promise<boolean> =>
+    handleAlarmEdit(color, "color");
 
   const handleCheckedChange = async (day: number, checked: boolean): void => {
     const wDays = [...days];
@@ -83,6 +95,13 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     }
     setDays(wDays);
     if (!handleAlarmEdit(wDays, "days")) setDays(old);
+  };
+
+  const onPress = () => {
+    navigation.navigate("color_modal", {
+      color: alarm.color,
+      onSubmit,
+    });
   };
   return (
     <View>
@@ -124,8 +143,10 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
         />
       </View>
       <View style={styles.color_container}>
-        <Circle colors={[alarm.color]} />
-        <Button color={alarm.color}>{alarm.color}</Button>
+        <Circle colors={[color]} />
+        <Button onPress={onPress} color={color}>
+          {color}
+        </Button>
       </View>
       <Divider style={styles.divider} />
       <List.Item
