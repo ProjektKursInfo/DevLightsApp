@@ -1,6 +1,6 @@
 import moment from "moment";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import { Text, TouchableRipple, useTheme } from "react-native-paper";
 import tinycolor from "tinycolor2";
 
@@ -28,13 +28,16 @@ export const DayChip = (props: DayChipProps): JSX.Element => {
         ? tinycolor(theme.colors.primary).setAlpha(0.8).toRgbString()
         : getGrey(false, theme),
       borderRadius: 10000,
+      height: Dimensions.get("window").width / 8.7,
+      width: Dimensions.get("window").width / 8.7,
+
       borderWidth: 2,
-      flex: 1,
       marginHorizontal: theme.spacing(0.5),
     },
     view: {
       padding: theme.spacing(2),
       backgroundColor: getGrey(selected, theme),
+      justifyContent: "center",
     },
     text: {
       textAlign: "center",

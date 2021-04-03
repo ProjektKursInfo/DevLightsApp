@@ -1,18 +1,33 @@
 import { Alarm, PartialLight, Response } from "@devlights/types";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/core";
 import axios, { AxiosResponse } from "axios";
-import { isEqual, map, remove } from "lodash";
+import { filter, indexOf, isEqual, map, remove } from "lodash";
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
-import { Button, Divider, List, Text, useTheme } from "react-native-paper";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { Modalize } from "react-native-modalize";
+import {
+  Button,
+  Chip,
+  Divider,
+  IconButton,
+  List,
+  Text,
+  TouchableRipple,
+  useTheme,
+} from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useSnackbar from "../../hooks/useSnackbar";
 import { Store } from "../../store";
 import { editAlarm, removeAlarm } from "../../store/actions/alarms";
 import { checkAlarmEquality } from "../../utils";
+import ApplyDialog from "../ApplyDialog/ApplyDialog";
+import ChangeableText from "../ChangeableText";
 import Circle from "../Circle";
 import DayChip from "../DayChip";
+import TimePicker from "../TimePicker";
 
 export interface AlarmCardProps {
   id: string;
@@ -27,31 +42,65 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   const dispatch = useDispatch();
   const [days, setDays] = React.useState<number[]>(alarm.days);
   const [color, setColor] = React.useState<string>(alarm.color);
+  const modalizeRef = React.useRef<Modalize>(null);
   const navigation = useNavigation();
   const theme: ReactNativePaper.Theme = useTheme();
-
+  const snackbar = useSnackbar();
+  const ref = React.useRef(null);
   const styles = StyleSheet.create({
-    chip_container: {
+    root: {
+      marginHorizontal: theme.spacing(3),
+      width: Dimensions.get("window").width - theme.spacing(3) * 2,
+      marginBottom: theme.spacing(2),
+    },
+    day_chip_container: {
       marginTop: theme.spacing(2),
       flexDirection: "row",
-      marginHorizontal: theme.spacing(1),
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    chip_container: {
+      marginTop: theme.spacing(4),
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      alignItems: "center",
+      width: "100%",
+      flexWrap: "wrap",
     },
     chip: {
-      marginRight: theme.spacing(2),
+      maxHeight: 40,
+      marginRight: theme.spacing(1),
+      marginTop: theme.spacing(1),
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    lights: {
+      marginTop: theme.spacing(2),
+    },
+    button: {
+      width: "60%",
+    },
+    addButton: {
+      marginLeft: 0,
     },
     color_container: {
+      marginTop: theme.spacing(3),
       flexDirection: "row",
-      marginLeft: theme.spacing(8),
-      marginTop: theme.spacing(4),
-    },
-    divider: {
-      margin: theme.spacing(3),
+      alignItems: "center",
+      justifyContent: "space-between",
     },
     icon: {
       alignSelf: "center",
     },
     delete_item: {
       marginLeft: theme.spacing(2),
+    },
+    textinput: {
+      flex: 2,
+      color: theme.colors.text,
+      fontSize: 20,
+      fontFamily: "TitilliumWeb-Bold",
+      fontWeight: "600",
     },
   });
 
@@ -60,52 +109,79 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
       .delete(`http://devlight/alarm/${alarm.id}`)
       .then((res: AxiosResponse<Response<Alarm>>) => {
         dispatch(removeAlarm(res.data.object));
-      })
-      .catch(() => {
-        // console.log("an error orrcurred while deleting alarm");
       });
   };
 
   const handleAlarmEdit = async (data: any, key: string): Promise<boolean> => {
-    let success = true;
-    const ax = axios.patch(`http://devlight/alarm/${alarm.id}`, {
-      [key]: data,
-    });
-    ax.then((res: AxiosResponse<Response<Alarm>>) => {
-      success = true;
+    try {
+      const res: AxiosResponse<Response<Alarm>> = await axios.patch(
+        `http://devlight/alarm/${alarm.id}`,
+        {
+          [key]: data,
+        },
+      );
       setColor(res.data.object.color);
       dispatch(editAlarm(res.data.object));
-    });
-    ax.catch(() => {
-      success = false;
-    });
-    return success;
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const onSubmit = async (color: string): Promise<boolean> =>
     handleAlarmEdit(color, "color");
 
-  const handleCheckedChange = async (day: number, checked: boolean): void => {
+  const handleCheckedChange = async (
+    day: number,
+    checked: boolean,
+  ): Promise<void> => {
     const wDays = [...days];
     const old = wDays;
     if (checked) {
       wDays.push(day);
-    } else {
+    } else if (wDays.length > 1) {
       remove(wDays, (d: number) => d === day);
+    } else {
+      snackbar.makeSnackbar(
+        "Alarm must be active for at least one day",
+        theme.colors.error,
+      );
+      return;
     }
     setDays(wDays);
-    if (!handleAlarmEdit(wDays, "days")) setDays(old);
+    if (!(await handleAlarmEdit(wDays, "days"))) setDays(old);
   };
 
-  const onPress = () => {
+  const handleColorChange = () => {
     navigation.navigate("color_modal", {
       color: alarm.color,
       onSubmit,
     });
   };
   return (
-    <View>
-      <View style={styles.chip_container}>
+    <View style={styles.root}>
+      <View style={{ flexDirection: "row" }}>
+        <Text
+          style={{
+            marginLeft: theme.spacing(2),
+            textAlignVertical: "center",
+            fontSize: 16,
+            fontWeight: "bold",
+          }}
+        >
+          {"Name:  "}
+        </Text>
+        <TextInput
+          ref={ref as React.RefObject<TextInput>}
+          onSubmitEditing={({ nativeEvent: { text } }) =>
+            handleAlarmEdit(text, "name")
+          }
+          textAlign="right"
+          style={styles.textinput}
+          defaultValue={alarm.name}
+        />
+      </View>
+      <View style={styles.day_chip_container}>
         <DayChip
           day={1}
           selected={days.includes(1)}
@@ -142,27 +218,83 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
           onCheckedChanged={handleCheckedChange}
         />
       </View>
+
+      <View style={styles.chip_container}>
+        {alarm.lights.map((l: PartialLight, i: number) => (
+          <Chip
+            onPress={() => navigation.navigate("light", { id: l.id })}
+            style={styles.chip}
+            onClose={() => {
+              if (alarm.lights.length > 1) {
+                handleAlarmEdit(
+                  map(
+                    filter(
+                      alarm.lights,
+                      (light: PartialLight) => light.id !== l.id,
+                    ),
+                    "id",
+                  ),
+                  "ids",
+                );
+              } else {
+                snackbar.makeSnackbar(
+                  "Alarm must have at least one Light",
+                  theme.colors.error,
+                );
+              }
+            }}
+          >
+            {alarm.lights[i].name}
+          </Chip>
+        ))}
+        <IconButton
+          style={styles.addButton}
+          onPress={() => modalizeRef.current?.open()}
+          icon={() => (
+            <FontAwesomeIcon
+              size={22}
+              color={theme.colors.accent}
+              icon={faPlus}
+            />
+          )}
+          size={20}
+        />
+      </View>
+
       <View style={styles.color_container}>
-        <Circle colors={[color]} />
-        <Button onPress={onPress} color={color}>
+        <Button
+          color={alarm.color}
+          style={styles.button}
+          mode="contained"
+          onPress={handleColorChange}
+        >
           {color}
         </Button>
+        <IconButton
+          size={30}
+          onPress={handleDelete}
+          icon={() => (
+            <FontAwesomeIcon
+              style={styles.icon}
+              icon={faTrash}
+              size={28}
+              color={theme.colors.error}
+            />
+          )}
+        />
       </View>
-      <Divider style={styles.divider} />
-      <List.Item
-        onPress={handleDelete}
-        style={styles.delete_item}
-        title="Delete Alarm"
-        left={() => (
-          <FontAwesomeIcon
-            style={styles.icon}
-            icon={faTrash}
-            size={26}
-            color={theme.colors.primary}
-          />
-        )}
+
+      <ApplyDialog
+        title="Lights for Alarm"
+        confirmText="Apply lights"
+        ref={modalizeRef}
+        onConfirm={(ids: string[]) => {
+          handleAlarmEdit(ids, "ids");
+          modalizeRef.current?.close();
+        }}
+        ids={map(alarm.lights, "id")}
+        ignoreLightOff
       />
-      <Divider style={styles.divider} />
     </View>
   );
 }

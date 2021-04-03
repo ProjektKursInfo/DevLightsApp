@@ -13,6 +13,7 @@ export interface AddAlarmAction {
 
 export interface EditAlarmAction {
   type: typeof EDIT_ALARM;
+  id: string;
   alarm: Alarm;
 }
 

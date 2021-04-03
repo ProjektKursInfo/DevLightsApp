@@ -9,33 +9,43 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { Modalize } from "react-native-modalize";
 import { Divider, List, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useLight from "../../hooks/useLight";
 import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   removeFavouriteColor,
-  removeFavouriteGradient
+  removeFavouriteGradient,
 } from "../../store/actions/favourites";
 import { Gradient } from "../../store/types/favouriteGradients";
 import { favouriteGradientsEquality, favouritesEquality } from "../../utils";
 import Circle from "../Circle";
-import { ApplyDialog } from "./ApplyDialog/ApplyDialog";
+import { ApplyDialog } from "../ApplyDialog/ApplyDialog";
 
 export function Color(props: {
   colors: string[];
   delete: () => void;
 }): JSX.Element {
   const { colors } = props;
+  const light = useLight();
   const theme = useTheme();
   const styles = StyleSheet.create({
     container: { width: "100%" },
     pressable: { alignSelf: "center" },
   });
   const modalizeRef = React.useRef<Modalize>(null);
+  const onConfirm = (ids: string[]) => {
+    modalizeRef.current?.close();
+    if (ids.length > 0) {
+      ids.forEach((id: string) => {
+        light.setColor(id, colors, colors.length > 1 ? "gradient" : "plain");
+      });
+    }
+  };
   return (
     <>
       <List.Item
@@ -54,8 +64,9 @@ export function Color(props: {
         )}
       />
       <ApplyDialog
-        onConfirm={() => modalizeRef.current?.close()}
-        colors={colors}
+        onConfirm={onConfirm}
+        title="Apply favourite color on Light"
+        confirmText="Apply Color"
         ref={modalizeRef}
       />
     </>
@@ -63,13 +74,13 @@ export function Color(props: {
 }
 
 export type FavouriteScreenNavigationProp = StackNavigationProp<
-LightsStackParamList,
-"favourite"
+  LightsStackParamList,
+  "favourite"
 >;
 
 export type FavouriteScreenRouteProp = RouteProp<
-LightsStackParamList,
-"favourite"
+  LightsStackParamList,
+  "favourite"
 >;
 
 export default function Favourite(): JSX.Element {

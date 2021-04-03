@@ -15,7 +15,7 @@ export function addAlarm(alarm: Alarm): AddAlarmAction {
 }
 
 export function editAlarm(alarm: Alarm): EditAlarmAction {
-  return { type: "EDIT_ALARM", alarm };
+  return { type: "EDIT_ALARM", alarm, id: alarm.id };
 }
 
 export function removeAlarm(alarm: Alarm): RemoveAlarmAction {

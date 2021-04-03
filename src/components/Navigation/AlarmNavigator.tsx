@@ -15,7 +15,11 @@ export default function AlarmNavigator(): JSX.Element {
   const Stack = createStackNavigator<AlarmStackParamList>();
   const theme = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { height: 100, elevation: 0 },
+      }}
+    >
       <Stack.Screen
         options={{
           headerTitle: "",

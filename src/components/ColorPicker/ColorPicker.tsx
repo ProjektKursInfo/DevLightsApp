@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Light } from "@devlights/types";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -15,15 +13,14 @@ import HsvColorPicker from "react-native-hsv-color-picker";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor, { ColorFormats } from "tinycolor2";
-import useLight from "../../hooks/useLight";
 import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   addFavouriteColor,
   removeFavouriteColor,
 } from "../../store/actions/favourites";
-import { makeValidColorArray } from "../../utils";
 import FavouriteList from "../FavouriteList/FavouriteList";
+import Icon from "../Icon";
 
 export type ColorModalScreenNavigationProp = StackNavigationProp<
   LightsStackParamList,
@@ -69,7 +66,7 @@ export default function ColorPicker(): JSX.Element {
       justifyContent: "center",
     },
     button: { marginTop: 20 },
-    icon: { marginRight: 20, marginTop: 15 },
+    icon: { marginRight: 20 },
   });
 
   React.useEffect(() => {
