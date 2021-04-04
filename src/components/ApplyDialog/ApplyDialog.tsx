@@ -108,10 +108,10 @@ export const ApplyDialog = React.forwardRef(
   },
 );
 
-export default ApplyDialog;
-
 ApplyDialog.defaultProps = {
   confirmText: "Apply",
   ids: [],
   ignoreLightOff: false,
 };
+
+export default ApplyDialog;

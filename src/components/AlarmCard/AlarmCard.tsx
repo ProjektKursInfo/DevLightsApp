@@ -3,31 +3,18 @@ import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/core";
 import axios, { AxiosResponse } from "axios";
-import { filter, indexOf, isEqual, map, remove } from "lodash";
+import { filter, map, remove } from "lodash";
 import * as React from "react";
-import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { Dimensions, StyleSheet, TextInput, View } from "react-native";
 import { Modalize } from "react-native-modalize";
-import {
-  Button,
-  Chip,
-  Divider,
-  IconButton,
-  List,
-  Text,
-  TouchableRipple,
-  useTheme,
-} from "react-native-paper";
+import { Button, Chip, IconButton, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import useSnackbar from "../../hooks/useSnackbar";
 import { Store } from "../../store";
 import { editAlarm, removeAlarm } from "../../store/actions/alarms";
 import { checkAlarmEquality } from "../../utils";
-import ApplyDialog from "../ApplyDialog/ApplyDialog";
-import ChangeableText from "../ChangeableText";
-import Circle from "../Circle";
+import ApplyDialog from "../ApplyDialog";
 import DayChip from "../DayChip";
-import TimePicker from "../TimePicker";
 
 export interface AlarmCardProps {
   id: string;
@@ -46,7 +33,63 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   const navigation = useNavigation();
   const theme: ReactNativePaper.Theme = useTheme();
   const snackbar = useSnackbar();
-  const ref = React.useRef(null);
+  const ref = React.useRef<TextInput>(null);
+
+  const handleDelete = () => {
+    axios
+      .delete(`http://devlight/alarm/${alarm.id}`)
+      .then((res: AxiosResponse<Response<Alarm>>) => {
+        dispatch(removeAlarm(res.data.object));
+      });
+  };
+
+  const handleAlarmEdit = async (data: any, key: string): Promise<boolean> => {
+    try {
+      const res: AxiosResponse<Response<Alarm>> = await axios.patch(
+        `http://devlight/alarm/${alarm.id}`,
+        {
+          [key]: data,
+        },
+      );
+      setColor(res.data.object.color);
+      dispatch(editAlarm(res.data.object));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const onSubmit = async (pColor: string): Promise<boolean> =>
+    handleAlarmEdit(pColor, "color");
+
+  const handleCheckedChange = async (
+    day: number,
+    checked: boolean,
+  ): Promise<void> => {
+    const wDays = [...days];
+    const old = wDays;
+    if (checked) {
+      wDays.push(day);
+    } else if (wDays.length > 1) {
+      remove(wDays, (d: number) => d === day);
+    } else {
+      snackbar.makeSnackbar(
+        "Alarm must be active for at least one day",
+        theme.colors.error,
+      );
+      return;
+    }
+    setDays(wDays);
+    if (!(await handleAlarmEdit(wDays, "days"))) setDays(old);
+  };
+
+  const handleColorChange = () => {
+    navigation.navigate("color_modal", {
+      color: alarm.color,
+      onSubmit,
+    });
+  };
+
   const styles = StyleSheet.create({
     root: {
       marginHorizontal: theme.spacing(3),
@@ -104,79 +147,17 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     },
   });
 
-  const handleDelete = () => {
-    axios
-      .delete(`http://devlight/alarm/${alarm.id}`)
-      .then((res: AxiosResponse<Response<Alarm>>) => {
-        dispatch(removeAlarm(res.data.object));
-      });
-  };
-
-  const handleAlarmEdit = async (data: any, key: string): Promise<boolean> => {
-    try {
-      const res: AxiosResponse<Response<Alarm>> = await axios.patch(
-        `http://devlight/alarm/${alarm.id}`,
-        {
-          [key]: data,
-        },
-      );
-      setColor(res.data.object.color);
-      dispatch(editAlarm(res.data.object));
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const onSubmit = async (color: string): Promise<boolean> =>
-    handleAlarmEdit(color, "color");
-
-  const handleCheckedChange = async (
-    day: number,
-    checked: boolean,
-  ): Promise<void> => {
-    const wDays = [...days];
-    const old = wDays;
-    if (checked) {
-      wDays.push(day);
-    } else if (wDays.length > 1) {
-      remove(wDays, (d: number) => d === day);
-    } else {
-      snackbar.makeSnackbar(
-        "Alarm must be active for at least one day",
-        theme.colors.error,
-      );
-      return;
-    }
-    setDays(wDays);
-    if (!(await handleAlarmEdit(wDays, "days"))) setDays(old);
-  };
-
-  const handleColorChange = () => {
-    navigation.navigate("color_modal", {
-      color: alarm.color,
-      onSubmit,
-    });
-  };
   return (
     <View style={styles.root}>
       <View style={{ flexDirection: "row" }}>
-        <Text
-          style={{
-            marginLeft: theme.spacing(2),
-            textAlignVertical: "center",
-            fontSize: 16,
-            fontWeight: "bold",
-          }}
-        >
-          {"Name:  "}
-        </Text>
+        <IconButton icon="label-outline" />
         <TextInput
           ref={ref as React.RefObject<TextInput>}
-          onSubmitEditing={({ nativeEvent: { text } }) =>
-            handleAlarmEdit(text, "name")
-          }
-          textAlign="right"
+          onSubmitEditing={({ nativeEvent: { text } }) => {
+            if (text !== "") handleAlarmEdit(text, "name");
+            else ref.current?.setNativeProps({ text: alarm.name });
+          }}
+          textAlign="left"
           style={styles.textinput}
           defaultValue={alarm.name}
         />
@@ -222,6 +203,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
       <View style={styles.chip_container}>
         {alarm.lights.map((l: PartialLight, i: number) => (
           <Chip
+            key={l.id}
             onPress={() => navigation.navigate("light", { id: l.id })}
             style={styles.chip}
             onClose={() => {

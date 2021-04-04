@@ -19,7 +19,7 @@ function AlarmFooter(props: AlarmFooterProps): JSX.Element {
   const { isActive, onPress, id } = props;
   const alarm = useSelector(
     (state: Store) => state.alarms.find((a: Alarm) => a.id === id) as Alarm,
-    (l: Alarm, r: Alarm) => isEqual(l.days, r.days),
+    (l: Alarm, r: Alarm) => isEqual(l.days, r.days) || isEqual(l.name, r.name),
   );
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -40,15 +40,13 @@ function AlarmFooter(props: AlarmFooterProps): JSX.Element {
     <View style={styles.root}>
       {!isActive ? (
         <Text style={styles.text}>
-          {
-            alarm.days.length === 7
-              ? "Everyday"
-              : alarm.days.map(
-                  (val: number, i: number) =>
-                    moment().set("day", val).format("ddd") +
-                    (i < alarm.days.length - 1 ? ", " : ""),
-                ) /*  + `\u002E` */
-          }{" "}
+          {alarm.days.length === 7
+            ? "Everyday"
+            : alarm.days.map(
+                (val: number, i: number) =>
+                  moment().set("day", val).format("ddd") +
+                  (i < alarm.days.length - 1 ? ", " : ""),
+              )}{" "}
           {`\u2022 ${alarm.name}`}
         </Text>
       ) : (

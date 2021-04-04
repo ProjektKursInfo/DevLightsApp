@@ -1,24 +1,18 @@
 import { Alarm, Response } from "@devlights/types";
 import axios, { AxiosResponse } from "axios";
-import { findIndex, indexOf, isEqual, map } from "lodash";
+import { indexOf, isEqual, map } from "lodash";
 import moment from "moment";
 import React from "react";
 import {
   Dimensions,
-  Easing,
-  GestureResponderEvent,
   RefreshControl,
   ScrollView,
   StyleSheet,
-  TouchableWithoutFeedback,
-  View,
 } from "react-native";
 import Accordion from "react-native-collapsible/Accordion";
 import { Modalize } from "react-native-modalize";
 import {
-  Divider,
   FAB,
-  Switch,
   Text,
   Title,
   TouchableRipple,
@@ -51,7 +45,6 @@ export default function Alarms(): JSX.Element {
   const theme = useTheme();
 
   React.useEffect(() => {
-    console.log(newAlarm);
     return setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
   }, []);
 
@@ -88,7 +81,6 @@ export default function Alarms(): JSX.Element {
   };
 
   const handleAlarmCreation = (ids: string[]) => {
-    console.log(newAlarm.ids);
     axios
       .put("http://devlight/alarm", {
         name: "Alarm",
@@ -98,9 +90,6 @@ export default function Alarms(): JSX.Element {
         ids,
       })
       .then((res: AxiosResponse<Response<Alarm>>) => {
-        console.log("###");
-        console.log(res.data.object);
-        console.log("###");
         dispatch(addAlarm(res.data.object));
         setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
       })
