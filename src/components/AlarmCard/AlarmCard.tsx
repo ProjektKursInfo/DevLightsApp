@@ -37,7 +37,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
 
   const handleDelete = () => {
     axios
-      .delete(`http://devlight/alarm/${alarm.id}`)
+      .delete(`/alarm/${alarm.id}`)
       .then((res: AxiosResponse<Response<Alarm>>) => {
         dispatch(removeAlarm(res.data.object));
       });
@@ -46,7 +46,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   const handleAlarmEdit = async (data: any, key: string): Promise<boolean> => {
     try {
       const res: AxiosResponse<Response<Alarm>> = await axios.patch(
-        `http://devlight/alarm/${alarm.id}`,
+        `/alarm/${alarm.id}`,
         {
           [key]: data,
         },

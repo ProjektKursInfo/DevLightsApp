@@ -40,7 +40,7 @@ export default function TagScreen(): JSX.Element {
 
   const onPress = (type: string) => {
     axios
-      .patch(`http://devlight/tags/${params.tag}/${type}`)
+      .patch(`/tags/${params.tag}/${type}`)
       .then((res: AxiosResponse) => {
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
         const newLights: Light[] = res.data.object as Light[];
@@ -119,14 +119,14 @@ export default function TagScreen(): JSX.Element {
             right={() => (
               <TouchableOpacity
                 style={styles.list_icon}
-                onPress={() => (
+                onPress={() =>
                   light.removeTags(l.id, [params.tag]).then(() => {
                     if (lights.length <= 1) {
                       navigation.goBack();
                       dispatch(removeTag(params.tag));
                     }
                   })
-                )}
+                }
               >
                 <FontAwesomeIcon
                   color={theme.colors.accent}

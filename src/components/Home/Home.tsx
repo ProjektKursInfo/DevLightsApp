@@ -33,6 +33,8 @@ interface SpinnerProps {
   visible: boolean;
 }
 
+type AxiosPromise<T> = Promise<AxiosResponse<Response<T>>>;
+
 export function Spinner(props: SpinnerProps): JSX.Element {
   const styles = StyleSheet.create({
     container: {
@@ -81,15 +83,10 @@ export default function Home(): JSX.Element {
     setLoading(true);
     setError(false);
     const fetching = fetchTheme();
-    const lightPromise: Promise<AxiosResponse<Response<Light[]>>> = axios.get(
-      "http://devlight/lights",
-    );
-    const alarmPromise: Promise<AxiosResponse<Response<Alarm[]>>> = axios.get(
-      "http://devlight/alarm",
-    );
-    const tagsPromise: Promise<AxiosResponse<Response<string[]>>> = axios.get(
-      "http://devlight/tags",
-    );
+
+    const lightPromise: AxiosPromise<Light[]> = axios.get("/lights");
+    const alarmPromise: AxiosPromise<Alarm[]> = axios.get("/alarm");
+    const tagsPromise: AxiosPromise<string[]> = axios.get("/tags");
     const promises: Promise<AxiosResponse<LightResponse> | unknown>[] = [];
     promises.push(fetching);
     if (network) {
@@ -100,6 +97,7 @@ export default function Home(): JSX.Element {
     allSettled(promises).then((val) => {
       try {
         if (val[1]) {
+          console.log(val[1].value);
           const newLights = val[1].value.data.object;
           store.dispatch(setAllLights(newLights));
         } else {

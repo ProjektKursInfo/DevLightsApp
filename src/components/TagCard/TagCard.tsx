@@ -54,7 +54,7 @@ export default function TagCard(props: TagCardProps) {
 
   const onPress = (type: string) => {
     axios
-      .patch(`http://devlight/tags/${tag}/${type}`)
+      .patch(`/tags/${tag}/${type}`)
       .then((res) => {
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
         const newLights: Light[] = res.data.object as Light[];

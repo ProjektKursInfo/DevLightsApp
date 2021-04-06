@@ -51,7 +51,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   const theme = useTheme();
 
   async function fetchLight(id: string): Promise<LightResponse> {
-    const ax = Axios.get(`http://devlight/lights/${id}`);
+    const ax = Axios.get(`/lights/${id}`);
     ax.then((res: LightResponse) => {
       dispatch(setLight(id, res.data.object));
     });
@@ -62,9 +62,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     id: string,
     status: boolean,
   ): Promise<LightResponse> {
-    const ax = Axios.patch(
-      `http://devlight/lights/${id}/${status ? "on" : "off"}`,
-    );
+    const ax = Axios.patch(`/lights/${id}/${status ? "on" : "off"}`);
     ax.then((res: LightResponse) => {
       snackbar.makeSnackbar(res.data.message, theme.colors.success);
       dispatch(setLightStatus(id, status));
@@ -76,7 +74,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   }
 
   async function setName(id: string, name: string): Promise<LightResponse> {
-    const ax = Axios.patch(`http://devlight/lights/${id}/update`, {
+    const ax = Axios.patch(`/lights/${id}/update`, {
       name,
     });
     ax.then((res: LightResponse) => {
@@ -94,7 +92,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   }
 
   async function setCount(id: string, count: number): Promise<LightResponse> {
-    const ax = Axios.patch(`http://devlight/lights/${id}/count`, {
+    const ax = Axios.patch(`/lights/${id}/count`, {
       count,
     });
     ax.then((res: LightResponse) => {
@@ -117,7 +115,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     timeout?: number,
   ): Promise<LightResponse> {
     const ax = Axios.patch(
-      `http://devlight/lights/${id}/color`,
+      `/lights/${id}/color`,
       {
         colors,
         pattern,
@@ -148,7 +146,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     id: string,
     brightness: number,
   ): Promise<LightResponse> {
-    const ax = Axios.patch(`http://devlight/lights/${id}/brightness`, {
+    const ax = Axios.patch(`/lights/${id}/brightness`, {
       brightness: Math.round(brightness),
     });
     ax.then(() => {
@@ -158,7 +156,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   }
 
   async function addTags(id: string, tags: string[]): Promise<LightResponse> {
-    const ax = Axios.put(`http://devlight/lights/${id}/tags`, {
+    const ax = Axios.put(`/lights/${id}/tags`, {
       tags,
     });
     ax.then(() => {
@@ -178,7 +176,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     id: string,
     tags: string[],
   ): Promise<LightResponse> {
-    const ax = Axios.delete(`http://devlight/lights/${id}/tags`, {
+    const ax = Axios.delete(`/lights/${id}/tags`, {
       data: { tags },
     });
     ax.then(() => {

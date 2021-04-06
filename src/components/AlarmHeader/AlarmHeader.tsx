@@ -32,7 +32,7 @@ export default function AlarmHeader(props: {
     const old = alarm.isOn;
     setIsOn(value);
     axios
-      .patch(`http://devlight/alarm/${id}`, {
+      .patch(`/alarm/${id}`, {
         isOn: value,
       })
       .then((res: AxiosResponse<Response<Alarm>>) => {
@@ -45,7 +45,7 @@ export default function AlarmHeader(props: {
 
   const handleTimeChange = (time: string) => {
     axios
-      .patch(`http://devlight/alarm/${id}`, {
+      .patch(`/alarm/${id}`, {
         time,
       })
       .then((res: AxiosResponse<Response<Alarm>>) => {

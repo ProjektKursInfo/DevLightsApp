@@ -13,8 +13,8 @@ import { tagArrayEquality } from "../../utils";
 import TagCard from "../TagCard";
 
 export type HomeScreenNavigationProp = StackNavigationProp<
-TagsStackParamList,
-"home"
+  TagsStackParamList,
+  "home"
 >;
 export type HomeScreenRouteProp = RouteProp<TagsStackParamList, "home">;
 
@@ -28,7 +28,7 @@ function Tags(): JSX.Element {
 
   const fetch = (refreshing = false) => {
     if (refreshing) setRefresh(true);
-    axios.get("http://devlight/tags").then((res: AxiosResponse) => {
+    axios.get("/tags").then((res: AxiosResponse) => {
       dispatch(setTags(res.data.object));
       if (refreshing) setRefresh(false);
     });

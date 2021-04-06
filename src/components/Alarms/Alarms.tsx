@@ -45,6 +45,7 @@ export default function Alarms(): JSX.Element {
   const theme = useTheme();
 
   React.useEffect(() => {
+    setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
     return setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
   }, []);
 
@@ -75,14 +76,14 @@ export default function Alarms(): JSX.Element {
   });
 
   const fetchAlarms = () => {
-    axios.get("http://devlight/alarm").then((res: AxiosResponse) => {
+    axios.get("/alarm").then((res: AxiosResponse) => {
       dispatch(setAlarms(res.data.object));
     });
   };
 
   const handleAlarmCreation = (ids: string[]) => {
     axios
-      .put("http://devlight/alarm", {
+      .put("/alarm", {
         name: "Alarm",
         color: "#00ff6a",
         days: newAlarm.days,
