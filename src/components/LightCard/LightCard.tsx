@@ -99,6 +99,7 @@ export default function LightCard(props: CardProps): JSX.Element {
     if (light.isOn) {
       switch (light.leds.pattern) {
         case "rainbow":
+        case "fading":
           return [
             "#ff0000",
             "#ffff00",
@@ -108,9 +109,14 @@ export default function LightCard(props: CardProps): JSX.Element {
             "#ff00ff",
           ];
         case "plain":
+        case "runner":
+        case "waking":
+        case "blinking":
           return [light.leds.colors[0], light.leds.colors[0]];
-        default:
+        case "gradient":
           return light.leds.colors;
+        default:
+          return ["#000000", "#000000"];
       }
     } else {
       return ["#000000", "#000000"];
