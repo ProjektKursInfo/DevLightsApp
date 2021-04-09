@@ -1,4 +1,4 @@
-import { Light, Pattern, USER_PATTERNS } from "@devlights/types";
+import { Light, Pattern, UserPattern, USER_PATTERNS } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { isEqual } from "lodash";
@@ -17,6 +17,7 @@ import DropDownPicker, {
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
+import { LightResponse } from "../../hooks/useLight/LightProvider";
 import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
 import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
@@ -117,12 +118,12 @@ export default function LightScreen(): JSX.Element {
     USER_PATTERNS.includes(light.leds.pattern)
       ? defaultItems
       : [
-        ...defaultItems,
-        {
-          label: getRightString(),
-          value: "unkown",
-        },
-      ],
+          ...defaultItems,
+          {
+            label: getRightString(),
+            value: "unkown",
+          },
+        ],
   );
 
   React.useEffect(() => {
@@ -131,15 +132,16 @@ export default function LightScreen(): JSX.Element {
     });
   }, []);
 
-
   const handlePatternChange = (pattern?: Pattern) => {
-    console.log(pattern);
-    console.log(getRightString());
     if (!USER_PATTERNS.includes(pattern ?? light.leds.pattern)) {
-      setItems([...defaultItems, { label: getRightString(pattern), value: "unkown" }]);
+      setItems([
+        ...defaultItems,
+        { label: getRightString(pattern), value: "unkown" },
+      ]);
       // @ts-ignore
       dropdown.selectItem("unkown");
     } else {
+      setItems(defaultItems);
       // @ts-ignore
       dropdown.selectItem(light.leds.pattern);
     }
@@ -172,16 +174,21 @@ export default function LightScreen(): JSX.Element {
         if (pattern === "gradient") {
           newColors.push(light.leds.colors[0]);
         }
-        lights.setColor(
-          light.id,
-          // replace with one parameter of type Partial<Leds>
-          pattern === "rainbow" ? [] : newColors,
-          pattern as Pattern,
-          // man muss die zahl an 2 stellen ändern
-          pattern === "runner" || pattern === "rainbow" ? 1000 : undefined,
-        ).catch(() => {
-          handlePatternChange();
-        });
+        lights
+          .setColor(
+            light.id,
+            // replace with one parameter of type Partial<Leds>
+            pattern === "rainbow" ? [] : newColors,
+            pattern as Pattern,
+            // man muss die zahl an 2 stellen ändern
+            pattern === "runner" || pattern === "rainbow" ? 1000 : undefined,
+          )
+          .then((res: LightResponse) => {
+            handlePatternChange(res.data.object.leds.pattern);
+          })
+          .catch(() => {
+            handlePatternChange();
+          });
       }
     }
   };

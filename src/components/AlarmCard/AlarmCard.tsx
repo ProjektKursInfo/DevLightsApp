@@ -36,11 +36,9 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   const ref = React.useRef<TextInput>(null);
 
   const handleDelete = () => {
-    axios
-      .delete(`/alarm/${alarm.id}`)
-      .then(() => {
-        dispatch(removeAlarm(alarm));
-      });
+    axios.delete(`/alarm/${alarm.id}`).then(() => {
+      dispatch(removeAlarm(alarm));
+    });
   };
 
   const handleAlarmEdit = async (data: any, key: string): Promise<boolean> => {
@@ -59,8 +57,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     }
   };
 
-  const onSubmit = async (pColor: string): Promise<boolean> =>
-    handleAlarmEdit(pColor, "color");
+  const onSubmit = async (pColor: string): Promise<boolean> => handleAlarmEdit(pColor, "color");
 
   const handleCheckedChange = async (
     day: number,

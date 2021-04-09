@@ -22,7 +22,7 @@ export interface CardProps {
 export default function LightCard(props: CardProps): JSX.Element {
   const theme: ReactNativePaper.Theme = useTheme();
   const { light } = props;
-  const { colors } = light.leds;
+  const { colors, pattern } = light.leds;
   const swipeableRef = React.useRef<Swipeable>(null);
   const styles = StyleSheet.create({
     card: {
@@ -34,7 +34,11 @@ export default function LightCard(props: CardProps): JSX.Element {
     headline: {
       marginTop: theme.spacing(4),
       marginLeft: theme.spacing(4),
-      color: light.isOn ? getContrastTextColor(colors[0]) : "#fff",
+      color: light.isOn
+        ? pattern === "rainbow"
+          ? "#fff"
+          : getContrastTextColor(colors[0])
+        : "#fff",
     },
     touchable: {
       width: "100%",
@@ -91,6 +95,28 @@ export default function LightCard(props: CardProps): JSX.Element {
     );
   };
 
+  const getRightColor = (): string[] => {
+    if (light.isOn) {
+      switch (light.leds.pattern) {
+        case "rainbow":
+          return [
+            "#ff0000",
+            "#ffff00",
+            "#00ff00",
+            "#00ffff",
+            "#0000ff",
+            "#ff00ff",
+          ];
+        case "plain":
+          return [light.leds.colors[0], light.leds.colors[0]];
+        default:
+          return light.leds.colors;
+      }
+    } else {
+      return ["#000000", "#000000"];
+    }
+  };
+
   const navigation = useNavigation();
   const onPress = (): void => {
     navigation.navigate("light", {
@@ -108,11 +134,7 @@ export default function LightCard(props: CardProps): JSX.Element {
       <TouchableOpacity style={styles.touchable} onPress={onPress}>
         <LinearGradient
           style={styles.card}
-          colors={
-            light.isOn
-              ? [colors[0], colors[1] ? colors[1] : colors[0]]
-              : ["#000", "#000"]
-          }
+          colors={getRightColor()}
           start={[0.25, 0.25]}
           end={[0.75, 0.75]}
         >
