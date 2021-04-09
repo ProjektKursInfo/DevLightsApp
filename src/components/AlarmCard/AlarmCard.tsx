@@ -38,8 +38,8 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   const handleDelete = () => {
     axios
       .delete(`/alarm/${alarm.id}`)
-      .then((res: AxiosResponse<Response<Alarm>>) => {
-        dispatch(removeAlarm(res.data.object));
+      .then(() => {
+        dispatch(removeAlarm(alarm));
       });
   };
 

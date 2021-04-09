@@ -33,9 +33,9 @@ export default function PlainComponent(
       light.id,
       newColors,
       light.leds.pattern,
-      light.leds.timeout,
+      undefined,
     );
-    await ax.then((response: AxiosResponse) => {
+    await ax.then(() => {
       success = true;
     });
     await ax.catch(() => {

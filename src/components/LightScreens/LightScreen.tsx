@@ -25,6 +25,7 @@ import ChangeableText from "../ChangeableText";
 import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import Powerbulb from "../Powerbulb";
+import RainbowComponent from "../RainbowComponent";
 import RunnerComponent from "../RunnerComponent";
 import TagsList from "../TagsList/TagsList";
 
@@ -45,6 +46,8 @@ function PatternComponent(props: {
       return <PlainComponent id={props.id} />;
     case "runner":
       return <RunnerComponent id={props.id} />;
+    case "rainbow":
+      return <RainbowComponent id={props.id} />;
     default:
       return (
         <Text style={{ textAlign: "center" }}>
@@ -88,10 +91,13 @@ export default function LightScreen(): JSX.Element {
       label: "Running",
       value: "runner",
     },
+    {
+      label: "Rainbow",
+      value: "rainbow",
+    },
   ];
-  const getRightString = (): string => {
-    // TODO Add Runner and Rainbow to Types Package
-    switch (light.leds.pattern) {
+  const getRightString = (pattern?: Pattern): string => {
+    switch (pattern ?? light.leds.pattern) {
       case "rainbow":
         return "Rainbow";
       case "waking":
@@ -100,6 +106,8 @@ export default function LightScreen(): JSX.Element {
         return "Fading";
       case "blinking":
         return "Blinking";
+      case "custom":
+        return "Custom";
       default:
         return light.leds.pattern;
     }
@@ -109,12 +117,12 @@ export default function LightScreen(): JSX.Element {
     USER_PATTERNS.includes(light.leds.pattern)
       ? defaultItems
       : [
-          ...defaultItems,
-          {
-            label: getRightString(),
-            value: "unkown",
-          },
-        ],
+        ...defaultItems,
+        {
+          label: getRightString(),
+          value: "unkown",
+        },
+      ],
   );
 
   React.useEffect(() => {
@@ -123,13 +131,15 @@ export default function LightScreen(): JSX.Element {
     });
   }, []);
 
-  const handlePatternChange = () => {
-    if (!USER_PATTERNS.includes(light.leds.pattern)) {
-      setItems([...items, { label: getRightString(), value: "unkown" }]);
+
+  const handlePatternChange = (pattern?: Pattern) => {
+    console.log(pattern);
+    console.log(getRightString());
+    if (!USER_PATTERNS.includes(pattern ?? light.leds.pattern)) {
+      setItems([...defaultItems, { label: getRightString(pattern), value: "unkown" }]);
       // @ts-ignore
       dropdown.selectItem("unkown");
     } else {
-      setItems(defaultItems);
       // @ts-ignore
       dropdown.selectItem(light.leds.pattern);
     }
@@ -165,19 +175,21 @@ export default function LightScreen(): JSX.Element {
         lights.setColor(
           light.id,
           // replace with one parameter of type Partial<Leds>
-          newColors,
+          pattern === "rainbow" ? [] : newColors,
           pattern as Pattern,
           // man muss die zahl an 2 stellen ändern
-          pattern === "runner" ? 100 : undefined,
-        );
+          pattern === "runner" || pattern === "rainbow" ? 1000 : undefined,
+        ).catch(() => {
+          handlePatternChange();
+        });
       }
     }
   };
 
   const fetch = async () => {
     setRefresh(true);
-    await lights.fetchLight(route.params.id);
-    handlePatternChange();
+    const res = await lights.fetchLight(route.params.id);
+    handlePatternChange(res.data.object.leds.pattern);
     setRefresh(false);
   };
   const styles = StyleSheet.create({

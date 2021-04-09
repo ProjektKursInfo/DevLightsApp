@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import * as SplashScreen from "expo-splash-screen";
 import Lottie from "lottie-react-native";
 import * as React from "react";
@@ -14,7 +14,7 @@ import {
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
 import { Alarm, Light, Response } from "@devlights/types";
-import allSettled from "promise.allsettled";
+import allSettled, { PromiseResult } from "promise.allsettled";
 import useNetwork from "../../hooks/useNetwork";
 import { Store } from "../../store";
 import {
@@ -94,10 +94,9 @@ export default function Home(): JSX.Element {
       promises.push(tagsPromise);
       promises.push(alarmPromise);
     }
-    allSettled(promises).then((val) => {
+    allSettled(promises).then(((val: any) => {
       try {
         if (val[1]) {
-          console.log(val[1].value);
           const newLights = val[1].value.data.object;
           store.dispatch(setAllLights(newLights));
         } else {
@@ -119,7 +118,7 @@ export default function Home(): JSX.Element {
       }
       setLoading(false);
       SplashScreen.hideAsync();
-    });
+    }));
 
     const favouriteColors: string | null = await AsyncStorage.getItem(
       "favouriteColors",
@@ -157,7 +156,7 @@ export default function Home(): JSX.Element {
     },
     contentContainerStyle: {
       alignItems: "center",
-      height: loading
+      height: loading || error
         ? "100%"
         : Dimensions.get("window").height * 0.2 + lights.length * 140,
     },

@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
-import { isEqual } from "lodash";
+import { isEqual, isUndefined } from "lodash";
 import * as React from "react";
 import {
   Dimensions,
@@ -60,9 +60,9 @@ export default function GradientComponent(
       light.id,
       newColors,
       light.leds.pattern,
-      light.leds.timeout,
+      undefined,
     );
-    await ax.then((response: AxiosResponse) => {
+    await ax.then(() => {
       success = true;
     });
     await ax.catch(() => {
