@@ -7,6 +7,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
+import useSnackbar from "../../hooks/useSnackbar";
 import { Store } from "../../store";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
 
@@ -28,16 +29,43 @@ export default function RunnerComponent(
       isEqual(left.leds.timeout, right.leds.timeout) ||
       isEqual(left.leds.colors, right.leds.colors),
   );
+  const snackbar = useSnackbar();
+
+  const onSubmit = async (color: string): Promise<boolean> => {
+    let success = true;
+    const ax = lights.setColor(
+      light.id,
+      [color],
+      light.leds.pattern,
+      light.leds.timeout,
+    );
+    await ax.then(() => {
+      success = true;
+    });
+    await ax.catch(() => {
+      success = false;
+    });
+
+    return success;
+  };
 
   const onPress = () => {
     navigation.navigate("color_modal", {
-      id: props.id,
+      color: light.leds.colors[0],
+      onSubmit,
       index: 0,
     });
   };
 
   // maybe number as parameter
   const changeTimeout = (timeout: string) => {
+    if (!/^\d+$/.test(timeout)) {
+      snackbar.makeSnackbar("Invalid number or string provided!", theme.colors.error);
+      if (ref) {
+        ref.current?.setNativeProps({ text: light.count.toString() });
+      }
+      return;
+    }
     if (parseInt(timeout, 10) !== light.leds.timeout) {
       lights
         .setColor(
@@ -47,7 +75,7 @@ export default function RunnerComponent(
           parseInt(timeout, 10),
         )
         .catch(() => {
-          /* ref.current?.setNativeProps({ text: light.leds.timeout?.toString() }); */
+          ref.current?.setNativeProps({ text: light.leds.timeout?.toString() });
         });
     }
   };
