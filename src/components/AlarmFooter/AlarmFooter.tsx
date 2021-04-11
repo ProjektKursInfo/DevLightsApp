@@ -36,19 +36,30 @@ function AlarmFooter(props: AlarmFooterProps): JSX.Element {
       marginLeft: theme.spacing(6),
     },
   });
+
+  const getDays = (): string | string[] => {
+    const { days } = alarm;
+    if (days.length === 7) {
+      return "Everyday";
+    }
+    if (alarm.days.includes(0) && alarm.days.includes(6)) {
+      return "Weekends";
+    }
+    if (
+      alarm.days.includes(1)
+      && alarm.days.includes(2)
+      && alarm.days.includes(3)
+      && alarm.days.includes(4)
+      && alarm.days.includes(5)
+    ) {
+      return "Weekdays";
+    }
+    return days.map((val: number) => moment().set("day", val).format("dd"));
+  };
   return (
     <View style={styles.root}>
       {!isActive ? (
-        <Text style={styles.text}>
-          {alarm.days.length === 7
-            ? "Everyday"
-            : alarm.days.map(
-                (val: number, i: number) =>
-                  moment().set("day", val).format("ddd") +
-                  (i < alarm.days.length - 1 ? ", " : ""),
-              )}{" "}
-          {`\u2022 ${alarm.name}`}
-        </Text>
+        <Text style={styles.text}>{`${getDays()} \u2022 ${alarm.name}`}</Text>
       ) : (
         <Text> </Text>
       )}

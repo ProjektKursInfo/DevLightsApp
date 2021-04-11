@@ -57,7 +57,8 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     }
   };
 
-  const onSubmit = async (pColor: string): Promise<boolean> => handleAlarmEdit(pColor, "color");
+  const onSubmit = async (pColor: string): Promise<boolean> =>
+    handleAlarmEdit(pColor, "color");
 
   const handleCheckedChange = async (
     day: number,
@@ -76,6 +77,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
       );
       return;
     }
+    wDays.sort();
     setDays(wDays);
     if (!(await handleAlarmEdit(wDays, "days"))) setDays(old);
   };

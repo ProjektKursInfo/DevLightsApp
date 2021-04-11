@@ -31,14 +31,14 @@ export const LightContext = React.createContext<{
   addTags(id: string, tags: string[]): Promise<LightResponse>;
   removeTags(id: string, tags: string[]): Promise<LightResponse>;
 }>({
-  fetchLight: () => new Promise<AxiosResponse>((): void => { }),
-  setStatus: () => new Promise<AxiosResponse>((): void => { }),
-  setName: () => new Promise<AxiosResponse>((): void => { }),
-  setCount: () => new Promise<AxiosResponse>((): void => { }),
-  setColor: () => new Promise<AxiosResponse>((): void => { }),
-  setBrightness: () => new Promise<AxiosResponse>((): void => { }),
-  addTags: () => new Promise<AxiosResponse>((): void => { }),
-  removeTags: () => new Promise<AxiosResponse>((): void => { }),
+  fetchLight: () => new Promise<AxiosResponse>((): void => {}),
+  setStatus: () => new Promise<AxiosResponse>((): void => {}),
+  setName: () => new Promise<AxiosResponse>((): void => {}),
+  setCount: () => new Promise<AxiosResponse>((): void => {}),
+  setColor: () => new Promise<AxiosResponse>((): void => {}),
+  setBrightness: () => new Promise<AxiosResponse>((): void => {}),
+  addTags: () => new Promise<AxiosResponse>((): void => {}),
+  removeTags: () => new Promise<AxiosResponse>((): void => {}),
 });
 
 export interface LightProviderProps {
@@ -53,7 +53,6 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
   async function fetchLight(id: string): Promise<LightResponse> {
     const ax = Axios.get(`/lights/${id}`);
     ax.then((res: LightResponse) => {
-      console.log(res.data.object);
       dispatch(setLight(id, res.data.object));
     });
     return await ax;
@@ -85,7 +84,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
 
     ax.catch((err: AxiosError) => {
       snackbar.makeSnackbar(
-        err?.response?.data.message ?? "Unexpected Error",
+        err?.response?.data.message ?? "Nothing changed",
         theme.colors.error,
       );
     });
@@ -102,7 +101,7 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
     });
     ax.catch((err: AxiosError) => {
       snackbar.makeSnackbar(
-        err?.response?.data.message ?? "Unexpected Error",
+        err?.response?.data.message ?? "Nothing changed",
         theme.colors.error,
       );
     });
@@ -131,12 +130,19 @@ export default function LightProvider(props: LightProviderProps): JSX.Element {
         snackbar.makeSnackbar("Nothing changed", theme.colors.error);
       } else if (res.status === 200) {
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
-        dispatch(setLightColor(id, pattern ?? "plain", colors.length > 0 ? colors : res.data.object.leds.colors, timeout));
+        dispatch(
+          setLightColor(
+            id,
+            pattern ?? "plain",
+            colors.length > 0 ? colors : res.data.object.leds.colors,
+            timeout,
+          ),
+        );
       }
     });
     ax.catch((err: AxiosError) => {
       snackbar.makeSnackbar(
-        err?.response?.data.message ?? "Unexpected error",
+        err?.response?.data.message ?? "Nothing changed",
         theme.colors.error,
       );
     });

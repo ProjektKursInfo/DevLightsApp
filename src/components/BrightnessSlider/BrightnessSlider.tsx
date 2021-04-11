@@ -8,6 +8,7 @@ import tinycolor from "tinycolor2";
 import { Light } from "@devlights/types";
 import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
+import { useTheme } from "react-native-paper";
 
 export interface SliderProps {
   color: string;
@@ -23,6 +24,7 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
 
   const [brightness, setBrightness] = React.useState<number>(light.brightness);
   const lights = useLight();
+  const theme = useTheme();
   const styles = StyleSheet.create({
     trackStyle: { height: 5 },
     thumbStyle: {
@@ -34,7 +36,9 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   });
   return (
     <Slider
-      minimumTrackTintColor={light.leds.colors[0]}
+      minimumTrackTintColor={
+        light.isOn ? light.leds.colors[0] : theme.colors.disabled
+      }
       minimumValue={1}
       maximumValue={255}
       value={brightness}

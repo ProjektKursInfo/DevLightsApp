@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import { Headline, useTheme } from "react-native-paper";
+import { Headline, Text, useTheme } from "react-native-paper";
 import Powerbulb from "../Powerbulb";
 import getContrastTextColor from "../textContrast";
 
@@ -34,11 +34,14 @@ export default function LightCard(props: CardProps): JSX.Element {
     headline: {
       marginTop: theme.spacing(4),
       marginLeft: theme.spacing(4),
-      color: light.isOn
-        ? pattern === "rainbow"
-          ? "#fff"
-          : getContrastTextColor(colors[0])
-        : "#fff",
+      position: "absolute",
+      zIndex: 10,
+      color:
+        pattern === "rainbow"
+          ? "#000"
+          : light.isOn
+          ? getContrastTextColor(light.leds.colors[0])
+          : "#fff",
     },
     touchable: {
       width: "100%",
@@ -70,6 +73,7 @@ export default function LightCard(props: CardProps): JSX.Element {
       borderRadius: 12,
     },
     button: { alignItems: "center", justifyContent: "center", flex: 1 },
+    rainbow_container: { flex: 1, flexDirection: "row" },
   });
 
   const awonPress = () => {
@@ -138,16 +142,32 @@ export default function LightCard(props: CardProps): JSX.Element {
       }
     >
       <TouchableOpacity style={styles.touchable} onPress={onPress}>
-        <LinearGradient
-          style={styles.card}
-          colors={getRightColor()}
-          start={[0.25, 0.25]}
-          end={[0.75, 0.75]}
-        >
-          <Headline style={styles.headline}>
-            {light.name ?? "Name not avaible"}
-          </Headline>
-        </LinearGradient>
+        {light.leds.pattern !== "rainbow" ? (
+          <LinearGradient
+            style={styles.card}
+            colors={getRightColor()}
+            start={[0.25, 0.25]}
+            end={[0.75, 0.75]}
+          >
+            <Headline style={styles.headline}>
+              {light.name ?? "Name not avaible"}
+            </Headline>
+          </LinearGradient>
+        ) : (
+          <>
+            <View style={styles.rainbow_container}>
+              <Headline style={styles.headline}>
+                {light.name ?? "Name not avaible"}
+              </Headline>
+              <View style={{ flex: 1, backgroundColor: "#ff0000" }}></View>
+              <View style={{ flex: 1, backgroundColor: "#ffff00" }}></View>
+              <View style={{ flex: 1, backgroundColor: "#00ff00" }}></View>
+              <View style={{ flex: 1, backgroundColor: "#00ffff" }}></View>
+              <View style={{ flex: 1, backgroundColor: "#0000ff" }}></View>
+              <View style={{ flex: 1, backgroundColor: "#ff00ff" }}></View>
+            </View>
+          </>
+        )}
       </TouchableOpacity>
     </Swipeable>
   );

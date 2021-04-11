@@ -1,5 +1,5 @@
 import { Alarm, Response } from "@devlights/types";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { indexOf, isEqual, map } from "lodash";
 import moment from "moment";
 import React from "react";
@@ -19,6 +19,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useSnackbar from "../../hooks/useSnackbar";
 import { Store } from "../../store";
 import { addAlarm, setAlarms } from "../../store/actions/alarms";
 import AlarmCard from "../AlarmCard/AlarmCard";
@@ -43,6 +44,7 @@ export default function Alarms(): JSX.Element {
   }>({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
   const [visible, setVisible] = React.useState<boolean>(false);
   const theme = useTheme();
+  const snackbar = useSnackbar();
 
   React.useEffect(() => {
     setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
@@ -94,8 +96,12 @@ export default function Alarms(): JSX.Element {
         dispatch(addAlarm(res.data.object));
         setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
       })
-      .catch(() => {
+      .catch((err: AxiosError) => {
         setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
+        snackbar.makeSnackbar(
+          err.response?.data.message ?? "Error while creating a new alarm",
+          theme.colors.error,
+        );
       });
   };
 

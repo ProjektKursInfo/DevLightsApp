@@ -48,6 +48,7 @@ function PatternComponent(props: {
     case "runner":
       return <RunnerComponent id={props.id} />;
     case "rainbow":
+    case "fading":
       return <RainbowComponent id={props.id} />;
     default:
       return (
@@ -99,8 +100,6 @@ export default function LightScreen(): JSX.Element {
   ];
   const getRightString = (pattern?: Pattern): string => {
     switch (pattern ?? light.leds.pattern) {
-      case "rainbow":
-        return "Rainbow";
       case "waking":
         return "Waking";
       case "fading":
@@ -148,6 +147,7 @@ export default function LightScreen(): JSX.Element {
   };
 
   const changeName = (name: string) => {
+    if (name === light.name) return;
     const ax = lights.setName(light.id, name);
     ax.then(() => {
       setError(false);
