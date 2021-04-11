@@ -97,6 +97,10 @@ export default function LightScreen(): JSX.Element {
       label: "Rainbow",
       value: "rainbow",
     },
+    {
+      label: "Fading",
+      value: "fading",
+    },
   ];
   const getRightString = (pattern?: Pattern): string => {
     switch (pattern ?? light.leds.pattern) {
@@ -132,7 +136,10 @@ export default function LightScreen(): JSX.Element {
   }, []);
 
   const handlePatternChange = (pattern?: Pattern) => {
-    if (!USER_PATTERNS.includes(pattern ?? light.leds.pattern)) {
+    if (
+      !USER_PATTERNS.includes(pattern ?? light.leds.pattern) &&
+      pattern !== "fading"
+    ) {
       setItems([
         ...defaultItems,
         { label: getRightString(pattern), value: "unkown" },
@@ -178,10 +185,12 @@ export default function LightScreen(): JSX.Element {
           .setColor(
             light.id,
             // replace with one parameter of type Partial<Leds>
-            pattern === "rainbow" ? [] : newColors,
+            pattern === "rainbow" || pattern === "fading" ? [] : newColors,
             pattern as Pattern,
             // man muss die zahl an 2 stellen ändern
-            pattern === "runner" || pattern === "rainbow" ? 1000 : undefined,
+            ["runner", "rainbow", "fading"].includes(pattern)
+              ? 1000
+              : undefined,
           )
           .then((res: LightResponse) => {
             handlePatternChange(res.data.object.leds.pattern);
@@ -325,7 +334,8 @@ export default function LightScreen(): JSX.Element {
             arrowColor={theme.colors.text}
             arrowSize={26}
             defaultValue={
-              !USER_PATTERNS.includes(light.leds.pattern)
+              !USER_PATTERNS.includes(light.leds.pattern) &&
+              light.leds.pattern !== "fading"
                 ? "unkown"
                 : light.leds.pattern
             }

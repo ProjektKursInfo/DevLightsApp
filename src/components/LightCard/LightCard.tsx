@@ -36,12 +36,11 @@ export default function LightCard(props: CardProps): JSX.Element {
       marginLeft: theme.spacing(4),
       position: "absolute",
       zIndex: 10,
-      color:
-        pattern === "rainbow"
+      color: light.isOn
+        ? pattern === "rainbow"
           ? "#000"
-          : light.isOn
-          ? getContrastTextColor(light.leds.colors[0])
-          : "#fff",
+          : getContrastTextColor(light.leds.colors[0])
+        : "#fff",
     },
     touchable: {
       width: "100%",
@@ -73,7 +72,10 @@ export default function LightCard(props: CardProps): JSX.Element {
       borderRadius: 12,
     },
     button: { alignItems: "center", justifyContent: "center", flex: 1 },
-    rainbow_container: { flex: 1, flexDirection: "row" },
+    rainbow_container: {
+      flex: 1,
+      flexDirection: "row",
+    },
   });
 
   const awonPress = () => {
@@ -159,12 +161,42 @@ export default function LightCard(props: CardProps): JSX.Element {
               <Headline style={styles.headline}>
                 {light.name ?? "Name not avaible"}
               </Headline>
-              <View style={{ flex: 1, backgroundColor: "#ff0000" }}></View>
-              <View style={{ flex: 1, backgroundColor: "#ffff00" }}></View>
-              <View style={{ flex: 1, backgroundColor: "#00ff00" }}></View>
-              <View style={{ flex: 1, backgroundColor: "#00ffff" }}></View>
-              <View style={{ flex: 1, backgroundColor: "#0000ff" }}></View>
-              <View style={{ flex: 1, backgroundColor: "#ff00ff" }}></View>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: light.isOn ? "#ff0000" : "#000",
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: light.isOn ? "#ffff00" : "#000",
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: light.isOn ? "#00ff00" : "#000",
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: light.isOn ? "#00ffff" : "#000",
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: light.isOn ? "#0000ff" : "#000",
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: light.isOn ? "#ff00ff" : "#000",
+                }}
+              />
             </View>
           </>
         )}
