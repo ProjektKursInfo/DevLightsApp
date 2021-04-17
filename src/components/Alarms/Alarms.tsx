@@ -19,6 +19,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useNetwork from "../../hooks/useNetwork";
 import useSnackbar from "../../hooks/useSnackbar";
 import { Store } from "../../store";
 import { addAlarm, setAlarms } from "../../store/actions/alarms";
@@ -35,6 +36,7 @@ export default function Alarms(): JSX.Element {
       (l: Alarm[], r: Alarm[]) => isEqual(l, r),
     ) || [];
   const dispatch = useDispatch();
+  const network = useNetwork();
   const modalizeRef = React.useRef<Modalize>(null);
   const [activeSections, setActiveSections] = React.useState<number[]>([]);
   const [newAlarm, setNewAlarm] = React.useState<{
@@ -159,7 +161,12 @@ export default function Alarms(): JSX.Element {
           <Text> Sorry! There arent any alarms yet</Text>
         )}
       </ScrollView>
-      <FAB style={styles.fab} onPress={() => setVisible(true)} icon="plus" />
+      <FAB
+        visible={network}
+        style={styles.fab}
+        onPress={() => setVisible(true)}
+        icon="plus"
+      />
       <TimePicker
         time={`${moment().get("hour")}:${moment().get("minute")}`}
         visible={visible}

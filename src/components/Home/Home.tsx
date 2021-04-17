@@ -94,7 +94,7 @@ export default function Home(): JSX.Element {
       promises.push(tagsPromise);
       promises.push(alarmPromise);
     }
-    allSettled(promises).then(((val: any) => {
+    allSettled(promises).then((val: any) => {
       try {
         if (val[1]) {
           const newLights = val[1].value.data.object;
@@ -118,7 +118,7 @@ export default function Home(): JSX.Element {
       }
       setLoading(false);
       SplashScreen.hideAsync();
-    }));
+    });
 
     const favouriteColors: string | null = await AsyncStorage.getItem(
       "favouriteColors",
@@ -142,6 +142,9 @@ export default function Home(): JSX.Element {
     if (network) {
       fetch();
     } else {
+      store.dispatch(setAlarms([]));
+      store.dispatch(setTags([]));
+      store.dispatch(setAllLights([]));
       setError(true);
     }
   }, [network]);
@@ -156,9 +159,10 @@ export default function Home(): JSX.Element {
     },
     contentContainerStyle: {
       alignItems: "center",
-      height: loading || error
-        ? "100%"
-        : Dimensions.get("window").height * 0.2 + lights.length * 140,
+      height:
+        loading || error
+          ? "100%"
+          : Dimensions.get("window").height * 0.2 + lights.length * 140,
     },
     error_text: {
       textAlign: "center",

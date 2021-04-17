@@ -18,7 +18,7 @@ interface TagCardProps {
   tag: string;
 }
 
-export default function TagCard(props: TagCardProps) {
+export default function TagCard(props: TagCardProps): JSX.Element {
   const { tag } = props;
   const navigation = useNavigation<TagScreenNavigationProp>();
   const theme = useTheme();
@@ -99,7 +99,7 @@ export default function TagCard(props: TagCardProps) {
   };
   const renderRightActions = (progress: Animated.AnimatedInterpolation) => (
     <View style={styles.action_container}>
-      {renderRightAction("All on", theme.colors.success, 128, progress, "on")}
+      {renderRightAction("All on", theme.colors.grey, 128, progress, "on")}
       {renderRightAction("All off", theme.colors.error, 64, progress, "off")}
     </View>
   );

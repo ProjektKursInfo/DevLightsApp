@@ -353,7 +353,7 @@ export default function LightScreen(): JSX.Element {
 
         <View style={styles.slider_container}>
           <Text style={styles.slider_text}> Brightness</Text>
-          <BrightnessSlider color={light.leds.colors[0]} id={light.id} />
+          <BrightnessSlider color={light.leds.colors[0]} ids={[light.id]} />
         </View>
 
         <Divider style={styles.divider} />

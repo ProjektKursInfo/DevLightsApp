@@ -40,7 +40,7 @@ export default function ColorPicker(): JSX.Element {
     isEqual,
   );
   const [hsv, setHsv] = React.useState<ColorFormats.HSV>(
-    tinycolor(color).toHsv(),
+    tinycolor(color ?? "#fff").toHsv(),
   );
   const [icon, setIcon] = React.useState<IconProp>(faStar);
   const navigation = useNavigation();

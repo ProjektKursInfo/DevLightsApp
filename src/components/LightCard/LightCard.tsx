@@ -36,11 +36,10 @@ export default function LightCard(props: CardProps): JSX.Element {
       marginLeft: theme.spacing(4),
       position: "absolute",
       zIndex: 10,
-      color: light.isOn
-        ? pattern === "rainbow"
+      color:
+        pattern === "rainbow" && light.isOn
           ? "#000"
-          : getContrastTextColor(light.leds.colors[0])
-        : "#fff",
+          : getContrastTextColor(light.isOn ? colors[0] : "#000"),
     },
     touchable: {
       width: "100%",
@@ -104,7 +103,6 @@ export default function LightCard(props: CardProps): JSX.Element {
   const getRightColor = (): string[] => {
     if (light.isOn) {
       switch (light.leds.pattern) {
-        case "rainbow":
         case "fading":
           return [
             "#ff0000",

@@ -1,4 +1,4 @@
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
 import {
   createStackNavigator,
   StackHeaderLeftButtonProps,
@@ -7,6 +7,7 @@ import {
 import React from "react";
 import { useTheme } from "react-native-paper";
 import { TagsStackParamList } from "../../interfaces/types";
+import ColorPicker from "../ColorPicker";
 import Icon from "../Icon/Icon";
 import Tags from "../Tags";
 import TagScreen from "../Tags/TagScreen";
@@ -43,6 +44,22 @@ export default function TagsNavigator(): JSX.Element {
           ...TransitionPresets.ScaleFromCenterAndroid,
         }}
         component={TagScreen}
+      />
+      <Stack.Screen
+        name="color_modal"
+        options={{
+          headerLeft: (props: StackHeaderLeftButtonProps) => (
+            <Icon
+              color={theme.colors.accent}
+              position="left"
+              icon={faTimes}
+              {...props}
+            />
+          ),
+          headerTitle: "",
+          ...TransitionPresets.ModalSlideFromBottomIOS,
+        }}
+        component={ColorPicker}
       />
     </Stack.Navigator>
   );

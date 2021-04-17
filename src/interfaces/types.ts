@@ -1,5 +1,9 @@
 export type ThemeType = "Light" | "Dark" | "System-Default";
-
+export type ColorModal = {
+  color: string;
+  onSubmit: (color: string) => Promise<boolean>;
+  index?: number;
+};
 /**
  * Types for the LightsNavigator
  */
@@ -8,11 +12,7 @@ export type LightsStackParamList = {
   light: {
     id: string;
   };
-  color_modal: {
-    color: string;
-    onSubmit: (color: string) => Promise<boolean>;
-    index?: number;
-  };
+  color_modal: ColorModal;
   favourite: undefined;
 };
 
@@ -24,15 +24,12 @@ export type TagsStackParamList = {
   tag: {
     tag: string;
   };
+  color_modal: ColorModal;
 };
 /**
  * Types for Alarm Navigator
  */
 export type AlarmStackParamList = {
   home: undefined;
-  color_modal: {
-    color: string;
-    onSubmit: (color: string) => Promise<boolean>;
-    index?: number;
-  };
+  color_modal: ColorModal;
 };

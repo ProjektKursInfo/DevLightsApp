@@ -1,9 +1,15 @@
-import { faClock, faCog, faHome, faTags } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClock,
+  faCog,
+  faHome,
+  faTags,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
+import { Dimensions } from "react-native";
 import { useTheme } from "react-native-paper";
 import Settings from "../Settings";
 import AlarmNavigator from "./AlarmNavigator";
@@ -31,12 +37,22 @@ function SettingsNavigator() {
 
 export default function Navigation(): JSX.Element {
   const theme = useTheme();
-  const Tab = createMaterialBottomTabNavigator();
+  const Tab = createBottomTabNavigator();
   return (
     <NavigationContainer theme={theme}>
       <Tab.Navigator
-        barStyle={{ backgroundColor: theme.colors.accent }}
-        labeled={false}
+        tabBarOptions={{
+          tabStyle: {
+            backgroundColor: theme.colors.accent,
+          },
+          style: {
+            height: Dimensions.get("window").height * 0.075,
+          },
+          activeTintColor: "#000",
+          inactiveTintColor: theme.colors.grey,
+          showLabel: false,
+        }}
+        lazy
         initialRouteName="home"
       >
         <Tab.Screen

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios, { AxiosResponse } from "axios";
+import { map } from "lodash";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
@@ -15,6 +16,7 @@ import { Store } from "../../../store";
 import { setLight } from "../../../store/actions/lights";
 import { removeTag } from "../../../store/actions/tags";
 import { tagsEquality } from "../../../utils";
+import BrightnessSlider from "../../BrightnessSlider";
 
 export type TagScreenNavigationProp = StackNavigationProp<
   TagsStackParamList,
@@ -82,6 +84,16 @@ export default function TagScreen(): JSX.Element {
     item_divider: { margin: theme.spacing(2) },
     list_item: { margin: theme.spacing(2) },
     list_icon: { alignSelf: "center" },
+    slider_container: {
+      width: "90%",
+      marginTop: 10,
+      marginLeft: theme.spacing(6),
+      marginRight: theme.spacing(6),
+    },
+    slider_text: {
+      fontSize: 20,
+      fontFamily: "TitilliumWeb-Regular",
+    },
   });
   return (
     <ScrollView contentContainerStyle={styles.contentContainerStyle}>
@@ -137,6 +149,10 @@ export default function TagScreen(): JSX.Element {
             )}
           />
         ))}
+      </View>
+      <View style={styles.slider_container}>
+        <Text style={styles.slider_text}> Brightness</Text>
+        <BrightnessSlider color="#1de9b6" ids={map(lights, "id")} />
       </View>
     </ScrollView>
   );

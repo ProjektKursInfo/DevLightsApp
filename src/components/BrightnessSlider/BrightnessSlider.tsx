@@ -6,19 +6,19 @@ import Slider from "react-native-slider";
 import { useSelector } from "react-redux";
 import tinycolor from "tinycolor2";
 import { Light } from "@devlights/types";
+import { useTheme } from "react-native-paper";
 import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
-import { useTheme } from "react-native-paper";
 
 export interface SliderProps {
   color: string;
-  id: string;
+  ids: string[];
 }
 
 export default function BrightnessSlider(props: SliderProps): JSX.Element {
-  const { id } = props;
+  const { ids } = props;
   const light: Light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
+    (state: Store) => state.lights.find((l: Light) => l.id === ids[0]) as Light,
     (left: Light, right: Light) => !isEqual(left, right),
   );
 
@@ -46,9 +46,11 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
       thumbStyle={styles.thumbStyle}
       onValueChange={(value: number) => setBrightness(value)}
       onSlidingComplete={(value: number) =>
-        lights.setBrightness(light.id, value).catch(() => {
-          setBrightness(light.brightness);
-        })
+        ids.forEach((id: string) =>
+          lights.setBrightness(id, value).catch(() => {
+            setBrightness(light.brightness);
+          }),
+        )
       }
     />
   );
