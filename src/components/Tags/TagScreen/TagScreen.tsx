@@ -115,11 +115,17 @@ export default function TagScreen(): JSX.Element {
         </Button>
       </View>
 
+      <View style={styles.slider_container}>
+        <Text style={styles.slider_text}> Brightness</Text>
+        <BrightnessSlider color="#1de9b6" ids={map(lights, "id")} />
+      </View>
+
       <View style={styles.item_container}>
         <Text style={styles.item_headline}>
           Lights with tag
           {` ${params.tag}`}
         </Text>
+
         <Divider style={styles.item_divider} />
         {lights.map((l: Light) => (
           <List.Item
@@ -149,10 +155,6 @@ export default function TagScreen(): JSX.Element {
             )}
           />
         ))}
-      </View>
-      <View style={styles.slider_container}>
-        <Text style={styles.slider_text}> Brightness</Text>
-        <BrightnessSlider color="#1de9b6" ids={map(lights, "id")} />
       </View>
     </ScrollView>
   );

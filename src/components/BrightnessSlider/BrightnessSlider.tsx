@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { filter, isEqual, some } from "lodash";
 import * as React from "react";
 import { StyleSheet } from "react-native";
 // @ts-ignore
@@ -22,6 +22,12 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
     (left: Light, right: Light) => !isEqual(left, right),
   );
 
+  const realLights: Light[] = useSelector(
+    (state: Store) =>
+      filter(state.lights, (light: Light) => ids.includes(light.id)) as Light[],
+    (left: Light[], right: Light[]) => !isEqual(left, right),
+  );
+
   const [brightness, setBrightness] = React.useState<number>(light.brightness);
   const lights = useLight();
   const theme = useTheme();
@@ -34,11 +40,16 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
       width: 30,
     },
   });
+
+  const disabled =
+    some(realLights, (nLight: Light) => nLight.leds.pattern === "custom") ||
+    some(realLights, (nLight: Light) => !nLight.isOn);
   return (
     <Slider
       minimumTrackTintColor={
-        light.isOn ? light.leds.colors[0] : theme.colors.disabled
+        !disabled ? light.leds.colors[0] : theme.colors.disabled
       }
+      disabled={disabled}
       minimumValue={1}
       maximumValue={255}
       value={brightness}
@@ -46,11 +57,11 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
       thumbStyle={styles.thumbStyle}
       onValueChange={(value: number) => setBrightness(value)}
       onSlidingComplete={(value: number) =>
-        ids.forEach((id: string) =>
-          lights.setBrightness(id, value).catch(() => {
-            setBrightness(light.brightness);
-          }),
-        )
+        realLights.forEach((pLight: Light) => {
+          lights.setBrightness(pLight.id, value).catch(() => {
+            setBrightness(pLight.brightness);
+          });
+        })
       }
     />
   );

@@ -5,11 +5,10 @@ import {
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
-import { Dimensions } from "react-native";
 import { useTheme } from "react-native-paper";
 import Settings from "../Settings";
 import AlarmNavigator from "./AlarmNavigator";
@@ -37,22 +36,12 @@ function SettingsNavigator() {
 
 export default function Navigation(): JSX.Element {
   const theme = useTheme();
-  const Tab = createBottomTabNavigator();
+  const Tab = createMaterialBottomTabNavigator();
   return (
     <NavigationContainer theme={theme}>
       <Tab.Navigator
-        tabBarOptions={{
-          tabStyle: {
-            backgroundColor: theme.colors.accent,
-          },
-          style: {
-            height: Dimensions.get("window").height * 0.075,
-          },
-          activeTintColor: "#000",
-          inactiveTintColor: theme.colors.grey,
-          showLabel: false,
-        }}
-        lazy
+        barStyle={{ backgroundColor: theme.colors.accent }}
+        labeled={false}
         initialRouteName="home"
       >
         <Tab.Screen
