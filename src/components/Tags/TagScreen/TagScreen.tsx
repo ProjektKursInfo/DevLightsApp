@@ -25,7 +25,7 @@ export type TagScreenRouteProp = RouteProp<TagsStackParamList, "tag">;
 export default function TagScreen(): JSX.Element {
   const { params } = useRoute<TagScreenRouteProp>();
   const dispatch = useDispatch();
-  const navigation = useNavigation<TagScreenNavigationProp>();
+  const navigation = useNavigation();
   const light = useLight();
   const theme = useTheme();
   const lights: Light[] = useSelector(
