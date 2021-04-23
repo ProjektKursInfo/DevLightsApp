@@ -40,13 +40,22 @@ export const tagsEquality = (
       i < (left.length > right.length ? left.length : right.length);
       i++
     ) {
-      if (right[i].tags?.includes(tag)) tagCount++;
-      if (right[i].tags !== left[i].tags) return false;
+      if (left[i].tags?.includes(tag)) tagCount++;
+      if (left[i].tags !== right[i].tags) return false;
+      if (left[i].isOn !== right[i].isOn) return false;
     }
 
     if (tagCount !== count) return false;
   } catch {
     return false;
+  }
+  return true;
+};
+
+export const isOnEquality = (left: Light[], right: Light[]): boolean => {
+  if (left.length !== right.length) return false;
+  for (let i = 0; i < left.length; i++) {
+    if (left[i].isOn !== right[i].isOn) return false;
   }
   return true;
 };

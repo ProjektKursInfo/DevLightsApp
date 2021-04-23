@@ -1,18 +1,17 @@
 import { Light } from "@devlights/types";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import { map } from "lodash";
 import React from "react";
 import { Animated, Dimensions, StyleSheet, View } from "react-native";
-import {
-  RectButton,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Text, useTheme } from "react-native-paper";
-import { useDispatch } from "react-redux";
-import useSnackbar from "../../hooks/useSnackbar";
-import { setLight } from "../../store/actions/lights";
+import { useSelector } from "react-redux";
+import { Store } from "../../store";
+import { isOnEquality } from "../../utils";
+import Powerbulb from "../Powerbulb";
 import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
+import getContrastTextColor from "../textContrast";
 
 interface TagCardProps {
   tag: string;
@@ -20,94 +19,74 @@ interface TagCardProps {
 
 export default function TagCard(props: TagCardProps): JSX.Element {
   const { tag } = props;
+  const swipeableRef = React.useRef<Swipeable>(null);
+  const lights = useSelector(
+    (state: Store) => state.lights.filter((l: Light) => l.tags?.includes(tag)),
+    (l: Light[], r: Light[]) => isOnEquality(l, r),
+  );
   const navigation = useNavigation<TagScreenNavigationProp>();
   const theme = useTheme();
   const styles = StyleSheet.create({
-    animated_view: { flex: 1, backgroundColor: "red" },
-    button: { alignItems: "center", justifyContent: "center", flex: 1 },
-    text: {
-      color: "white",
-      fontSize: 16,
-      backgroundColor: "transparent",
-      padding: 10,
+    animated_view: {
+      flex: 1,
+      backgroundColor: theme.colors.grey,
+      alignItems: "center",
+      alignContent: "center",
+      justifyContent: "center",
     },
     action_container: {
-      width: 128,
+      width: 80,
       flexDirection: "row",
     },
     swipeable: {
       height: 100,
+      backgroundColor: theme.colors.grey,
       width: Dimensions.get("window").width * 0.8,
-      backgroundColor: theme.colors.lightText,
       marginTop: 15,
       borderRadius: 12,
     },
-    touchable: { height: "100%", width: "100%" },
+    touchable: {
+      height: "100%",
+      width: "100%",
+      backgroundColor: theme.colors.accent,
+    },
     tag: {
+      color: getContrastTextColor(theme.colors.accent),
       marginLeft: theme.spacing(4),
       marginTop: theme.spacing(4),
       fontSize: 18,
     },
   });
-  const dispatch = useDispatch();
-  const snackbar = useSnackbar();
-
-  const onPress = (type: string) => {
-    axios
-      .patch(`/tags/${tag}/${type}`)
-      .then((res) => {
-        snackbar.makeSnackbar(res.data.message, theme.colors.success);
-        const newLights: Light[] = res.data.object as Light[];
-        newLights.map((l: Light) => dispatch(setLight(l.id, l)));
-      })
-      .catch((err) => {
-        snackbar.makeSnackbar(
-          err.response.data.message ?? `Maybe all Lights are already ${type}?`,
-          theme.colors.error,
-        );
-      });
-  };
 
   const renderRightAction = (
-    text: string,
-    color: string,
     x: number,
     progress: Animated.AnimatedInterpolation,
-    type: string,
   ) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
       outputRange: [x, 0],
     });
     return (
-      <Animated.View
-        style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
-      >
-        <RectButton
-          style={[
-            styles.button,
-            {
-              backgroundColor: color,
-            },
-          ]}
-          onPress={() => onPress(type)}
+      <View style={styles.action_container}>
+        <Animated.View
+          style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
         >
-          <Text style={styles.text}>{text}</Text>
-        </RectButton>
-      </Animated.View>
+          <Powerbulb
+            onBulbPress={() => swipeableRef.current?.close()}
+            ids={map(lights, "id")}
+          />
+        </Animated.View>
+      </View>
     );
   };
-  const renderRightActions = (progress: Animated.AnimatedInterpolation) => (
-    <View style={styles.action_container}>
-      {renderRightAction("All on", theme.colors.grey, 128, progress, "on")}
-      {renderRightAction("All off", theme.colors.error, 64, progress, "off")}
-    </View>
-  );
 
   return (
     <Swipeable
+      ref={swipeableRef}
       containerStyle={styles.swipeable}
-      renderRightActions={renderRightActions}
+      renderRightActions={(progress: Animated.AnimatedInterpolation) =>
+        renderRightAction(80, progress)
+      }
     >
       <TouchableWithoutFeedback
         style={styles.touchable}

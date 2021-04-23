@@ -131,7 +131,7 @@ export default function LightScreen(): JSX.Element {
 
   React.useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Powerbulb id={light.id} />,
+      headerRight: () => <Powerbulb ids={[light.id]} />,
     });
   }, []);
 

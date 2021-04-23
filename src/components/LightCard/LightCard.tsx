@@ -44,7 +44,7 @@ export default function LightCard(props: CardProps): JSX.Element {
         <Animated.View
           style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
         >
-          <Powerbulb onBulbPress={awonPress} id={light.id} />
+          <Powerbulb onBulbPress={awonPress} ids={[light.id]} />
         </Animated.View>
       </View>
     );

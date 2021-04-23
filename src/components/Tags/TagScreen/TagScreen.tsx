@@ -3,20 +3,18 @@ import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import axios, { AxiosResponse } from "axios";
 import { map } from "lodash";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import useLight from "../../../hooks/useLight";
-import useSnackbar from "../../../hooks/useSnackbar";
 import { TagsStackParamList } from "../../../interfaces/types";
 import { Store } from "../../../store";
-import { setLight } from "../../../store/actions/lights";
 import { removeTag } from "../../../store/actions/tags";
 import { tagsEquality } from "../../../utils";
 import BrightnessSlider from "../../BrightnessSlider";
+import Powerbulb from "../../Powerbulb";
 
 export type TagScreenNavigationProp = StackNavigationProp<
   TagsStackParamList,
@@ -27,40 +25,42 @@ export type TagScreenRouteProp = RouteProp<TagsStackParamList, "tag">;
 export default function TagScreen(): JSX.Element {
   const { params } = useRoute<TagScreenRouteProp>();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
-  const snackbar = useSnackbar();
+  const navigation = useNavigation<TagScreenNavigationProp>();
   const light = useLight();
   const theme = useTheme();
-
-  React.useEffect(() => {
-    navigation.setOptions({ headerTitle: params.tag });
-  }, [params.tag]);
   const lights: Light[] = useSelector(
     (state: Store) => state.lights.filter((l) => l.tags?.includes(params.tag)),
-    (l: Light[], r: Light[]) => tagsEquality(l, r, lights.length, params.tag),
+    (l: Light[], r: Light[]) => !tagsEquality(l, r, lights.length, params.tag),
   );
 
-  const onPress = (type: string) => {
-    axios
-      .patch(`/tags/${params.tag}/${type}`)
-      .then((res: AxiosResponse) => {
-        snackbar.makeSnackbar(res.data.message, theme.colors.success);
-        const newLights: Light[] = res.data.object as Light[];
-        newLights.map((l: Light) => dispatch(setLight(l.id, l)));
-      })
-      .catch((err) => {
-        snackbar.makeSnackbar(
-          err.response.data.message ?? `Maybe all Lights are already ${type}?`,
-          theme.colors.error,
-        );
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerTitle: params.tag,
+      headerRight: () => <Powerbulb ids={map(lights, "id")} />,
+    });
+  }, [params.tag]);
+
+  const onSubmit = async (color: string): Promise<boolean> => {
+    let success = true;
+    lights.forEach(async (l: Light) => {
+      const ax = light.setColor(l.id, [color], "plain");
+      await ax.then(() => {
+        success = true;
       });
+      await ax.catch(() => {
+        success = false;
+      });
+    });
+
+    return success;
   };
 
   const styles = StyleSheet.create({
     contentContainerStyle: { alignItems: "center" },
-    button_container: {
+    icon_container: {
       flexDirection: "row",
       alignSelf: "center",
+      alignItems: "center",
       margin: theme.spacing(4),
     },
     title: { fontSize: 18, textAlignVertical: "top" },
@@ -86,35 +86,18 @@ export default function TagScreen(): JSX.Element {
     list_icon: { alignSelf: "center" },
     slider_container: {
       width: "90%",
-      marginTop: 10,
-      marginLeft: theme.spacing(6),
-      marginRight: theme.spacing(6),
+      margin: theme.spacing(6),
     },
     slider_text: {
       fontSize: 20,
       fontFamily: "TitilliumWeb-Regular",
     },
+    button: {
+      margin: theme.spacing(2),
+    },
   });
   return (
     <ScrollView contentContainerStyle={styles.contentContainerStyle}>
-      <View style={styles.button_container}>
-        <Button
-          style={styles.button_left}
-          mode="contained"
-          onPress={() => onPress("on")}
-        >
-          All on
-        </Button>
-        <Text style={styles.button_middle_text}> | </Text>
-        <Button
-          style={styles.button_right}
-          mode="contained"
-          onPress={() => onPress("off")}
-        >
-          All off
-        </Button>
-      </View>
-
       <View style={styles.slider_container}>
         <Text style={styles.slider_text}> Brightness</Text>
         <BrightnessSlider color="#1de9b6" ids={map(lights, "id")} />
@@ -156,6 +139,16 @@ export default function TagScreen(): JSX.Element {
           />
         ))}
       </View>
+
+      <Button
+        mode="contained"
+        style={styles.button}
+        onPress={() =>
+          navigation.navigate("color_modal", { color: "#000000", onSubmit })
+        }
+      >
+        Color
+      </Button>
     </ScrollView>
   );
 }
