@@ -12,7 +12,7 @@ import {
   TextInputProps,
   TextStyle,
   View,
-  ViewStyle
+  ViewStyle,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useTheme } from "react-native-paper";
@@ -28,7 +28,7 @@ export interface ChangeableTextProps extends TextInputProps {
 }
 
 export default function ChangeableText(
-  props: ChangeableTextProps
+  props: ChangeableTextProps,
 ): JSX.Element {
   const { colors } = useTheme();
   const {
@@ -51,10 +51,6 @@ export default function ChangeableText(
   React.useEffect(() => {
     if (editable) inputRef?.current?.focus();
   }, [editable]);
-
-  const clearText = () => {
-    inputRef.current?.setNativeProps({ text: "" });
-  };
 
   const handleSave = (): void => {
     // TODO remove underline on button press
