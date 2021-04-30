@@ -20,7 +20,6 @@ import {
   removeFavouriteColor,
 } from "../../store/actions/favourites";
 import FavouriteList from "../FavouriteList/FavouriteList";
-import Icon from "../Icon";
 
 export type ColorModalScreenNavigationProp = StackNavigationProp<
   LightsStackParamList,
@@ -35,17 +34,16 @@ export type ColorModalScreenRouteProp = RouteProp<
 export default function ColorPicker(): JSX.Element {
   const route = useRoute<ColorModalScreenRouteProp>();
   const { color } = route.params;
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const theme = useTheme();
   const favouriteColors: string[] = useSelector(
     (state: Store) => state.favouriteColors,
-    isEqual,
   );
   const [hsv, setHsv] = React.useState<ColorFormats.HSV>(
     tinycolor(color ?? "#fff").toHsv(),
   );
   const [icon, setIcon] = React.useState<IconProp>(faStar);
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const theme = useTheme();
 
   const { colors } = theme;
   const saveColor = () => {
@@ -115,6 +113,7 @@ export default function ColorPicker(): JSX.Element {
       setHsv(tinycolor(color).toHsv());
     }
   };
+
   return (
     <View style={styles.container}>
       <FavouriteList onPress={onPress} />

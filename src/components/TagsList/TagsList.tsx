@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
 import { Store } from "../../store";
 import ChangeableText from "../ChangeableText";
-import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
+import { TagScreenNavigationProp } from "../TagScreen/TagScreen";
 
 export interface TagsListProps {
   light: Light;
@@ -59,7 +59,7 @@ export default function TagsList(props: TagsListProps): JSX.Element {
     <>
       <Text style={styles.item_headline}>Tags</Text>
       <Divider style={styles.item_divider} />
-      {light.tags?.length > 0
+      {light.tags?.length
         ? light.tags?.map((tag: string) => (
             <>
               <List.Item

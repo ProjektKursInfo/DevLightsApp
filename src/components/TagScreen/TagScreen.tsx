@@ -8,13 +8,13 @@ import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import useLight from "../../../hooks/useLight";
-import { TagsStackParamList } from "../../../interfaces/types";
-import { Store } from "../../../store";
-import { removeTag } from "../../../store/actions/tags";
-import { tagsEquality } from "../../../utils";
-import BrightnessSlider from "../../BrightnessSlider";
-import Powerbulb from "../../Powerbulb";
+import useLight from "../../hooks/useLight";
+import { TagsStackParamList } from "../../interfaces/types";
+import { Store } from "../../store";
+import { removeTag } from "../../store/actions/tags";
+import { tagsEquality } from "../../utils";
+import BrightnessSlider from "../BrightnessSlider";
+import Powerbulb from "../Powerbulb";
 
 export type TagScreenNavigationProp = StackNavigationProp<
   TagsStackParamList,
@@ -24,13 +24,14 @@ export type TagScreenRouteProp = RouteProp<TagsStackParamList, "tag">;
 
 export default function TagScreen(): JSX.Element {
   const { params } = useRoute<TagScreenRouteProp>();
+  const { tag } = params;
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const light = useLight();
   const theme = useTheme();
   const lights: Light[] = useSelector(
-    (state: Store) => state.lights.filter((l) => l.tags?.includes(params.tag)),
-    (l: Light[], r: Light[]) => !tagsEquality(l, r, lights.length, params.tag),
+    (state: Store) => state.lights.filter((l) => l.tags?.includes(tag)),
+    (l: Light[], r: Light[]) => tagsEquality(l, r, lights.length, tag),
   );
 
   React.useEffect(() => {
@@ -106,7 +107,7 @@ export default function TagScreen(): JSX.Element {
       <View style={styles.item_container}>
         <Text style={styles.item_headline}>
           Lights with tag
-          {` ${params.tag}`}
+          {` ${tag}`}
         </Text>
 
         <Divider style={styles.item_divider} />

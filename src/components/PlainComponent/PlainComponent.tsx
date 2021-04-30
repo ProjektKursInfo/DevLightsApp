@@ -17,13 +17,12 @@ export interface PlainComponentProps {
 export default function PlainComponent(
   props: PlainComponentProps,
 ): JSX.Element {
+  const { id } = props;
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const lights = useLight();
   const light: Light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === props.id) as Light,
-    (left: Light, right: Light) =>
-      !isEqual(left.leds.colors, right.leds.colors),
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
+    (l: Light, r: Light) => !isEqual(l.leds.colors, r.leds.colors),
   );
 
   const onSubmit = async (color: string): Promise<boolean> => {

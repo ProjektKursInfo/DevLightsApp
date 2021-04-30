@@ -2,8 +2,7 @@ import { Light } from "@devlights/types";
 import { useNavigation } from "@react-navigation/native";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { StyleSheet, View, TextInput } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
@@ -18,16 +17,14 @@ export interface RunnerComponentProps {
 export default function RunnerComponent(
   props: RunnerComponentProps,
 ): JSX.Element {
+  const { id } = props;
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const theme = useTheme();
   const lights = useLight();
   const ref = React.useRef<TextInput>();
   const light: Light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === props.id) as Light,
-    (left: Light, right: Light) =>
-      isEqual(left.leds.timeout, right.leds.timeout) ||
-      isEqual(left.leds.colors, right.leds.colors),
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
+    (l: Light, r: Light) => isEqual(l.leds, r.leds),
   );
   const snackbar = useSnackbar();
 
@@ -60,7 +57,10 @@ export default function RunnerComponent(
   // maybe number as parameter
   const changeTimeout = (timeout: string) => {
     if (!/^\d+$/.test(timeout)) {
-      snackbar.makeSnackbar("Invalid number or string provided!", theme.colors.error);
+      snackbar.makeSnackbar(
+        "Invalid number or string provided!",
+        theme.colors.error,
+      );
       if (ref) {
         ref.current?.setNativeProps({ text: light.count.toString() });
       }

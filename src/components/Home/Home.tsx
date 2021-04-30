@@ -1,33 +1,33 @@
+import { Alarm, Light, Response } from "@devlights/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import * as SplashScreen from "expo-splash-screen";
 import Lottie from "lottie-react-native";
+import allSettled from "promise.allsettled";
 import * as React from "react";
 import {
+  Dimensions,
   RefreshControl,
+  ScrollView,
   StatusBar,
   StyleSheet,
   View,
-  ScrollView,
-  Dimensions,
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
-import { Alarm, Light, Response } from "@devlights/types";
-import allSettled, { PromiseResult } from "promise.allsettled";
+import { LightResponse } from "../../hooks/useLight/LightProvider";
 import useNetwork from "../../hooks/useNetwork";
+import { Theme } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setAlarms } from "../../store/actions/alarms";
 import {
   setFavouriteColors,
   setFavouriteGradients,
 } from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
+import { setTags } from "../../store/actions/tags";
 import LightCard from "../LightCard";
 import { useThemeChange } from "../ThemeDialog";
-import { ThemeType } from "../../interfaces/types";
-import { setTags } from "../../store/actions/tags";
-import { LightResponse } from "../../hooks/useLight/LightProvider";
-import { setAlarms } from "../../store/actions/alarms";
 
 interface SpinnerProps {
   visible: boolean;
@@ -73,9 +73,9 @@ export default function Home(): JSX.Element {
   const network = useNetwork();
 
   const fetchTheme = async () => {
-    const themeType: ThemeType =
-      ((await AsyncStorage.getItem("theme")) as ThemeType) ?? "Dark";
-    await themeChange.changeTheme(themeType);
+    const storage = await AsyncStorage.getItem("theme");
+    const type: Theme = (storage as Theme) ?? "Dark";
+    await themeChange.changeTheme(type);
     return theme;
   };
 
@@ -94,7 +94,8 @@ export default function Home(): JSX.Element {
       promises.push(tagsPromise);
       promises.push(alarmPromise);
     }
-    allSettled(promises).then((val: any) => {
+    // TODO Type val
+    allSettled(promises).then((val: any[]) => {
       try {
         if (val[1]) {
           const newLights = val[1].value.data.object;
@@ -113,10 +114,11 @@ export default function Home(): JSX.Element {
         } else {
           store.dispatch(setAlarms([]));
         }
+        setLoading(false);
       } catch {
+        setLoading(false);
         setError(true);
       }
-      setLoading(false);
       SplashScreen.hideAsync();
     });
 
@@ -139,14 +141,7 @@ export default function Home(): JSX.Element {
   };
 
   React.useEffect(() => {
-    if (network) {
-      fetch();
-    } else {
-      store.dispatch(setAlarms([]));
-      store.dispatch(setTags([]));
-      store.dispatch(setAllLights([]));
-      setError(true);
-    }
+    fetch();
   }, [network]);
 
   const { colors } = useTheme();
@@ -178,14 +173,14 @@ export default function Home(): JSX.Element {
 
       <ScrollView
         style={styles.container}
-        refreshControl={
+        refreshControl={(
           <RefreshControl
             refreshing={false}
             onRefresh={() => fetch()}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
-        }
+        )}
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>

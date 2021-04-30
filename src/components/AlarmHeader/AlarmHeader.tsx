@@ -77,8 +77,7 @@ export default function AlarmHeader(props: {
       <View style={styles.root}>
         <TouchableRipple
           style={styles.ripple}
-          onPress={(e: GestureResponderEvent) => {
-            e.pro;
+          onPress={() => {
             setVisible(true);
           }}
         >

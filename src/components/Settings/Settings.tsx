@@ -5,7 +5,7 @@ import * as React from "react";
 import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import { List, Title, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
-import { ThemeType } from "../../interfaces/types";
+import { Theme } from "../../interfaces/types";
 import { Store } from "../../store";
 import ThemeDialog from "../ThemeDialog";
 
@@ -14,7 +14,7 @@ export default function Settings(): JSX.Element {
   const [visible, setVisible] = React.useState<boolean>(false);
   const themeType = useSelector(
     (state: Store) => state.theme,
-    (left: ThemeType, right: ThemeType) => isEqual(left, right),
+    (left: Theme, right: Theme) => isEqual(left, right),
   );
   const styles = StyleSheet.create({
     container: { width: "100%", height: "100%" },

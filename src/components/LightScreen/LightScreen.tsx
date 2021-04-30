@@ -62,11 +62,12 @@ function PatternComponent(props: {
 
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
+  const { params } = route;
+  const { id } = params;
   const theme = useTheme();
   const { colors } = theme;
   const light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === route.params.id) as Light,
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (l: Light, r: Light) =>
       !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn),
   );
@@ -106,8 +107,6 @@ export default function LightScreen(): JSX.Element {
     switch (pattern ?? light.leds.pattern) {
       case "waking":
         return "Waking";
-      case "fading":
-        return "Fading";
       case "blinking":
         return "Blinking";
       case "custom":
@@ -117,16 +116,20 @@ export default function LightScreen(): JSX.Element {
     }
   };
 
+  const getDropDownItems = (
+    pattern?: Pattern,
+  ): DropDownPickerProps["items"] => {
+    if (
+      USER_PATTERNS.includes(pattern ?? light.leds.pattern) ||
+      (pattern ?? light.leds.pattern === "fading")
+    ) {
+      return defaultItems;
+    }
+    return [...defaultItems, { label: getRightString(), value: "unkown" }];
+  };
+
   const [items, setItems] = React.useState<DropDownPickerProps["items"]>(
-    USER_PATTERNS.includes(light.leds.pattern)
-      ? defaultItems
-      : [
-          ...defaultItems,
-          {
-            label: getRightString(),
-            value: "unkown",
-          },
-        ],
+    getDropDownItems(),
   );
 
   React.useEffect(() => {
@@ -136,21 +139,12 @@ export default function LightScreen(): JSX.Element {
   }, []);
 
   const handlePatternChange = (pattern?: Pattern) => {
-    if (
-      !USER_PATTERNS.includes(pattern ?? light.leds.pattern) &&
-      pattern !== "fading"
-    ) {
-      setItems([
-        ...defaultItems,
-        { label: getRightString(pattern), value: "unkown" },
-      ]);
-      // @ts-ignore
-      dropdown.selectItem("unkown");
-    } else {
-      setItems(defaultItems);
-      // @ts-ignore
-      dropdown.selectItem(light.leds.pattern);
-    }
+    setItems(getDropDownItems(pattern));
+    dropdown.selectItem(
+      [...USER_PATTERNS, "fading"].includes(pattern ?? light.leds.pattern)
+        ? pattern
+        : "unkown",
+    );
   };
 
   const changeName = (name: string) => {
@@ -170,9 +164,7 @@ export default function LightScreen(): JSX.Element {
       if (ref) {
         ref.current?.setNativeProps({ text: light.count.toString() });
       }
-      return;
-    }
-    lights.setCount(light.id, parseInt(count, 10));
+    } else lights.setCount(light.id, parseInt(count, 10));
   };
   const changePattern = (pattern: string) => {
     if (pattern !== "unkown" && pattern !== undefined) {

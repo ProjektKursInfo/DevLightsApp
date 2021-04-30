@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { Store } from "../../store";
 import { isOnEquality } from "../../utils";
 import Powerbulb from "../Powerbulb";
-import { TagScreenNavigationProp } from "../Tags/TagScreen/TagScreen";
+import { TagScreenNavigationProp } from "../TagScreen/TagScreen";
 import getContrastTextColor from "../textContrast";
 
 interface TagCardProps {

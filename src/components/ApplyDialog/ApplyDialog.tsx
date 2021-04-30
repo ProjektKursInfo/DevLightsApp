@@ -17,7 +17,7 @@ interface ApplyDialogProps {
   title: string;
   confirmText?: string | undefined;
   onConfirm: (values: string[]) => void;
-  ids?: string[];
+  ids: string[];
   ignoreLightOff?: boolean;
 }
 
@@ -27,7 +27,7 @@ export const ApplyDialog = React.forwardRef(
     const theme = useTheme();
     const { title, confirmText, ids, ignoreLightOff } = props;
 
-    const [values, setValues] = React.useState<string[]>(ids ?? []);
+    const [values, setValues] = React.useState<string[]>(ids);
 
     React.useEffect(() => {
       setValues(ids);
@@ -110,7 +110,6 @@ export const ApplyDialog = React.forwardRef(
 
 ApplyDialog.defaultProps = {
   confirmText: "Apply",
-  ids: [],
   ignoreLightOff: false,
 };
 

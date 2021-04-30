@@ -36,13 +36,13 @@ export interface GradientComponentProps {
 export default function GradientComponent(
   props: GradientComponentProps,
 ): JSX.Element {
+  const { id } = props;
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const light: Light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === props.id) as Light,
-    (left: Light, right: Light) =>
-      !isEqual(left.leds.colors, right.leds.colors),
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
+    (l: Light, r: Light) => !isEqual(l.leds.colors, r.leds.colors),
   );
+  const { colors } = light.leds;
   const favouriteGradients: Gradient[] = useSelector(
     (state: Store) => state.favouriteGradients,
   );
@@ -50,8 +50,6 @@ export default function GradientComponent(
   const dispatch = useDispatch();
   const theme = useTheme();
   const lights = useLight();
-
-  const { colors } = light.leds;
 
   const onSubmit = async (color: string, index?: number): Promise<boolean> => {
     let success = true;
@@ -137,7 +135,7 @@ export default function GradientComponent(
       {favouriteGradients.length !== 0 ? (
         <>
           <Text style={styles.text}> Favourite Gradients </Text>
-          <FavouriteGradientList style={styles.list} id={light.id} />
+          <FavouriteGradientList style={styles.list} id={id} />
         </>
       ) : null}
       <Pressable style={styles.pressable} onPress={() => saveColor()}>

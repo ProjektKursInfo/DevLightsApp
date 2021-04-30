@@ -68,6 +68,7 @@ export function Color(props: {
         title="Apply favourite color on Light"
         confirmText="Apply Color"
         ref={modalizeRef}
+        ids={[]}
       />
     </>
   );

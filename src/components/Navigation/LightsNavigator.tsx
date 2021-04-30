@@ -16,7 +16,7 @@ import ColorPicker from "../ColorPicker";
 import Favourite from "../Favourite";
 import Home from "../Home";
 import Icon from "../Icon";
-import LightScreens from "../LightScreens";
+import LightScreens from "../LightScreen";
 
 export default function LightsNavigator(): JSX.Element {
   const Stack = createStackNavigator<LightsStackParamList>();
@@ -24,6 +24,7 @@ export default function LightsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <Stack.Navigator
+      initialRouteName="home"
       screenOptions={{
         headerStyle: { height: 100, elevation: 0 },
       }}

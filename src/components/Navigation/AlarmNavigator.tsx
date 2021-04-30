@@ -16,6 +16,7 @@ export default function AlarmNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <Stack.Navigator
+      initialRouteName="home"
       screenOptions={{
         headerStyle: { height: 100, elevation: 0 },
       }}

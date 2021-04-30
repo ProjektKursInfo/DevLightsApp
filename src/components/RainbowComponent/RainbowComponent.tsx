@@ -1,8 +1,7 @@
 import { Light } from "@devlights/types";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { StyleSheet, View, TextInput } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { useSelector } from "react-redux";
 import useLight from "../../hooks/useLight";
@@ -15,12 +14,13 @@ export interface RunnerComponentProps {
 export default function RunnerComponent(
   props: RunnerComponentProps,
 ): JSX.Element {
+  const { id } = props;
   const theme = useTheme();
   const lights = useLight();
   const ref = React.useRef<TextInput>();
   const light: Light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.id === props.id) as Light,
-    (left: Light, right: Light) => isEqual(left.leds.timeout, right.leds.timeout),
+    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
+    (l: Light, r: Light) => isEqual(l.leds.timeout, r.leds.timeout),
   );
 
   // maybe number as parameter

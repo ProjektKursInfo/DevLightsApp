@@ -41,7 +41,13 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     });
   };
 
-  const handleAlarmEdit = async (data: any, key: string): Promise<boolean> => {
+  /**
+   * function for editing one single alarm e.g. the time of it
+   * @param data the data with the changes
+   * @param key type of what you want to change e.g. "time"
+   * @returns Promise over boolean to check wether the request succeded or not
+   */
+  const handleEdit = async (data: any, key: string): Promise<boolean> => {
     try {
       const res: AxiosResponse<Response<Alarm>> = await axios.patch(
         `/alarm/${alarm.id}`,
@@ -57,8 +63,8 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     }
   };
 
-  const onSubmit = async (pColor: string): Promise<boolean> =>
-    handleAlarmEdit(pColor, "color");
+  const onSubmit = async (c: string): Promise<boolean> =>
+    handleEdit(c, "color");
 
   const handleCheckedChange = async (
     day: number,
@@ -79,7 +85,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     }
     wDays.sort();
     setDays(wDays);
-    if (!(await handleAlarmEdit(wDays, "days"))) setDays(old);
+    if (!(await handleEdit(wDays, "days"))) setDays(old);
   };
 
   const handleColorChange = () => {
@@ -153,7 +159,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
         <TextInput
           ref={ref as React.RefObject<TextInput>}
           onSubmitEditing={({ nativeEvent: { text } }) => {
-            if (text !== "") handleAlarmEdit(text, "name");
+            if (text !== "") handleEdit(text, "name");
             else ref.current?.setNativeProps({ text: alarm.name });
           }}
           textAlign="left"
@@ -162,6 +168,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
         />
       </View>
       <View style={styles.day_chip_container}>
+        {days.for}
         <DayChip
           day={1}
           selected={days.includes(1)}
@@ -207,7 +214,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
             style={styles.chip}
             onClose={() => {
               if (alarm.lights.length > 1) {
-                handleAlarmEdit(
+                handleEdit(
                   map(
                     filter(
                       alarm.lights,
@@ -270,7 +277,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
         confirmText="Apply lights"
         ref={modalizeRef}
         onConfirm={(ids: string[]) => {
-          handleAlarmEdit(ids, "ids");
+          handleEdit(ids, "ids");
           modalizeRef.current?.close();
         }}
         ids={map(alarm.lights, "id")}

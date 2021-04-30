@@ -3,7 +3,7 @@ import React from "react";
 import { StyleProp, StyleSheet, TextStyle } from "react-native";
 import { Button, Dialog, Portal, RadioButton } from "react-native-paper";
 import { useSelector } from "react-redux";
-import { ThemeType } from "../../interfaces/types";
+import { Theme } from "../../interfaces/types";
 import { Store } from "../../store";
 import { useThemeChange } from "./ThemeProvider";
 
@@ -16,9 +16,9 @@ export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
   const { visible } = props;
   const theme = useSelector(
     (state: Store) => state.theme,
-    (l: ThemeType, r: ThemeType) => isEqual(l, r),
+    (l: Theme, r: Theme) => isEqual(l, r),
   );
-  const [value, setValue] = React.useState<ThemeType>(theme);
+  const [value, setValue] = React.useState<Theme>(theme);
   const changeTheme = useThemeChange();
 
   const onConfirm = async () => {
@@ -51,7 +51,7 @@ export default function ThemeDialog(props: ThemeDialogProps): JSX.Element {
         <Dialog.Content>
           <RadioButton.Group
             onValueChange={(newValue: string) => {
-              setValue(newValue as ThemeType);
+              setValue(newValue as Theme);
             }}
             value={value}
           >

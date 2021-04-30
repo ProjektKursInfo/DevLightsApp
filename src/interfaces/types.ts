@@ -1,4 +1,4 @@
-export type ThemeType = "Light" | "Dark" | "System-Default";
+export type Theme = "Light" | "Dark" | "System-Default";
 export type ColorModal = {
   color: string;
   onSubmit: (color: string) => Promise<boolean>;

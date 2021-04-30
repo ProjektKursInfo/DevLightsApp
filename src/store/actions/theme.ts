@@ -1,6 +1,6 @@
-import { ThemeType } from "../../interfaces/types";
+import { Theme } from "../../interfaces/types";
 import { SetThemeAction } from "../types/theme";
 
-export default function setTheme(theme: ThemeType): SetThemeAction {
+export default function setTheme(theme: Theme): SetThemeAction {
   return { type: "SET_THEME", theme };
 }

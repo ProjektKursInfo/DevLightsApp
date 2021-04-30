@@ -10,13 +10,14 @@ import { TagsStackParamList } from "../../interfaces/types";
 import ColorPicker from "../ColorPicker";
 import Icon from "../Icon/Icon";
 import Tags from "../Tags";
-import TagScreen from "../Tags/TagScreen";
+import TagScreen from "../TagScreen/TagScreen";
 
 export default function TagsNavigator(): JSX.Element {
   const Stack = createStackNavigator<TagsStackParamList>();
   const theme = useTheme();
   return (
     <Stack.Navigator
+      initialRouteName="home"
       screenOptions={{
         headerStyle: { height: 100, elevation: 0 },
       }}

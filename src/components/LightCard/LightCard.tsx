@@ -7,7 +7,6 @@ import * as React from "react";
 import {
   Animated,
   Dimensions,
-  I18nManager,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -23,13 +22,10 @@ export interface CardProps {
 
 export default function LightCard(props: CardProps): JSX.Element {
   const theme: ReactNativePaper.Theme = useTheme();
+  const navigation = useNavigation();
   const { light } = props;
   const { colors, pattern } = light.leds;
   const swipeableRef = React.useRef<Swipeable>(null);
-
-  const awonPress = () => {
-    swipeableRef.current?.close();
-  };
 
   const renderRightAction = (
     x: number,
@@ -44,13 +40,16 @@ export default function LightCard(props: CardProps): JSX.Element {
         <Animated.View
           style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
         >
-          <Powerbulb onBulbPress={awonPress} ids={[light.id]} />
+          <Powerbulb
+            onBulbPress={() => swipeableRef.current?.close()}
+            ids={[light.id]}
+          />
         </Animated.View>
       </View>
     );
   };
 
-  const getRightColor = (): string[] => {
+  const getCardColor = (): string[] => {
     if (light.isOn) {
       switch (light.leds.pattern) {
         case "fading":
@@ -67,8 +66,6 @@ export default function LightCard(props: CardProps): JSX.Element {
         case "waking":
         case "blinking":
           return [light.leds.colors[0], light.leds.colors[0]];
-        case "gradient":
-          return light.leds.colors;
         default:
           return light.leds.colors;
       }
@@ -77,7 +74,6 @@ export default function LightCard(props: CardProps): JSX.Element {
     }
   };
 
-  const navigation = useNavigation();
   const onPress = (): void => {
     navigation.navigate("light", {
       id: light.id,
@@ -153,7 +149,6 @@ export default function LightCard(props: CardProps): JSX.Element {
     },
     action_container: {
       width: 80,
-      flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     },
     swipeable: {
       height: 120,
@@ -177,7 +172,6 @@ export default function LightCard(props: CardProps): JSX.Element {
       flex: 1,
       flexDirection: "row",
     },
-    custom_view: {},
   });
 
   let curIndex = -1;
@@ -196,7 +190,7 @@ export default function LightCard(props: CardProps): JSX.Element {
         {light.leds.pattern !== "rainbow" && light.leds.pattern !== "custom" ? (
           <LinearGradient
             style={styles.card}
-            colors={getRightColor()}
+            colors={getCardColor()}
             start={[0.25, 0.25]}
             end={[0.75, 0.75]}
           >
@@ -248,24 +242,21 @@ export default function LightCard(props: CardProps): JSX.Element {
         ) : (
           <View style={styles.custom_container}>
             {getFlexAmounts(light.leds.colors.length).map(
-              (counts: number[]) => {
-                return (
-                  <View style={styles.custom_container_inner}>
-                    {counts.map((amount: number) => {
-                      curIndex++;
-                      return (
-                        <View
-                          style={{
-                            ...styles.custom_view,
-                            backgroundColor: light.leds.colors[curIndex],
-                            flex: amount,
-                          }}
-                        ></View>
-                      );
-                    })}
-                  </View>
-                );
-              },
+              (counts: number[]) => (
+                <View style={styles.custom_container_inner}>
+                  {counts.map((amount: number) => {
+                    curIndex++;
+                    return (
+                      <View
+                        style={{
+                          backgroundColor: light.leds.colors[curIndex],
+                          flex: amount,
+                        }}
+                      />
+                    );
+                  })}
+                </View>
+              ),
             )}
           </View>
         )}
