@@ -7,7 +7,6 @@ import axios from "axios";
 import Navigation from "./components/Navigation/Navigation";
 import SafeAreaView from "./components/SafeAreaView";
 import ThemeProvider from "./components/ThemeDialog/ThemeProvider";
-import { LightProvider } from "./hooks/useLight";
 import SnackbarProvider from "./hooks/useSnackbar/SnackbarProvider";
 import store from "./store";
 import "intl";
@@ -23,13 +22,11 @@ export default function App(): JSX.Element {
       <Provider store={store}>
         <ThemeProvider>
           <SnackbarProvider>
-            <LightProvider>
               <SafeAreaProvider>
                 <SafeAreaView>
                   <Navigation />
                 </SafeAreaView>
               </SafeAreaProvider>
-            </LightProvider>
           </SnackbarProvider>
         </ThemeProvider>
       </Provider>
