@@ -46,11 +46,11 @@ function AlarmFooter(props: AlarmFooterProps): JSX.Element {
       return "Weekends";
     }
     if (
-      alarm.days.includes(1)
-      && alarm.days.includes(2)
-      && alarm.days.includes(3)
-      && alarm.days.includes(4)
-      && alarm.days.includes(5)
+      alarm.days.includes(1) &&
+      alarm.days.includes(2) &&
+      alarm.days.includes(3) &&
+      alarm.days.includes(4) &&
+      alarm.days.includes(5)
     ) {
       return "Weekdays";
     }

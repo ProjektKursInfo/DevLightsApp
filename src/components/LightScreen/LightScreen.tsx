@@ -1,6 +1,7 @@
-import { Light, Pattern, UserPattern, USER_PATTERNS } from "@devlights/types";
+import { Light, Pattern, USER_PATTERNS } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -8,26 +9,22 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  TextInput,
   View,
 } from "react-native";
 import DropDownPicker, {
   DropDownPickerProps,
 } from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
-import { useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
-import { LightResponse } from "../../hooks/useLight/LightProvider";
-import useSnackbar from "../../hooks/useSnackbar/useSnackbar";
+import { useDispatch, useSelector } from "react-redux";
+import { LightResponse } from "../../interfaces/types";
 import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setLight } from "../../store/actions/lights";
 import BrightnessSlider from "../BrightnessSlider";
-import ChangeableText from "../ChangeableText";
-import GradientComponent from "../GradientComponent";
-import PlainComponent from "../PlainComponent";
+import CountComponent from "../CountComponent";
+import NameComponent from "../NameComponent";
+import PatternComponent from "../PatternComponent";
 import Powerbulb from "../Powerbulb";
-import RainbowComponent from "../RainbowComponent";
-import RunnerComponent from "../RunnerComponent";
 import TagsList from "../TagsList/TagsList";
 
 export type LightScreenNavigationProp = StackNavigationProp<
@@ -36,49 +33,24 @@ export type LightScreenNavigationProp = StackNavigationProp<
 >;
 export type LightScreenRouteProp = RouteProp<LightsStackParamList, "light">;
 
-function PatternComponent(props: {
-  pattern: Pattern;
-  id: string;
-}): JSX.Element {
-  switch (props.pattern) {
-    case "gradient":
-      return <GradientComponent id={props.id} />;
-    case "plain":
-      return <PlainComponent id={props.id} />;
-    case "runner":
-      return <RunnerComponent id={props.id} />;
-    case "rainbow":
-    case "fading":
-      return <RainbowComponent id={props.id} />;
-    default:
-      return (
-        <Text style={{ textAlign: "center" }}>
-          The Light is currently in a mode where changing the Color is not
-          supported.
-        </Text>
-      );
-  }
-}
-
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
   const { params } = route;
   const { id } = params;
   const theme = useTheme();
   const { colors } = theme;
+  const dispatch = useDispatch();
   const light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (l: Light, r: Light) =>
-      !isEqual(l.leds, r.leds) || !isEqual(l.isOn, r.isOn),
+      isEqual(l.leds, r.leds) ||
+      !isEqual(l.isOn, r.isOn) ||
+      isEqual(l.leds.pattern, r.leds.pattern),
   );
   const navigation = useNavigation();
-  const ref = React.useRef<TextInput>();
-  const snackbar = useSnackbar();
-  const lights = useLight();
   // @ts-ignore
   let dropdown = null;
   const [refresh, setRefresh] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
   const [pickerOpen, setPickerOpen] = React.useState<boolean>(false);
   const defaultItems = [
@@ -147,56 +119,34 @@ export default function LightScreen(): JSX.Element {
     );
   };
 
-  const changeName = (name: string) => {
-    if (name === light.name) return;
-    const ax = lights.setName(light.id, name);
-    ax.then(() => {
-      setError(false);
-    });
-    ax.catch(() => {
-      setError(true);
-    });
-  };
-
-  const changeLedCount = (count: string) => {
-    if (!/^\d+$/.test(count) || parseInt(count, 10) > 150) {
-      snackbar.makeSnackbar("Invalid number or string provided!", colors.error);
-      if (ref) {
-        ref.current?.setNativeProps({ text: light.count.toString() });
-      }
-    } else lights.setCount(light.id, parseInt(count, 10));
-  };
-  const changePattern = (pattern: string) => {
+  const changePattern = async (pattern: string) => {
     if (pattern !== "unkown" && pattern !== undefined) {
       if (pattern !== light.leds.pattern) {
         const newColors: string[] = [light.leds.colors[0]];
         if (pattern === "gradient") {
           newColors.push(light.leds.colors[0]);
         }
-        lights
-          .setColor(
-            light.id,
-            // replace with one parameter of type Partial<Leds>
+        const ax: LightResponse = await axios.patch(`/lights/${id}/color`, {
+          colors:
             pattern === "rainbow" || pattern === "fading" ? [] : newColors,
-            pattern as Pattern,
-            // man muss die zahl an 2 stellen ändern
-            ["runner", "rainbow", "fading"].includes(pattern)
-              ? 1000
-              : undefined,
-          )
-          .then((res: LightResponse) => {
-            handlePatternChange(res.data.object.leds.pattern);
-          })
-          .catch(() => {
-            handlePatternChange();
-          });
+          pattern: pattern as Pattern,
+          // man muss die zahl an 2 stellen ändern
+          timeout: ["runner", "rainbow", "fading"].includes(pattern)
+            ? 1000
+            : undefined,
+        });
+        dispatch(setLight(light.id, ax.data.object));
+        handlePatternChange(
+          ax.status === 200 ? ax.data.object.leds.pattern : undefined,
+        );
       }
     }
   };
 
   const fetch = async () => {
     setRefresh(true);
-    const res = await lights.fetchLight(route.params.id);
+    const res: LightResponse = await axios.get(`/lights/${id}`);
+    dispatch(setLight(light.id, res.data.object));
     handlePatternChange(res.data.object.leds.pattern);
     setRefresh(false);
   };
@@ -239,13 +189,6 @@ export default function LightScreen(): JSX.Element {
       textAlignVertical: "center",
       fontSize: 20,
     },
-    textinput: {
-      flex: 2,
-      color: theme.colors.text,
-      fontSize: 20,
-      fontFamily: "TitilliumWeb-Bold",
-      fontWeight: "600",
-    },
     dropdownItems: {
       justifyContent: "flex-start",
     },
@@ -258,7 +201,7 @@ export default function LightScreen(): JSX.Element {
     dropdownContainer: {
       height: 45,
     },
-    plain: { zIndex: -1 },
+    pattern: { zIndex: -1 },
     slider_container: {
       marginTop: 10,
       marginLeft: theme.spacing(6),
@@ -295,26 +238,11 @@ export default function LightScreen(): JSX.Element {
         style={styles.container}
         contentContainerStyle={{ paddingBottom: theme.spacing(4) }}
       >
-        <ChangeableText
-          error={error}
-          value={light.name}
-          onSave={changeName}
-          style={{ marginBottom: theme.spacing(5) }}
-        />
+        <NameComponent light={light} />
 
         <View style={styles.numberContainer}>
           <Text style={styles.title}>LEDs</Text>
-          <TextInput
-            editable={light.isOn}
-            ref={ref as React.RefObject<TextInput>}
-            keyboardType="number-pad"
-            onSubmitEditing={({ nativeEvent: { text } }) =>
-              changeLedCount(text)
-            }
-            textAlign="right"
-            style={styles.textinput}
-            defaultValue={light.count.toString()}
-          />
+          <CountComponent light={light} />
         </View>
         <View style={styles.selectContainer}>
           <Text style={styles.selectLabel}>Pattern</Text>
@@ -349,8 +277,8 @@ export default function LightScreen(): JSX.Element {
         </View>
 
         <Divider style={styles.divider} />
-        <View style={styles.plain}>
-          <PatternComponent pattern={light.leds.pattern} id={light.id} />
+        <View style={styles.pattern}>
+          <PatternComponent id={light.id} />
         </View>
 
         <Divider style={styles.divider} />

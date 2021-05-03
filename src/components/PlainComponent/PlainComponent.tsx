@@ -1,14 +1,16 @@
+import { Light } from "@devlights/types";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
-import { useSelector } from "react-redux";
-import { Light } from "@devlights/types";
+import { useDispatch, useSelector } from "react-redux";
+import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
-import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
-import useLight from "../../hooks/useLight";
+import { setLight, setLightColor } from "../../store/actions/lights";
 import { makeValidColorArray } from "../../utils";
+import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
 
 export interface PlainComponentProps {
   id: string;
@@ -19,7 +21,7 @@ export default function PlainComponent(
 ): JSX.Element {
   const { id } = props;
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
-  const lights = useLight();
+  const dispatch = useDispatch();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (l: Light, r: Light) => !isEqual(l.leds.colors, r.leds.colors),
@@ -28,13 +30,12 @@ export default function PlainComponent(
   const onSubmit = async (color: string): Promise<boolean> => {
     let success = true;
     const newColors = makeValidColorArray(color, light.leds.colors, 0);
-    const ax = lights.setColor(
-      light.id,
-      newColors,
-      light.leds.pattern,
-      undefined,
-    );
-    await ax.then(() => {
+    const ax = axios.patch(`/lights/${light.id}/color`, {
+      colors: newColors,
+      pattern: light.leds.pattern,
+    });
+    await ax.then((res: LightResponse) => {
+      dispatch(setLightColor(id, "plain", res.data.object.leds.colors));
       success = true;
     });
     await ax.catch(() => {

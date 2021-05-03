@@ -5,7 +5,6 @@ import { faStar as fullstar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { isEqual } from "lodash";
 import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 // @ts-ignore

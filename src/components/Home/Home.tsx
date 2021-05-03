@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
-import { LightResponse } from "../../hooks/useLight/LightProvider";
+import { LightResponse } from "../../interfaces/types";
 import useNetwork from "../../hooks/useNetwork";
 import { Theme } from "../../interfaces/types";
 import { Store } from "../../store";
@@ -173,14 +173,14 @@ export default function Home(): JSX.Element {
 
       <ScrollView
         style={styles.container}
-        refreshControl={(
+        refreshControl={
           <RefreshControl
             refreshing={false}
             onRefresh={() => fetch()}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
-        )}
+        }
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>

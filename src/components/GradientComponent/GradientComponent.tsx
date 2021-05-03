@@ -7,7 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
-import { isEqual, isUndefined } from "lodash";
+import axios from "axios";
+import { isEqual } from "lodash";
 import * as React from "react";
 import {
   Dimensions,
@@ -16,14 +17,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Button, useTheme, Text } from "react-native-paper";
+import { Button, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
+import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   addFavouriteGradient,
   removeFavouriteGradient,
 } from "../../store/actions/favourites";
+import { setLight, setLightColor } from "../../store/actions/lights";
 import { Gradient } from "../../store/types/favouriteGradients";
 import { isFavouriteGradient, makeValidColorArray } from "../../utils";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
@@ -49,18 +51,23 @@ export default function GradientComponent(
   const [icon, setIcon] = React.useState<IconProp>(faStar);
   const dispatch = useDispatch();
   const theme = useTheme();
-  const lights = useLight();
 
-  const onSubmit = async (color: string, index?: number): Promise<boolean> => {
+  const onSubmit = async (
+    color: string | string[],
+    index?: number,
+  ): Promise<boolean> => {
     let success = true;
-    const newColors = makeValidColorArray(color, light.leds.colors, index ?? 0);
-    const ax = lights.setColor(
-      light.id,
-      newColors,
-      light.leds.pattern,
-      undefined,
+    const newColors = makeValidColorArray(
+      typeof color === "string" ? color : "",
+      light.leds.colors,
+      index ?? 0,
     );
-    await ax.then(() => {
+    const ax = axios.patch(`/lights/${id}/color`, {
+      colors: typeof color === "string" ? newColors : color,
+      pattern: light.leds.pattern,
+    });
+    await ax.then((res: LightResponse) => {
+      dispatch(setLightColor(id, "gradient", res.data.object.leds.colors));
       success = true;
     });
     await ax.catch(() => {
@@ -155,9 +162,7 @@ export default function GradientComponent(
         <View style={styles.iconContainer}>
           <TouchableOpacity
             disabled={!light.isOn}
-            onPress={() =>
-              lights.setColor(light.id, [colors[1], colors[0]], "gradient")
-            }
+            onPress={() => onSubmit([colors[1], colors[0]])}
           >
             <FontAwesomeIcon
               icon={faExchangeAlt}

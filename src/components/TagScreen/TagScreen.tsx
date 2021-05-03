@@ -3,14 +3,16 @@ import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
 import { map } from "lodash";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
+import { LightResponse } from "../../interfaces/types";
 import { TagsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setLight } from "../../store/actions/lights";
 import { removeTag } from "../../store/actions/tags";
 import { tagsEquality } from "../../utils";
 import BrightnessSlider from "../BrightnessSlider";
@@ -27,7 +29,6 @@ export default function TagScreen(): JSX.Element {
   const { tag } = params;
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const light = useLight();
   const theme = useTheme();
   const lights: Light[] = useSelector(
     (state: Store) => state.lights.filter((l) => l.tags?.includes(tag)),
@@ -44,8 +45,13 @@ export default function TagScreen(): JSX.Element {
   const onSubmit = async (color: string): Promise<boolean> => {
     let success = true;
     lights.forEach(async (l: Light) => {
-      const ax = light.setColor(l.id, [color], "plain");
-      await ax.then(() => {
+      const ax = axios.patch(`/lights/${l.id}/color`, {
+        colors: [color],
+        pattern: "plain",
+      });
+
+      await ax.then((res: LightResponse) => {
+        dispatch(setLight(l.id, res.data.object));
         success = true;
       });
       await ax.catch(() => {
@@ -54,6 +60,19 @@ export default function TagScreen(): JSX.Element {
     });
 
     return success;
+  };
+
+  const removeTags = (id: string, tags: string[]) => {
+    const ax = axios.delete(`/lights/${id}/tags`, {
+      data: { tags },
+    });
+    ax.then((res: LightResponse) => {
+      dispatch(setLight(id, res.data.object));
+      if (lights.length <= 1) {
+        navigation.goBack();
+        dispatch(removeTag(params.tag));
+      }
+    });
   };
 
   const styles = StyleSheet.create({
@@ -121,14 +140,7 @@ export default function TagScreen(): JSX.Element {
             right={() => (
               <TouchableOpacity
                 style={styles.list_icon}
-                onPress={() =>
-                  light.removeTags(l.id, [params.tag]).then(() => {
-                    if (lights.length <= 1) {
-                      navigation.goBack();
-                      dispatch(removeTag(params.tag));
-                    }
-                  })
-                }
+                onPress={() => removeTags(l.id, [params.tag])}
               >
                 <FontAwesomeIcon
                   color={theme.colors.accent}

@@ -2,6 +2,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
@@ -14,35 +15,42 @@ import {
 import { Modalize } from "react-native-modalize";
 import { Divider, List, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
+import { LightResponse } from "../../interfaces/types";
 import { LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   removeFavouriteColor,
   removeFavouriteGradient,
 } from "../../store/actions/favourites";
+import { setLight } from "../../store/actions/lights";
 import { Gradient } from "../../store/types/favouriteGradients";
 import { favouriteGradientsEquality, favouritesEquality } from "../../utils";
-import Circle from "../Circle";
 import { ApplyDialog } from "../ApplyDialog/ApplyDialog";
+import Circle from "../Circle";
 
 export function Color(props: {
   colors: string[];
   delete: () => void;
 }): JSX.Element {
   const { colors } = props;
-  const light = useLight();
   const theme = useTheme();
   const styles = StyleSheet.create({
     container: { width: "100%" },
     pressable: { alignSelf: "center" },
   });
+  const dispatch = useDispatch();
   const modalizeRef = React.useRef<Modalize>(null);
   const onConfirm = (ids: string[]) => {
     modalizeRef.current?.close();
     if (ids.length > 0) {
       ids.forEach((id: string) => {
-        light.setColor(id, colors, colors.length > 1 ? "gradient" : "plain");
+        const ax = axios.patch(`/lights/${id}`, {
+          colors,
+          pattern: colors.length > 1 ? "gradient" : "plain",
+        });
+        ax.then((res: LightResponse) =>
+          dispatch(setLight(id, res.data.object)),
+        );
       });
     }
   };

@@ -45,6 +45,7 @@ export function setLightColor(
   colors: string[],
   timeout?: number,
 ): SetLightColorAction {
+  console.log(pattern);
   return { type: EDIT_LIGHT_COLOR, id, pattern, colors, timeout };
 }
 

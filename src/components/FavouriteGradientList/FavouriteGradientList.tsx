@@ -1,5 +1,6 @@
+import axios from "axios";
+import { isEqual } from "lodash";
 import React from "react";
-import { useSelector } from "react-redux";
 import {
   Pressable,
   ScrollView,
@@ -7,12 +8,13 @@ import {
   StyleSheet,
   ViewStyle,
 } from "react-native";
-import { isEqual } from "lodash";
 import { useTheme } from "react-native-paper";
-import Circle from "../Circle";
+import { useDispatch, useSelector } from "react-redux";
+import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setLight } from "../../store/actions/lights";
 import { Gradient } from "../../store/types/favouriteGradients";
-import useLight from "../../hooks/useLight";
+import Circle from "../Circle";
 
 export interface FavouriteGradientListProps {
   id: string;
@@ -24,7 +26,7 @@ export default function FavouriteGradientList(
 ): JSX.Element {
   const { style, id } = props;
   const theme = useTheme();
-  const light = useLight();
+  const dispatch = useDispatch();
   const favouriteGradients = useSelector(
     (state: Store) => state.favouriteGradients,
     (l: Gradient[], r: Gradient[]) => isEqual(l, r),
@@ -41,13 +43,18 @@ export default function FavouriteGradientList(
       margin: theme.spacing(2),
     },
   });
+  const setColor = (colors: string[]) => {
+    axios
+      .patch(`/lights/${id}`, { colors, pattern: "gradient" })
+      .then((res: LightResponse) => dispatch(setLight(id, res.data.object)));
+  };
   return (
     <>
       <ScrollView contentContainerStyle={styles.container}>
         {favouriteGradients.map((g: Gradient) => (
           <Pressable
             style={styles.pressable}
-            onPress={() => light.setColor(id, [g.start, g.end], "gradient")}
+            onPress={() => setColor([g.start, g.end])}
           >
             <Circle key={g.start + g.end} colors={[g.start, g.end]} />
           </Pressable>

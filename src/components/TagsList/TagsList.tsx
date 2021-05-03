@@ -1,12 +1,14 @@
 import { Light } from "@devlights/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Divider, List, Text, useTheme } from "react-native-paper";
-import { useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
+import { useDispatch, useSelector } from "react-redux";
+import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setLight } from "../../store/actions/lights";
 import ChangeableText from "../ChangeableText";
 import { TagScreenNavigationProp } from "../TagScreen/TagScreen";
 
@@ -20,13 +22,18 @@ export default function TagsList(props: TagsListProps): JSX.Element {
   const { enabled, light } = props;
   const theme = useTheme();
   const tags = useSelector((state: Store) => state.tags);
-  const lights = useLight();
+  const dispatch = useDispatch();
 
   const addTag = async (tag: string) => {
     const index = tags.findIndex(
       (t: string) => t.toLowerCase() === tag.toLowerCase(),
     );
-    await lights.addTags(light.id, [index >= 0 ? tags[index] : tag]);
+    const ax = axios.put(`/lights/${light.id}/tags`, {
+      tags: [index >= 0 ? tags[index] : tag],
+    });
+    ax.then((res: LightResponse) => {
+      dispatch(setLight(light.id, res.data.object));
+    });
     props.setEnabled(false);
   };
 

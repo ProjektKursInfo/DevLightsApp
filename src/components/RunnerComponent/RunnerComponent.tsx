@@ -1,13 +1,14 @@
 import { Light } from "@devlights/types";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
-import { useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
-import useSnackbar from "../../hooks/useSnackbar";
+import { useDispatch, useSelector } from "react-redux";
+import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setLight, setLightColor } from "../../store/actions/lights";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
 
 export interface RunnerComponentProps {
@@ -20,26 +21,34 @@ export default function RunnerComponent(
   const { id } = props;
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const theme = useTheme();
-  const lights = useLight();
+  const dispatch = useDispatch();
   const ref = React.useRef<TextInput>();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
-    (l: Light, r: Light) => isEqual(l.leds, r.leds),
+    (l: Light, r: Light) => isEqual(l.leds.timeout, r.leds.timeout),
   );
-  const snackbar = useSnackbar();
 
   const onSubmit = async (color: string): Promise<boolean> => {
     let success = true;
-    const ax = lights.setColor(
-      light.id,
-      [color],
-      light.leds.pattern,
-      light.leds.timeout,
-    );
-    await ax.then(() => {
+
+    const ax = axios.patch(`/lights/${id}/color`, {
+      colors: [color],
+      pattern: light.leds.pattern,
+      timeout: light.leds.timeout,
+    });
+    await ax.then((res: LightResponse) => {
+      dispatch(
+        setLightColor(
+          id,
+          "runner",
+          res.data.object.leds.colors,
+          light.leds.timeout,
+        ),
+      );
       success = true;
     });
-    await ax.catch(() => {
+    await ax.catch((err) => {
+      console.log(err.response);
       success = false;
     });
 
@@ -54,29 +63,19 @@ export default function RunnerComponent(
     });
   };
 
-  // maybe number as parameter
   const changeTimeout = (timeout: string) => {
-    if (!/^\d+$/.test(timeout)) {
-      snackbar.makeSnackbar(
-        "Invalid number or string provided!",
-        theme.colors.error,
-      );
-      if (ref) {
-        ref.current?.setNativeProps({ text: light.count.toString() });
-      }
-      return;
-    }
     if (parseInt(timeout, 10) !== light.leds.timeout) {
-      lights
-        .setColor(
-          light.id,
-          light.leds.colors,
-          light.leds.pattern,
-          parseInt(timeout, 10),
-        )
-        .catch(() => {
-          ref.current?.setNativeProps({ text: light.leds.timeout?.toString() });
-        });
+      const ax = axios.patch(`/lights/${light.id}`, {
+        pattern: light.leds.pattern,
+        timeout: parseInt(timeout, 10),
+      });
+      ax.then((res: LightResponse) =>
+        dispatch(setLight(light.id, res.data.object)),
+      );
+      ax.catch(() => {
+        // @ts-ignore
+        ref.current?.setNativeProps({ text: light.leds.timeout?.toString() });
+      });
     }
   };
 

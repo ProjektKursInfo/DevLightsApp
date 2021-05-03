@@ -1,12 +1,14 @@
 import { Light } from "@devlights/types";
 import { faLightbulb as regular } from "@fortawesome/free-regular-svg-icons";
 import { faLightbulb, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 import { map } from "lodash";
 import React from "react";
 import { useTheme } from "react-native-paper";
-import { useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
+import { useDispatch, useSelector } from "react-redux";
+import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setLight } from "../../store/actions/lights";
 import { isOnEquality } from "../../utils";
 import Icon from "../Icon";
 
@@ -21,7 +23,7 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
     (state: Store) => state.lights.filter((l) => ids.includes(l.id)),
     (l: Light[], r: Light[]) => isOnEquality(l, r),
   );
-  const light = useLight();
+  const dispatch = useDispatch();
   const theme = useTheme();
 
   const getSwitchedOns = (): boolean => {
@@ -42,9 +44,10 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
     if (onBulbPress) onBulbPress();
     lights.forEach((l: Light) => {
       if (l.isOn !== status) {
-        light
-          .setStatus(l.id, status)
-          .catch(() => setIcon(getSwitchedOns() ? faLightbulb : regular));
+        const ax = axios.patch(`/lights/${l.id}/${status ? "on" : "off"}`);
+        ax.then((res: LightResponse) =>
+          dispatch(setLight(l.id, res.data.object)),
+        ).catch(() => setIcon(getSwitchedOns() ? faLightbulb : regular));
       }
     });
   };

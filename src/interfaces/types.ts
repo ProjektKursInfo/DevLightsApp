@@ -1,4 +1,8 @@
+import { Light, Response } from "@devlights/types";
+import { AxiosResponse } from "axios";
+
 export type Theme = "Light" | "Dark" | "System-Default";
+export type LightResponse = AxiosResponse<Response<Light>>;
 export type ColorModal = {
   color: string;
   onSubmit: (color: string) => Promise<boolean>;

@@ -1,11 +1,13 @@
 import { Light } from "@devlights/types";
+import axios from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { useSelector } from "react-redux";
-import useLight from "../../hooks/useLight";
+import { useDispatch, useSelector } from "react-redux";
+import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
+import { setLight, setLightColor } from "../../store/actions/lights";
 
 export interface RunnerComponentProps {
   id: string;
@@ -16,7 +18,7 @@ export default function RunnerComponent(
 ): JSX.Element {
   const { id } = props;
   const theme = useTheme();
-  const lights = useLight();
+  const dispatch = useDispatch();
   const ref = React.useRef<TextInput>();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
@@ -26,12 +28,24 @@ export default function RunnerComponent(
   // maybe number as parameter
   const changeTimeout = (timeout: string) => {
     if (parseInt(timeout, 10) !== light.leds.timeout) {
-      lights
-        .setColor(light.id, [], light.leds.pattern, parseInt(timeout, 10))
-        .catch(() => {
-          // @ts-ignore
-          ref.current?.setNativeProps({ text: light.leds.timeout?.toString() });
-        });
+      const ax = axios.patch(`/lights/${light.id}/color`, {
+        pattern: light.leds.pattern,
+        timeout: parseInt(timeout, 10),
+      });
+      ax.then((res: LightResponse) =>
+        dispatch(
+          setLightColor(
+            id,
+            "rainbow",
+            res.data.object.leds.colors,
+            light.leds.timeout,
+          ),
+        ),
+      );
+      ax.catch(() => {
+        // @ts-ignore
+        ref.current?.setNativeProps({ text: light.leds.timeout?.toString() });
+      });
     }
   };
 

@@ -2,13 +2,13 @@ import { Alarm, Response } from "@devlights/types";
 import axios, { AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import React from "react";
-import { GestureResponderEvent, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import {
   Divider,
-  TouchableRipple,
-  Text,
-  useTheme,
   Switch,
+  Text,
+  TouchableRipple,
+  useTheme,
 } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { Store } from "../../store";
