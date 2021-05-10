@@ -25,7 +25,9 @@ export default function RunnerComponent(
   const ref = React.useRef<TextInput>();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
-    (l: Light, r: Light) => isEqual(l.leds.timeout, r.leds.timeout),
+    (l: Light, r: Light) =>
+      isEqual(l.leds.timeout, r.leds.timeout) ||
+      isEqual(l.leds.colors[0], r.leds.colors[0]),
   );
 
   const onSubmit = async (color: string): Promise<boolean> => {
@@ -48,7 +50,6 @@ export default function RunnerComponent(
       success = true;
     });
     await ax.catch((err) => {
-      console.log(err.response);
       success = false;
     });
 
@@ -65,7 +66,8 @@ export default function RunnerComponent(
 
   const changeTimeout = (timeout: string) => {
     if (parseInt(timeout, 10) !== light.leds.timeout) {
-      const ax = axios.patch(`/lights/${light.id}`, {
+      const ax = axios.patch(`/lights/${light.id}/color`, {
+        colors: light.leds.colors,
         pattern: light.leds.pattern,
         timeout: parseInt(timeout, 10),
       });

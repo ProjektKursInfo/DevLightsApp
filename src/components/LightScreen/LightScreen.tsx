@@ -1,4 +1,4 @@
-import { Light, Pattern, USER_PATTERNS } from "@devlights/types";
+import { Light, Pattern } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
@@ -11,19 +11,16 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import DropDownPicker, {
-  DropDownPickerProps,
-} from "react-native-dropdown-picker";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { LightResponse } from "../../interfaces/types";
-import { LightsStackParamList } from "../../interfaces/types";
+import { LightResponse, LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
 import BrightnessSlider from "../BrightnessSlider";
 import CountComponent from "../CountComponent";
 import NameComponent from "../NameComponent";
 import PatternComponent from "../PatternComponent";
+import PatternPicker from "../PatternPicker";
 import Powerbulb from "../Powerbulb";
 import TagsList from "../TagsList/TagsList";
 
@@ -43,66 +40,15 @@ export default function LightScreen(): JSX.Element {
   const light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (l: Light, r: Light) =>
-      isEqual(l.leds, r.leds) ||
-      !isEqual(l.isOn, r.isOn) ||
+      isEqual(l.isOn, r.isOn) &&
+      isEqual(l.leds.colors, r.leds.colors) &&
       isEqual(l.leds.pattern, r.leds.pattern),
   );
   const navigation = useNavigation();
-  // @ts-ignore
-  let dropdown = null;
+
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
   const [pickerOpen, setPickerOpen] = React.useState<boolean>(false);
-  const defaultItems = [
-    {
-      label: "Single Color",
-      value: "plain",
-    },
-    {
-      label: "Gradient",
-      value: "gradient",
-    },
-    {
-      label: "Running",
-      value: "runner",
-    },
-    {
-      label: "Rainbow",
-      value: "rainbow",
-    },
-    {
-      label: "Fading",
-      value: "fading",
-    },
-  ];
-  const getRightString = (pattern?: Pattern): string => {
-    switch (pattern ?? light.leds.pattern) {
-      case "waking":
-        return "Waking";
-      case "blinking":
-        return "Blinking";
-      case "custom":
-        return "Custom";
-      default:
-        return light.leds.pattern;
-    }
-  };
-
-  const getDropDownItems = (
-    pattern?: Pattern,
-  ): DropDownPickerProps["items"] => {
-    if (
-      USER_PATTERNS.includes(pattern ?? light.leds.pattern) ||
-      (pattern ?? light.leds.pattern === "fading")
-    ) {
-      return defaultItems;
-    }
-    return [...defaultItems, { label: getRightString(), value: "unkown" }];
-  };
-
-  const [items, setItems] = React.useState<DropDownPickerProps["items"]>(
-    getDropDownItems(),
-  );
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -110,46 +56,34 @@ export default function LightScreen(): JSX.Element {
     });
   }, []);
 
-  const handlePatternChange = (pattern?: Pattern) => {
-    setItems(getDropDownItems(pattern));
-    dropdown.selectItem(
-      [...USER_PATTERNS, "fading"].includes(pattern ?? light.leds.pattern)
-        ? pattern
-        : "unkown",
-    );
-  };
-
-  const changePattern = async (pattern: string) => {
-    if (pattern !== "unkown" && pattern !== undefined) {
-      if (pattern !== light.leds.pattern) {
-        const newColors: string[] = [light.leds.colors[0]];
-        if (pattern === "gradient") {
-          newColors.push(light.leds.colors[0]);
-        }
-        const ax: LightResponse = await axios.patch(`/lights/${id}/color`, {
-          colors:
-            pattern === "rainbow" || pattern === "fading" ? [] : newColors,
-          pattern: pattern as Pattern,
-          // man muss die zahl an 2 stellen ändern
-          timeout: ["runner", "rainbow", "fading"].includes(pattern)
-            ? 1000
-            : undefined,
-        });
-        dispatch(setLight(light.id, ax.data.object));
-        handlePatternChange(
-          ax.status === 200 ? ax.data.object.leds.pattern : undefined,
-        );
-      }
-    }
-  };
-
   const fetch = async () => {
     setRefresh(true);
     const res: LightResponse = await axios.get(`/lights/${id}`);
     dispatch(setLight(light.id, res.data.object));
-    handlePatternChange(res.data.object.leds.pattern);
     setRefresh(false);
   };
+
+  const changePattern = async (newPattern: Pattern): Promise<Pattern> => {
+    const newColors: string[] = [light.leds.colors[0]];
+    if (newPattern === "gradient") {
+      newColors.push(light.leds.colors[0]);
+    }
+    const ax: LightResponse = await axios.patch(`/lights/${id}/color`, {
+      colors:
+        newPattern === "rainbow" || newPattern === "fading" ? [] : newColors,
+      pattern: newPattern as Pattern,
+      // man muss die zahl an 2 stellen ändern
+      timeout: ["runner", "rainbow", "fading"].includes(newPattern)
+        ? 1000
+        : undefined,
+    });
+    if (ax.status === 200) {
+      dispatch(setLight(light.id, ax.data.object));
+      return newPattern;
+    }
+    return light.leds.pattern;
+  };
+
   const styles = StyleSheet.create({
     container: {
       height: "100%",
@@ -168,39 +102,18 @@ export default function LightScreen(): JSX.Element {
       marginVertical: 15,
     },
     selectContainer: {
-      marginLeft: theme.spacing(8),
+      marginLeft: theme.spacing(7),
       marginRight: theme.spacing(5),
     },
     selectLabel: {
       marginLeft: 5,
-    },
-    select: {
-      marginLeft: 0,
-      backgroundColor: colors.dark_grey,
-      borderColor: "transparent",
-    },
-    selectDropdown: {
-      marginLeft: 0,
-      backgroundColor: colors.grey,
-      borderColor: "transparent",
     },
     title: {
       flex: 3,
       textAlignVertical: "center",
       fontSize: 20,
     },
-    dropdownItems: {
-      justifyContent: "flex-start",
-    },
-    dropdownLabel: {
-      color: theme.colors.text,
-      fontSize: 20,
-      fontFamily: "TitilliumWeb-Regular",
-      fontWeight: "normal",
-    },
-    dropdownContainer: {
-      height: 45,
-    },
+
     pattern: { zIndex: -1 },
     slider_container: {
       marginTop: 10,
@@ -246,28 +159,13 @@ export default function LightScreen(): JSX.Element {
         </View>
         <View style={styles.selectContainer}>
           <Text style={styles.selectLabel}>Pattern</Text>
-          <DropDownPicker
-            controller={(instance: object) => (dropdown = instance)}
+          <PatternPicker
             disabled={!light.isOn || light.leds.pattern === "waking"}
-            items={items}
-            containerStyle={styles.dropdownContainer}
-            arrowColor={theme.colors.text}
-            arrowSize={26}
-            defaultValue={
-              !USER_PATTERNS.includes(light.leds.pattern) &&
-              light.leds.pattern !== "fading"
-                ? "unkown"
-                : light.leds.pattern
-            }
-            style={styles.select}
-            dropDownStyle={styles.selectDropdown}
-            labelStyle={styles.dropdownLabel}
-            itemStyle={styles.dropdownItems}
+            pattern={light.leds.pattern}
+            pickerOpen={pickerOpen}
             onOpen={() => setPickerOpen(true)}
             onClose={() => setPickerOpen(false)}
-            onChangeItem={(item) => {
-              pickerOpen ? changePattern(item.value) : undefined;
-            }}
+            changePattern={(pattern: Pattern) => changePattern(pattern)}
           />
         </View>
 

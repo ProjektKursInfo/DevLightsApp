@@ -15,8 +15,7 @@ import {
 import { Modalize } from "react-native-modalize";
 import { Divider, List, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { LightResponse } from "../../interfaces/types";
-import { LightsStackParamList } from "../../interfaces/types";
+import { LightsStackParamList, LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
   removeFavouriteColor,
@@ -44,13 +43,13 @@ export function Color(props: {
     modalizeRef.current?.close();
     if (ids.length > 0) {
       ids.forEach((id: string) => {
-        const ax = axios.patch(`/lights/${id}`, {
+        const ax = axios.patch(`/lights/${id}/color`, {
           colors,
           pattern: colors.length > 1 ? "gradient" : "plain",
         });
-        ax.then((res: LightResponse) =>
-          dispatch(setLight(id, res.data.object)),
-        );
+        ax.then((res: LightResponse) => {
+          dispatch(setLight(id, res.data.object));
+        });
       });
     }
   };

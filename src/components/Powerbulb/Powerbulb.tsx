@@ -8,12 +8,13 @@ import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
-import { setLight } from "../../store/actions/lights";
+import { setLight, setLightStatus } from "../../store/actions/lights";
 import { isOnEquality } from "../../utils";
 import Icon from "../Icon";
 
 interface PowerBulbProps {
   ids: string[];
+  // eslint-disable-next-line react/require-default-props
   onBulbPress?: () => void;
 }
 
@@ -41,12 +42,15 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
 
   const onPress = (status: boolean) => {
     setIcon(status ? faLightbulb : regular);
+
+    // Smartere Lösung => onSubmit Methode
+    // =>
     if (onBulbPress) onBulbPress();
     lights.forEach((l: Light) => {
       if (l.isOn !== status) {
         const ax = axios.patch(`/lights/${l.id}/${status ? "on" : "off"}`);
-        ax.then((res: LightResponse) =>
-          dispatch(setLight(l.id, res.data.object)),
+        ax.then(() =>
+          dispatch(setLight(l.id, { ...l, isOn: status })),
         ).catch(() => setIcon(getSwitchedOns() ? faLightbulb : regular));
       }
     });

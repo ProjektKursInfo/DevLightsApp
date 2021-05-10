@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { max, min } from "lodash";
 import * as React from "react";
+import { render } from "react-dom";
 import {
   Animated,
   Dimensions,
@@ -27,40 +28,19 @@ export default function LightCard(props: CardProps): JSX.Element {
   const { colors, pattern } = light.leds;
   const swipeableRef = React.useRef<Swipeable>(null);
 
-  const renderRightAction = (
-    x: number,
-    progress: Animated.AnimatedInterpolation,
-  ) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [x, 0],
-    });
-    return (
-      <View style={styles.action_container}>
-        <Animated.View
-          style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
-        >
-          <Powerbulb
-            onBulbPress={() => swipeableRef.current?.close()}
-            ids={[light.id]}
-          />
-        </Animated.View>
-      </View>
-    );
-  };
-
+  const rainbow: string[] = [
+    "#ff0000",
+    "#ffff00",
+    "#00ff00",
+    "#00ffff",
+    "#0000ff",
+    "#ff00ff",
+  ];
   const getCardColor = (): string[] => {
     if (light.isOn) {
       switch (light.leds.pattern) {
         case "fading":
-          return [
-            "#ff0000",
-            "#ffff00",
-            "#00ff00",
-            "#00ffff",
-            "#0000ff",
-            "#ff00ff",
-          ];
+          return rainbow;
         case "plain":
         case "runner":
         case "waking":
@@ -174,14 +154,35 @@ export default function LightCard(props: CardProps): JSX.Element {
     },
   });
 
+  const renderAction = (
+    x: number,
+    progress: Animated.AnimatedInterpolation,
+  ) => {
+    const trans = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [x, 0],
+    });
+    return (
+      <View style={styles.action_container}>
+        <Animated.View
+          style={[styles.animated_view, { transform: [{ translateX: trans }] }]}
+        >
+          <Powerbulb
+            onBulbPress={() => swipeableRef.current?.close()}
+            ids={[light.id]}
+          />
+        </Animated.View>
+      </View>
+    );
+  };
+
   let curIndex = -1;
+
   return (
     <Swipeable
       ref={swipeableRef}
       containerStyle={styles.swipeable}
-      renderRightActions={(progress: Animated.AnimatedInterpolation) =>
-        renderRightAction(80, progress)
-      }
+      renderRightActions={(p) => renderAction(80, p)}
     >
       <TouchableOpacity style={styles.touchable} onPress={onPress}>
         <Headline style={styles.headline}>
@@ -201,42 +202,15 @@ export default function LightCard(props: CardProps): JSX.Element {
         ) : light.leds.pattern === "rainbow" ? (
           <>
             <View style={styles.rainbow_container}>
-              <View
-                style={{
-                  ...styles.rainbow_view,
-                  backgroundColor: light.isOn ? "#ff0000" : "#000",
-                }}
-              />
-              <View
-                style={{
-                  ...styles.rainbow_view,
-                  backgroundColor: light.isOn ? "#ffff00" : "#000",
-                }}
-              />
-              <View
-                style={{
-                  ...styles.rainbow_view,
-                  backgroundColor: light.isOn ? "#00ff00" : "#000",
-                }}
-              />
-              <View
-                style={{
-                  ...styles.rainbow_view,
-                  backgroundColor: light.isOn ? "#00ffff" : "#000",
-                }}
-              />
-              <View
-                style={{
-                  ...styles.rainbow_view,
-                  backgroundColor: light.isOn ? "#0000ff" : "#000",
-                }}
-              />
-              <View
-                style={{
-                  ...styles.rainbow_view,
-                  backgroundColor: light.isOn ? "#ff00ff" : "#000",
-                }}
-              />
+              {rainbow.map((c: string) => (
+                <View
+                  key={c}
+                  style={{
+                    ...styles.rainbow_view,
+                    backgroundColor: light.isOn ? c : "#000",
+                  }}
+                />
+              ))}
             </View>
           </>
         ) : (

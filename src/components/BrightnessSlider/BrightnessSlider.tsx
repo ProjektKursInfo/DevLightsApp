@@ -28,7 +28,7 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const realLights: Light[] = useSelector(
     (state: Store) =>
       filter(state.lights, (l: Light) => ids.includes(l.id)) as Light[],
-    (left: Light[], right: Light[]) => !isEqual(left, right),
+    (left: Light[], right: Light[]) => isEqual(left, right),
   );
 
   const [brightness, setBrightness] = React.useState<number>(light.brightness);
@@ -44,18 +44,18 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   });
 
   const disabled =
-    some(realLights, (nLight: Light) => nLight.leds.pattern === "custom") ||
-    some(realLights, (nLight: Light) => !nLight.isOn);
+    some(realLights, (l: Light) => l.leds.pattern === "custom") ||
+    some(realLights, (l: Light) => !l.isOn);
 
-  const updateBrightness = (value: number) => {
-    realLights.forEach((pLight: Light) => {
-      const ax = axios.patch(`/lights/${pLight.id}/brightness`, {
-        brightness: value,
+  const updateBrightness = (b: number) => {
+    realLights.forEach((l: Light) => {
+      const ax = axios.patch(`/lights/${l.id}/brightness`, {
+        brightness: b,
       });
-      ax.then((res: LightResponse) =>
-        dispatch(setLight(pLight.id, res.data.object)),
-      );
-      ax.catch(() => setBrightness(pLight.brightness));
+      ax.then((res: LightResponse) => {
+        dispatch(setLight(l.id, res.data.object));
+      });
+      ax.catch(() => setBrightness(l.brightness));
     });
   };
   return (
