@@ -6,9 +6,11 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useSnackbar from "../../hooks/useSnackbar";
 import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
+import { addTag as addTagsToStore } from "../../store/actions/tags";
 import ChangeableText from "../ChangeableText";
 import { TagScreenNavigationProp } from "../TagScreen/TagScreen";
 
@@ -21,6 +23,7 @@ export interface TagsListProps {
 export default function TagsList(props: TagsListProps): JSX.Element {
   const { enabled, light } = props;
   const theme = useTheme();
+  const snackbar = useSnackbar();
   const tags = useSelector((state: Store) => state.tags);
   const dispatch = useDispatch();
 
@@ -33,7 +36,14 @@ export default function TagsList(props: TagsListProps): JSX.Element {
     });
     ax.then((res: LightResponse) => {
       dispatch(setLight(light.id, res.data.object));
+      dispatch(addTagsToStore(tag));
+
+      snackbar.makeSnackbar(
+        res.data.message,
+        res.status === 200 ? theme.colors.success : theme.colors.error,
+      );
     });
+
     props.setEnabled(false);
   };
 

@@ -35,6 +35,7 @@ export default function Alarms(): JSX.Element {
       (state: Store) => state.alarms,
       (l: Alarm[], r: Alarm[]) => isEqual(l, r),
     ) || [];
+  const [avaible, setAvaible] = React.useState<boolean>(true);
   const dispatch = useDispatch();
   const network = useNetwork();
   const modalizeRef = React.useRef<Modalize>(null);
@@ -52,6 +53,19 @@ export default function Alarms(): JSX.Element {
     setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
     return setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
   }, []);
+
+  const getavailable = async () => {
+    const ax = await axios.get("/ping");
+    if (ax.data === "Pong") {
+      setAvaible(true);
+    } else {
+      setAvaible(false);
+    }
+  };
+
+  React.useEffect(() => {
+    getavailable();
+  }, [network]);
 
   const styles = StyleSheet.create({
     container: {
@@ -79,7 +93,8 @@ export default function Alarms(): JSX.Element {
     },
   });
 
-  const fetchAlarms = () => {
+  const fetchAlarms = async () => {
+    await getavailable();
     axios.get("/alarm").then((res: AxiosResponse) => {
       dispatch(setAlarms(res.data.object));
     });
@@ -162,7 +177,7 @@ export default function Alarms(): JSX.Element {
         )}
       </ScrollView>
       <FAB
-        visible={network}
+        visible={network && avaible}
         style={styles.fab}
         onPress={() => setVisible(true)}
         icon="plus"

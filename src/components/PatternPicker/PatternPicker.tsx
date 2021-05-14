@@ -9,11 +9,11 @@ import { useTheme } from "react-native-paper";
 
 export interface UniversalPickerProps {
   disabled?: boolean;
-  pattern: Pattern;
+  pattern: Pattern | string;
   pickerOpen?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
-  changePattern: (pattern: Pattern) => Promise<Pattern>;
+  changePattern: (pattern: Pattern) => Promise<Pattern> | void;
 }
 
 export default function UniversalPicker(
@@ -24,7 +24,7 @@ export default function UniversalPicker(
   const theme = useTheme();
   const { colors } = theme;
   let dropdown: any = null;
-  const getRightString = (newPattern?: Pattern): string => {
+  const getRightString = (newPattern?: Pattern | string): string => {
     switch (newPattern ?? pattern) {
       case "waking":
         return "Waking";
@@ -32,6 +32,8 @@ export default function UniversalPicker(
         return "Blinking";
       case "custom":
         return "Custom";
+      case "unkown":
+        return "Choose Pattern";
       default:
         return newPattern ?? pattern;
     }
@@ -60,9 +62,10 @@ export default function UniversalPicker(
   ];
 
   const getDropDownItems = (
-    newPattern?: Pattern,
+    newPattern?: Pattern | string,
   ): DropDownPickerProps["items"] => {
     const patterns = concat(USER_PATTERNS, "fading");
+
     if (patterns.includes(newPattern || pattern)) {
       return defaultItems;
     }
@@ -73,24 +76,25 @@ export default function UniversalPicker(
     getDropDownItems(),
   );
 
-  const handlePatternChange = (newPattern?: Pattern) => {
-    setItems(getDropDownItems(newPattern));
-    dropdown.selectItem(
-      [...USER_PATTERNS, "fading"].includes(newPattern ?? pattern)
-        ? newPattern
-        : "unkown",
-    );
+  const handlePatternChange = (newPattern?: Pattern | string) => {
+    setItems(getDropDownItems(newPattern ?? pattern));
   };
 
   React.useEffect(() => {
-    handlePatternChange(pattern);
+    handlePatternChange();
   }, [pattern]);
+
+  React.useEffect(() => {
+    dropdown.selectItem(
+      [...USER_PATTERNS, "fading"].includes(pattern) ? pattern : "unkown",
+    );
+  }, [items]);
 
   const setPattern = async (newPattern: string) => {
     if (newPattern !== "unkown" && newPattern !== undefined) {
       if (newPattern !== pattern) {
         const pat = await props.changePattern(newPattern as Pattern);
-        handlePatternChange(pat);
+        handlePatternChange(typeof pat === "string" ? pat : undefined);
       }
     }
   };
@@ -123,6 +127,7 @@ export default function UniversalPicker(
     <DropDownPicker
       disabled={disabled}
       items={items}
+      // eslint-disable-next-line no-return-assign
       controller={(instance: any) => (dropdown = instance)}
       containerStyle={styles.dropdownContainer}
       arrowColor={theme.colors.text}

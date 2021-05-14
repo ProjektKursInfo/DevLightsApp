@@ -1,13 +1,21 @@
 import { Light } from "@devlights/types";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import { map } from "lodash";
 import React from "react";
 import { Animated, Dimensions, StyleSheet, View } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Text, useTheme } from "react-native-paper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Store } from "../../store";
+import { setLight } from "../../store/actions/lights";
+import { removeTag } from "../../store/actions/tags";
 import { isOnEquality } from "../../utils";
 import Powerbulb from "../Powerbulb";
 import { TagScreenNavigationProp } from "../TagScreen/TagScreen";
@@ -24,6 +32,7 @@ export default function TagCard(props: TagCardProps): JSX.Element {
     (state: Store) => state.lights.filter((l: Light) => l.tags?.includes(tag)),
     (l: Light[], r: Light[]) => isOnEquality(l, r),
   );
+  const dispatch = useDispatch();
   const navigation = useNavigation<TagScreenNavigationProp>();
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -58,6 +67,45 @@ export default function TagCard(props: TagCardProps): JSX.Element {
     },
   });
 
+  const deleteTag = async (tag: string) => {
+    await lights.forEach(
+      async (l: Light): Promise<void> => {
+        const ax = await axios.delete(`/lights/${l.id}/tags`, {
+          data: { tags: [tag] },
+        });
+        dispatch(setLight(l.id, ax.data.object));
+      },
+    );
+    dispatch(removeTag(tag));
+  };
+
+  const renderLeftAction = (
+    x: number,
+    progress: Animated.AnimatedInterpolation,
+  ) => {
+    const trans = progress.interpolate({
+      inputRange: [0, 80],
+      outputRange: [0, x],
+    });
+    return (
+      <View style={styles.action_container}>
+        <Animated.View
+          style={[
+            styles.animated_view,
+            {
+              transform: [{ translateX: trans }],
+              backgroundColor: theme.colors.secondary,
+            },
+          ]}
+        >
+          <TouchableOpacity onPress={() => deleteTag(tag)}>
+            <FontAwesomeIcon icon={faTrash} size={30} color="#fff" />
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+    );
+  };
+
   const renderRightAction = (
     x: number,
     progress: Animated.AnimatedInterpolation,
@@ -84,9 +132,8 @@ export default function TagCard(props: TagCardProps): JSX.Element {
     <Swipeable
       ref={swipeableRef}
       containerStyle={styles.swipeable}
-      renderRightActions={(progress: Animated.AnimatedInterpolation) =>
-        renderRightAction(80, progress)
-      }
+      renderLeftActions={(progress) => renderLeftAction(80, progress)}
+      renderRightActions={(progress) => renderRightAction(80, progress)}
     >
       <TouchableWithoutFeedback
         style={styles.touchable}

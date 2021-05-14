@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { Divider, List, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useSnackbar from "../../hooks/useSnackbar";
 import { LightResponse, TagsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
@@ -34,10 +35,14 @@ export type TagScreenRouteProp = RouteProp<TagsStackParamList, "tag">;
 export default function TagScreen(): JSX.Element {
   const { params } = useRoute<TagScreenRouteProp>();
   const { tag } = params;
+  const snackbar = useSnackbar();
   const [pickerOpen, setOpen] = React.useState(false);
-  const [leds, setLeds] = React.useState<Leds>({
+  const [leds, setLeds] = React.useState<{
+    colors: string[];
+    pattern: Pattern | string;
+  }>({
     colors: ["#000000"],
-    pattern: "",
+    pattern: "unkown",
   });
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -69,8 +74,17 @@ export default function TagScreen(): JSX.Element {
           : timeout ?? 100,
       },
     );
-    ax.data.object.forEach((l: Light) => dispatch(setLight(l.id, l)));
-    return await ax;
+
+    if (ax.status === 200) {
+      ax.data.object.forEach((l: Light) => dispatch(setLight(l.id, l)));
+    } else {
+      setLeds({ colors: ["#000000"], pattern: "unkown" });
+    }
+    snackbar.makeSnackbar(
+      ax.data.message,
+      ax.status === 200 ? theme.colors.success : theme.colors.error,
+    );
+    return ax;
   };
 
   const removeTags = (id: string, tags: string[]) => {
@@ -148,10 +162,9 @@ export default function TagScreen(): JSX.Element {
           <View style={styles.pattern}>
             <Text style={[styles.selectLabel]}>Choose pattern for tag</Text>
             <PatternPicker
-              changePattern={(pPattern: Pattern) => {
-                setLeds({ ...leds, pattern: pPattern });
-                return pPattern;
-              }}
+              changePattern={(p: Pattern | string) =>
+                setLeds({ ...leds, pattern: p })
+              }
               pattern={leds.pattern}
               onClose={() => setOpen(false)}
               onOpen={() => setOpen(true)}
@@ -159,17 +172,17 @@ export default function TagScreen(): JSX.Element {
             />
           </View>
           <View />
-          {leds.pattern.length === 0 ? undefined : (
-            <>
+          {leds.pattern === "unkown" ? undefined : (
+            <View style={{ zIndex: -1 }}>
               <Divider style={styles.divider} />
               <PatternComponent
-                pattern={leds.pattern}
+                pattern={leds.pattern as Pattern}
                 timeout={100}
                 colors={leds.colors}
                 disabled={false}
                 onSubmit={changeColor}
               />
-            </>
+            </View>
           )}
           <Text style={styles.note}>
             Note that its not saved on this screen which color you apply to tags

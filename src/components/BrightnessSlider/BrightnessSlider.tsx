@@ -32,13 +32,15 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   );
 
   const [brightness, setBrightness] = React.useState<number>(
-    light.brightness ?? 0,
+    light?.brightness ?? 0,
   );
   const theme = useTheme();
   const styles = StyleSheet.create({
     trackStyle: { height: 5 },
     thumbStyle: {
-      backgroundColor: tinycolor(light.leds.colors[0]).spin(180).toHexString(),
+      backgroundColor: tinycolor(light?.leds.colors[0] ?? "#000")
+        .spin(180)
+        .toHexString(),
       borderRadius: 20,
       height: 30,
       width: 30,
@@ -63,7 +65,7 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   return (
     <Slider
       minimumTrackTintColor={
-        !disabled ? light.leds.colors[0] : theme.colors.disabled
+        !disabled ? light?.leds.colors[0] ?? "#fff" : theme.colors.disabled
       }
       disabled={disabled}
       minimumValue={1}

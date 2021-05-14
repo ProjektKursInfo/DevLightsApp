@@ -20,9 +20,9 @@ export default function CountComponent(
   const dispatch = useDispatch();
   const theme = useTheme();
   const changeLedCount = (count: string) => {
-    if (!/^\d+$/.test(count) || parseInt(count, 10) > 150) {
+    if (!/^\d+$/.test(count) || parseInt(count, 10) > 1000) {
       snackbar.makeSnackbar(
-        "Invalid number or string provided!",
+        "Invalid number provided! Must be from ",
         theme.colors.error,
       );
       if (ref) {
@@ -30,11 +30,12 @@ export default function CountComponent(
       }
     } else {
       axios
-        .patch(`/lights/${light.id}`, {
+        .patch(`/lights/${light.id}/count`, {
           count: parseInt(count, 10),
         })
         .then((res: LightResponse) => {
           dispatch(setLight(light.id, res.data.object));
+          snackbar.makeSnackbar(res.data.message, theme.colors.success);
         });
     }
   };

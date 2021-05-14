@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useSnackbar from "../../hooks/useSnackbar";
 import { LightResponse, LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
@@ -35,6 +36,7 @@ export default function LightScreen(): JSX.Element {
   const { params } = route;
   const { id } = params;
   const theme = useTheme();
+  const snackbar = useSnackbar();
   const { colors } = theme;
   const dispatch = useDispatch();
   const light = useSelector(
@@ -42,7 +44,8 @@ export default function LightScreen(): JSX.Element {
     (l: Light, r: Light) =>
       isEqual(l.isOn, r.isOn) &&
       isEqual(l.leds.colors, r.leds.colors) &&
-      isEqual(l.leds.pattern, r.leds.pattern),
+      isEqual(l.leds.pattern, r.leds.pattern) &&
+      isEqual(l.tags, r.tags),
   );
   const navigation = useNavigation();
 
@@ -77,6 +80,10 @@ export default function LightScreen(): JSX.Element {
         ? 1000
         : undefined,
     });
+    snackbar.makeSnackbar(
+      ax.data.message,
+      ax.status === 200 ? theme.colors.success : theme.colors.error,
+    );
     if (ax.status === 200) {
       dispatch(setLight(light.id, ax.data.object));
       return newPattern;
@@ -93,12 +100,14 @@ export default function LightScreen(): JSX.Element {
       pattern: light.leds.pattern,
       timeout: timeout ?? light.leds.timeout,
     });
-
     if (ax.status === 200) {
       dispatch(setLight(light.id, ax.data.object));
     }
-
-    return await ax;
+    snackbar.makeSnackbar(
+      ax.data.message,
+      ax.status === 200 ? theme.colors.success : theme.colors.error,
+    );
+    return ax;
   };
 
   const styles = StyleSheet.create({
@@ -130,7 +139,6 @@ export default function LightScreen(): JSX.Element {
       textAlignVertical: "center",
       fontSize: 20,
     },
-
     pattern: { zIndex: -1, marginHorizontal: theme.spacing(5) },
     slider_container: {
       marginTop: 10,
@@ -199,7 +207,6 @@ export default function LightScreen(): JSX.Element {
             timeout={light.leds.timeout}
             colors={light.leds.colors}
             onSubmit={changeColor}
-            id={light.id}
           />
         </View>
 
