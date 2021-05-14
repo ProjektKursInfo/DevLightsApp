@@ -1,6 +1,6 @@
 import { Light } from "@devlights/types";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
@@ -12,25 +12,28 @@ import { setLight, setLightColor } from "../../store/actions/lights";
 import { ColorModalScreenNavigationProp } from "../ColorPicker/ColorPicker";
 
 export interface RunnerComponentProps {
-  id: string;
+  colors: string[];
+  timeout: number;
+  disabled: boolean;
+  onSubmit: (color: string, timeout?: number) => Promise<boolean>;
 }
 
 export default function RunnerComponent(
   props: RunnerComponentProps,
 ): JSX.Element {
-  const { id } = props;
+  const { colors, timeout, disabled, onSubmit } = props;
   const navigation = useNavigation<ColorModalScreenNavigationProp>();
   const theme = useTheme();
   const dispatch = useDispatch();
   const ref = React.useRef<TextInput>();
-  const light: Light = useSelector(
+  /* const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (l: Light, r: Light) =>
       isEqual(l.leds.timeout, r.leds.timeout) ||
       isEqual(l.leds.colors[0], r.leds.colors[0]),
-  );
+  ); */
 
-  const onSubmit = async (color: string): Promise<boolean> => {
+  /* const onSubmit = async (color: string): Promise<boolean> => {
     let success = true;
 
     const ax = axios.patch(`/lights/${id}/color`, {
@@ -54,31 +57,14 @@ export default function RunnerComponent(
     });
 
     return success;
-  };
+  }; */
 
   const onPress = () => {
     navigation.navigate("color_modal", {
-      color: light.leds.colors[0],
+      color: colors[0],
       onSubmit,
       index: 0,
     });
-  };
-
-  const changeTimeout = (timeout: string) => {
-    if (parseInt(timeout, 10) !== light.leds.timeout) {
-      const ax = axios.patch(`/lights/${light.id}/color`, {
-        colors: light.leds.colors,
-        pattern: light.leds.pattern,
-        timeout: parseInt(timeout, 10),
-      });
-      ax.then((res: LightResponse) =>
-        dispatch(setLight(light.id, res.data.object)),
-      );
-      ax.catch(() => {
-        // @ts-ignore
-        ref.current?.setNativeProps({ text: light.leds.timeout?.toString() });
-      });
-    }
   };
 
   const styles = StyleSheet.create({
@@ -111,23 +97,25 @@ export default function RunnerComponent(
       <View style={styles.timeoutContainer}>
         <Text style={styles.title}>Timeout</Text>
         <TextInput
-          editable={light.isOn}
+          editable={!disabled}
           ref={ref as React.RefObject<TextInput>}
           keyboardType="number-pad"
-          onSubmitEditing={({ nativeEvent: { text } }) => changeTimeout(text)}
+          onSubmitEditing={({ nativeEvent: { text } }) =>
+            onSubmit(colors[0], parseInt(text, 10))
+          }
           textAlign="right"
           style={styles.textinput}
-          defaultValue={light.leds.timeout?.toString() ?? "100"}
+          defaultValue={timeout?.toString() ?? "100"}
         />
       </View>
       <Button
-        disabled={!light.isOn}
+        disabled={disabled}
         mode="contained"
         style={styles.button}
         onPress={onPress}
-        color={light.leds.colors[0]}
+        color={colors[0]}
       >
-        {light.leds.colors[0]}
+        {colors[0]}
       </Button>
     </View>
   );

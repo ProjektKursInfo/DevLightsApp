@@ -38,11 +38,16 @@ function AlarmFooter(props: AlarmFooterProps): JSX.Element {
   });
 
   const getDays = (): string | string[] => {
+    // TODO Sunday at the end
     const { days } = alarm;
     if (days.length === 7) {
       return "Everyday";
     }
-    if (alarm.days.includes(0) && alarm.days.includes(6)) {
+    if (
+      alarm.days.includes(0) &&
+      alarm.days.includes(6) &&
+      alarm.days.length === 2
+    ) {
       return "Weekends";
     }
     if (

@@ -1,4 +1,5 @@
 import { Pattern, USER_PATTERNS } from "@devlights/types";
+import { concat } from "lodash";
 import React from "react";
 import { StyleSheet } from "react-native";
 import DropDownPicker, {
@@ -61,7 +62,8 @@ export default function UniversalPicker(
   const getDropDownItems = (
     newPattern?: Pattern,
   ): DropDownPickerProps["items"] => {
-    if ([USER_PATTERNS, "fading"].includes(newPattern ?? pattern)) {
+    const patterns = concat(USER_PATTERNS, "fading");
+    if (patterns.includes(newPattern || pattern)) {
       return defaultItems;
     }
     return [...defaultItems, { label: getRightString(), value: "unkown" }];
@@ -79,11 +81,12 @@ export default function UniversalPicker(
         : "unkown",
     );
   };
+
   React.useEffect(() => {
     handlePatternChange(pattern);
   }, [pattern]);
 
-  const changePattern = async (newPattern: string) => {
+  const setPattern = async (newPattern: string) => {
     if (newPattern !== "unkown" && newPattern !== undefined) {
       if (newPattern !== pattern) {
         const pat = await props.changePattern(newPattern as Pattern);
@@ -132,7 +135,7 @@ export default function UniversalPicker(
       onClose={onClose}
       onChangeItem={(item) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        pickerOpen ? changePattern(item.value) : undefined;
+        pickerOpen ? setPattern(item.value) : undefined;
       }}
     />
   );

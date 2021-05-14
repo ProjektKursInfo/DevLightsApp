@@ -1,43 +1,98 @@
-import { Light } from "@devlights/types";
-import { isEqual } from "lodash";
+import { Pattern } from "@devlights/types";
+import { AxiosResponse } from "axios";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
-import { useSelector } from "react-redux";
-import { Store } from "../../store";
+import { makeValidColorArray } from "../../utils";
 import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import RainbowComponent from "../RainbowComponent";
 import RunnerComponent from "../RunnerComponent";
 
-export default function PatternComponent(props: { id: string }): JSX.Element {
-  const light = useSelector(
-    (state: Store) =>
-      state.lights.find((l: Light) => l.id === props.id) as Light,
-    (l: Light, r: Light) => isEqual(l.leds.pattern, r.leds.pattern),
-  );
+export interface PatternComponentProps {
+  pattern: Pattern;
+  colors: string[];
+  timeout: number | undefined;
+  disabled: boolean;
+  onSubmit: (
+    colors: string[],
+    timeout: number | undefined,
+  ) => Promise<AxiosResponse>;
+}
+
+export default function PatternComponent(
+  props: PatternComponentProps,
+): JSX.Element {
+  const { pattern, colors, disabled, timeout } = props;
   const styles = StyleSheet.create({
     text: {
       textAlign: "center",
     },
   });
 
+  const onSubmit = async (
+    newColor: string | string[],
+    newTimeout?: number,
+    index?: number,
+  ): Promise<boolean> => {
+    const newColors =
+      typeof newColor === "string"
+        ? makeValidColorArray(
+            typeof newColor === "string" ? newColor : "",
+            colors,
+            index ?? 0,
+          )
+        : newColor;
+    const as = await props.onSubmit(
+      newColors,
+      newTimeout <= 0 ? timeout : newTimeout,
+    );
+    if (as.status !== 200) return false;
+    return true;
+  };
+
   const getComponent = () => {
-    switch (light.leds.pattern) {
+    switch (pattern) {
       case "gradient":
-        return <GradientComponent id={light.id} />;
+        return (
+          <GradientComponent
+            disabled={disabled}
+            onSubmit={onSubmit}
+            colors={colors}
+          />
+        );
       case "plain":
-        return <PlainComponent id={light.id} />;
+        return (
+          <PlainComponent
+            disabled={disabled}
+            colors={colors}
+            onSubmit={onSubmit}
+          />
+        );
       case "runner":
-        return <RunnerComponent id={light.id} />;
+        return (
+          <RunnerComponent
+            disabled={disabled}
+            colors={colors}
+            timeout={timeout ?? 100}
+            onSubmit={onSubmit}
+          />
+        );
       case "rainbow":
       case "fading":
-        return <RainbowComponent id={light.id} />;
+        return (
+          <RainbowComponent
+            disabled={disabled}
+            onSubmit={onSubmit}
+            colors={colors}
+            timeout={timeout ?? 100}
+          />
+        );
       default:
         return (
           <Text style={styles.text}>
-            The Light is currently in a mode where changing the Color is not
-            supported.
+            Changing color is not supported withing pattern
+            {pattern}
           </Text>
         );
     }

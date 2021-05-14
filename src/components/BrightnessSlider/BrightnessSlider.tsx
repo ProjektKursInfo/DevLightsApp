@@ -22,7 +22,7 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const dispatch = useDispatch();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === ids[0]) as Light,
-    (left: Light, right: Light) => !isEqual(left, right),
+    (left: Light, right: Light) => isEqual(left, right),
   );
 
   const realLights: Light[] = useSelector(
@@ -31,7 +31,9 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
     (left: Light[], right: Light[]) => isEqual(left, right),
   );
 
-  const [brightness, setBrightness] = React.useState<number>(light.brightness);
+  const [brightness, setBrightness] = React.useState<number>(
+    light.brightness ?? 0,
+  );
   const theme = useTheme();
   const styles = StyleSheet.create({
     trackStyle: { height: 5 },

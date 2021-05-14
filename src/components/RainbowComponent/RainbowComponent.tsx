@@ -1,52 +1,26 @@
-import { Light } from "@devlights/types";
-import axios from "axios";
-import { isEqual } from "lodash";
 import * as React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
-import { LightResponse } from "../../interfaces/types";
-import { Store } from "../../store";
-import { setLight, setLightColor } from "../../store/actions/lights";
 
 export interface RunnerComponentProps {
-  id: string;
+  colors: string[];
+  timeout: number;
+  disabled: boolean;
+  onSubmit: (colors: string | string[], timeout: number) => Promise<boolean>;
 }
 
 export default function RunnerComponent(
   props: RunnerComponentProps,
 ): JSX.Element {
-  const { id } = props;
+  const { colors, timeout, disabled } = props;
   const theme = useTheme();
-  const dispatch = useDispatch();
   const ref = React.useRef<TextInput>();
-  const light: Light = useSelector(
-    (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
-    (l: Light, r: Light) => isEqual(l.leds.timeout, r.leds.timeout),
-  );
 
-  // maybe number as parameter
-  const changeTimeout = (timeout: string) => {
-    if (parseInt(timeout, 10) !== light.leds.timeout) {
-      const ax = axios.patch(`/lights/${light.id}/color`, {
-        pattern: light.leds.pattern,
-        timeout: parseInt(timeout, 10),
-      });
-      ax.then((res: LightResponse) =>
-        dispatch(
-          setLightColor(
-            id,
-            "rainbow",
-            res.data.object.leds.colors,
-            light.leds.timeout,
-          ),
-        ),
-      );
-      ax.catch(() => {
-        // @ts-ignore
-        ref.current?.setNativeProps({ text: light.leds.timeout?.toString() });
-      });
-    }
+  const submit = (pTimeout: string) => {
+    const newTimeout = parseInt(pTimeout, 10);
+    props.onSubmit(colors, newTimeout).catch(() => {
+      ref.current?.setNativeProps({ text: timeout.toString() });
+    });
   };
 
   const styles = StyleSheet.create({
@@ -74,13 +48,13 @@ export default function RunnerComponent(
       <View style={styles.timeoutContainer}>
         <Text style={styles.title}>Timeout</Text>
         <TextInput
-          editable={light.isOn}
+          editable={!disabled}
           ref={ref as React.RefObject<TextInput>}
           keyboardType="number-pad"
-          onSubmitEditing={({ nativeEvent: { text } }) => changeTimeout(text)}
+          onSubmitEditing={({ nativeEvent: { text } }) => submit(text)}
           textAlign="right"
           style={styles.textinput}
-          defaultValue={light.leds.timeout?.toString() ?? "100"}
+          defaultValue={timeout?.toString() ?? "100"}
         />
       </View>
     </View>

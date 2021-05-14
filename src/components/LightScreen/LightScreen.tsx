@@ -84,6 +84,23 @@ export default function LightScreen(): JSX.Element {
     return light.leds.pattern;
   };
 
+  const changeColor = async (
+    pColors: string[],
+    timeout: number | undefined,
+  ) => {
+    const ax = await axios.patch(`/lights/${id}/color`, {
+      colors: ["fading", "rainbow"].includes(light.leds.pattern) ? [] : pColors,
+      pattern: light.leds.pattern,
+      timeout: timeout ?? light.leds.timeout,
+    });
+
+    if (ax.status === 200) {
+      dispatch(setLight(light.id, ax.data.object));
+    }
+
+    return await ax;
+  };
+
   const styles = StyleSheet.create({
     container: {
       height: "100%",
@@ -114,7 +131,7 @@ export default function LightScreen(): JSX.Element {
       fontSize: 20,
     },
 
-    pattern: { zIndex: -1 },
+    pattern: { zIndex: -1, marginHorizontal: theme.spacing(5) },
     slider_container: {
       marginTop: 10,
       marginLeft: theme.spacing(6),
@@ -176,7 +193,14 @@ export default function LightScreen(): JSX.Element {
 
         <Divider style={styles.divider} />
         <View style={styles.pattern}>
-          <PatternComponent id={light.id} />
+          <PatternComponent
+            disabled={!light.isOn}
+            pattern={light.leds.pattern}
+            timeout={light.leds.timeout}
+            colors={light.leds.colors}
+            onSubmit={changeColor}
+            id={light.id}
+          />
         </View>
 
         <Divider style={styles.divider} />
