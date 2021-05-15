@@ -2,7 +2,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Lottie from "lottie-react-native";
 import * as React from "react";
 import {
@@ -15,6 +15,7 @@ import {
 import { Modalize } from "react-native-modalize";
 import { Divider, List, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import useSnackbar from "../../hooks/useSnackbar";
 import { LightsStackParamList, LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
 import {
@@ -32,6 +33,7 @@ export function Color(props: {
   delete: () => void;
 }): JSX.Element {
   const { colors } = props;
+  const snackbar = useSnackbar();
   const theme = useTheme();
   const styles = StyleSheet.create({
     container: { width: "100%" },
@@ -49,7 +51,13 @@ export function Color(props: {
         });
         ax.then((res: LightResponse) => {
           dispatch(setLight(id, res.data.object));
-        });
+          snackbar.makeSnackbar(res.data.message, theme.colors.success);
+        }).catch((err: AxiosError) =>
+          snackbar.makeSnackbar(
+            err.response?.data.message ?? "Nothing changed",
+            theme.colors.error,
+          ),
+        );
       });
     }
   };

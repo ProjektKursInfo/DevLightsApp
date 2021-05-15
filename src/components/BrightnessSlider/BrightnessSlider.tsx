@@ -1,5 +1,5 @@
 import { Light } from "@devlights/types";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { filter, isEqual, map, mean, some } from "lodash";
 import * as React from "react";
 import { StyleSheet } from "react-native";
@@ -8,6 +8,7 @@ import { useTheme } from "react-native-paper";
 import Slider from "react-native-slider";
 import { useDispatch, useSelector } from "react-redux";
 import tinycolor from "tinycolor2";
+import useSnackbar from "../../hooks/useSnackbar";
 import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
@@ -20,6 +21,7 @@ export interface SliderProps {
 export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const { ids } = props;
   const dispatch = useDispatch();
+  const snackbar = useSnackbar();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === ids[0]) as Light,
     (left: Light, right: Light) => isEqual(left, right),
@@ -67,7 +69,13 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
       ax.then((res: LightResponse) => {
         dispatch(setLight(l.id, res.data.object));
       });
-      ax.catch(() => setBrightness(l.brightness));
+      ax.catch((err: AxiosError) => {
+        setBrightness(l.brightness);
+        snackbar.makeSnackbar(
+          err.response?.data.message ?? "Nothing",
+          theme.colors.error,
+        );
+      });
     });
   };
   return (

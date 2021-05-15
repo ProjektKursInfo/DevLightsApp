@@ -16,10 +16,10 @@ declare global {
       secondary: string;
       lightText: string;
       success: string;
-      grey: string,
-      dark_grey: string,
-      card: string,
-      border: string,
+      grey: string;
+      dark_grey: string;
+      card: string;
+      border: string;
     }
     interface Theme {
       spacing: (value: number) => number;
@@ -27,7 +27,7 @@ declare global {
   }
 }
 
-const font : ReactNativePaper.ThemeFonts = {
+const font: ReactNativePaper.ThemeFonts = {
   regular: {
     fontFamily: "TitilliumWeb-Regular",
     fontWeight: "normal",
@@ -82,7 +82,7 @@ export const lightTheme = async () => {
       background: "#fff",
       surface: "#fff",
       lightText: "#d1d1d1",
-      success: "#2dce89",
+      success: "#388e3c",
       grey: "#cfcfcf",
       dark_grey: "#919191",
       card: "#fff",
@@ -109,7 +109,7 @@ export const darkTheme = async () => {
       secondary: "#FF7D91",
       text: "#d1d1d1",
       lightText: "#d1d1d1aa",
-      success: "#2dce89",
+      success: "#388e3c",
       grey: "#4f4f4f",
       dark_grey: "#393939",
       error: "rgb(178, 0, 35)",

@@ -35,6 +35,7 @@ export default function PatternComponent(
     newTimeout?: number,
     index?: number,
   ): Promise<boolean> => {
+    let success = true;
     const newColors =
       typeof newColor === "string"
         ? makeValidColorArray(
@@ -43,12 +44,16 @@ export default function PatternComponent(
             index ?? 0,
           )
         : newColor;
-    const as = await props.onSubmit(
+    const as = props.onSubmit(
       newColors,
       newTimeout <= 0 ? timeout : newTimeout,
     );
-    if (as.status !== 200) return false;
-    return true;
+    as.then((res: AxiosResponse) => {
+      if (res.status === 304) success = false;
+    }).catch(() => {
+      success = true;
+    });
+    return success;
   };
 
   const getComponent = () => {

@@ -1,7 +1,7 @@
 import { Light, Pattern } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -55,7 +55,7 @@ export default function LightScreen(): JSX.Element {
 
   React.useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Powerbulb ids={[light.id]} />,
+      headerRight: () => <Powerbulb type="light" ids={[light.id]} />,
     });
   }, []);
 
@@ -67,11 +67,12 @@ export default function LightScreen(): JSX.Element {
   };
 
   const changePattern = async (newPattern: Pattern): Promise<Pattern> => {
+    let success = true;
     const newColors: string[] = [light.leds.colors[0]];
     if (newPattern === "gradient") {
       newColors.push(light.leds.colors[0]);
     }
-    const ax: LightResponse = await axios.patch(`/lights/${id}/color`, {
+    const ax = axios.patch(`/lights/${id}/color`, {
       colors:
         newPattern === "rainbow" || newPattern === "fading" ? [] : newColors,
       pattern: newPattern as Pattern,
@@ -80,32 +81,35 @@ export default function LightScreen(): JSX.Element {
         ? 1000
         : undefined,
     });
-    snackbar.makeSnackbar(
-      ax.data.message,
-      ax.status === 200 ? theme.colors.success : theme.colors.error,
-    );
-    if (ax.status === 200) {
-      dispatch(setLight(light.id, ax.data.object));
-      return newPattern;
-    }
-    return light.leds.pattern;
+    ax.then((res: LightResponse) => {
+      success = true;
+      dispatch(setLight(light.id, res.data.object));
+      snackbar.makeSnackbar(res.data.message, theme.colors.success);
+    });
+    ax.catch((err: AxiosError) => {
+      snackbar.makeSnackbar(err.response?.data.message, theme.colors.error);
+      success = false;
+    });
+    return success ? newPattern : light.leds.pattern;
   };
 
   const changeColor = async (
     pColors: string[],
     timeout: number | undefined,
   ) => {
-    const ax = await axios.patch(`/lights/${id}/color`, {
+    const ax = axios.patch(`/lights/${id}/color`, {
       colors: ["fading", "rainbow"].includes(light.leds.pattern) ? [] : pColors,
       pattern: light.leds.pattern,
       timeout: timeout ?? light.leds.timeout,
     });
-    if (ax.status === 200) {
-      dispatch(setLight(light.id, ax.data.object));
-    }
-    snackbar.makeSnackbar(
-      ax.data.message,
-      ax.status === 200 ? theme.colors.success : theme.colors.error,
+    ax.then((res: LightResponse) => {
+      dispatch(setLight(light.id, res.data.object));
+      snackbar.makeSnackbar(res.data.message, theme.colors.success);
+    }).catch((err: AxiosError) =>
+      snackbar.makeSnackbar(
+        err.response?.data.message ?? "Nothing changed",
+        theme.colors.error,
+      ),
     );
     return ax;
   };

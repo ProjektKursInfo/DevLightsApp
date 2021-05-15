@@ -101,13 +101,11 @@ export default function ColorPicker(): JSX.Element {
   };
 
   const onSubmit = async () => {
-    console.log("halllooooooo");
     const success = await route.params.onSubmit(
       tinycolor.fromRatio(hsv).toHexString(),
       //@ts-ignore
       route.params.index,
     );
-    console.log("hoooollaaaa");
     if (success) {
       navigation.goBack();
     } else {

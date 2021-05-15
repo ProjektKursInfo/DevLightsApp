@@ -1,9 +1,9 @@
-import { Leds, Light, Pattern, Response } from "@devlights/types";
+import { Light, Pattern, Response } from "@devlights/types";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { map } from "lodash";
 import React from "react";
 import {
@@ -40,9 +40,11 @@ export default function TagScreen(): JSX.Element {
   const [leds, setLeds] = React.useState<{
     colors: string[];
     pattern: Pattern | string;
+    timeout: number | undefined;
   }>({
     colors: ["#000000"],
     pattern: "unkown",
+    timeout: undefined,
   });
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -55,7 +57,9 @@ export default function TagScreen(): JSX.Element {
   React.useEffect(() => {
     navigation.setOptions({
       headerTitle: params.tag,
-      headerRight: () => <Powerbulb ids={map(lights, "id")} />,
+      headerRight: () => (
+        <Powerbulb type="tag" tag={tag} ids={map(lights, "id")} />
+      ),
     });
   }, [params.tag]);
 
@@ -64,27 +68,26 @@ export default function TagScreen(): JSX.Element {
     timeout: number | undefined,
   ) => {
     setLeds({ ...leds, colors: pColors, timeout });
-    const ax: AxiosResponse<Response<Light[]>> = await axios.patch(
-      `/tags/${tag}/color`,
-      {
-        colors: ["fading", "rainbow"].includes(leds.pattern) ? [] : pColors,
-        pattern: leds.pattern,
-        timeout: ["plain", "gradient"].includes(leds.pattern)
-          ? undefined
-          : timeout ?? 100,
-      },
-    );
-
-    if (ax.status === 200) {
-      ax.data.object.forEach((l: Light) => dispatch(setLight(l.id, l)));
-    } else {
-      setLeds({ colors: ["#000000"], pattern: "unkown" });
-    }
-    snackbar.makeSnackbar(
-      ax.data.message,
-      ax.status === 200 ? theme.colors.success : theme.colors.error,
-    );
-    return ax;
+    const ax = axios.patch(`/tags/${tag}/color`, {
+      colors: ["fading", "rainbow"].includes(leds.pattern) ? [] : pColors,
+      pattern: leds.pattern,
+      timeout: ["plain", "gradient"].includes(leds.pattern)
+        ? undefined
+        : timeout ?? 100,
+    });
+    ax.then((res: AxiosResponse<Response<Light[]>>) => {
+      res.data.object.forEach((l: Light) => dispatch(setLight(l.id, l)));
+      snackbar.makeSnackbar(res.data.message, theme.colors.success);
+    }).catch((err: AxiosError) => {
+      snackbar.makeSnackbar(
+        err.response?.status === 304
+          ? "Nothing chanded"
+          : err.response?.data.message,
+        theme.colors.error,
+      );
+      setLeds({ colors: ["#000000"], pattern: "unkown", timeout: undefined });
+    });
+    return await ax;
   };
 
   const removeTags = (id: string, tags: string[]) => {
@@ -119,8 +122,8 @@ export default function TagScreen(): JSX.Element {
       marginTop: theme.spacing(2),
       fontWeight: "bold",
     },
-    item_divider: { margin: theme.spacing(2) },
-    list_item: { margin: theme.spacing(2) },
+    item_divider: { margin: theme.spacing(2), marginBottom: 0 },
+    list_item: { margin: 0 },
     list_icon: { alignSelf: "center" },
     slider_container: {
       width: "90%",
@@ -222,6 +225,7 @@ export default function TagScreen(): JSX.Element {
               )}
             />
           ))}
+          <Divider style={styles.item_divider} />
         </View>
       </ScrollView>
     </View>
