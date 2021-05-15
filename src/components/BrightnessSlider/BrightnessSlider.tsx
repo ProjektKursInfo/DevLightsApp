@@ -1,6 +1,6 @@
 import { Light } from "@devlights/types";
 import axios from "axios";
-import { filter, isEqual, some } from "lodash";
+import { filter, isEqual, map, mean, some } from "lodash";
 import * as React from "react";
 import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
@@ -31,8 +31,16 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
     (left: Light[], right: Light[]) => isEqual(left, right),
   );
 
+  const getBrightness = (): number => {
+    if (realLights.length > 1) {
+      return Math.round(mean(map(realLights, "brightness")));
+    }
+
+    return realLights[0].brightness;
+  };
+
   const [brightness, setBrightness] = React.useState<number>(
-    light?.brightness ?? 0,
+    getBrightness() ?? 1,
   );
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -54,7 +62,7 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const updateBrightness = (b: number) => {
     realLights.forEach((l: Light) => {
       const ax = axios.patch(`/lights/${l.id}/brightness`, {
-        brightness: b,
+        brightness: Math.round(b),
       });
       ax.then((res: LightResponse) => {
         dispatch(setLight(l.id, res.data.object));

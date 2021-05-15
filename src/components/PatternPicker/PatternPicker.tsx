@@ -13,7 +13,9 @@ export interface UniversalPickerProps {
   pickerOpen?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
-  changePattern: (pattern: Pattern) => Promise<Pattern> | void;
+  changePattern: (
+    pattern: Pattern | string,
+  ) => Promise<Pattern> | Promise<string> | void;
 }
 
 export default function UniversalPicker(
@@ -93,7 +95,7 @@ export default function UniversalPicker(
   const setPattern = async (newPattern: string) => {
     if (newPattern !== "unkown" && newPattern !== undefined) {
       if (newPattern !== pattern) {
-        const pat = await props.changePattern(newPattern as Pattern);
+        const pat = await props.changePattern(newPattern as Pattern | string);
         handlePatternChange(typeof pat === "string" ? pat : undefined);
       }
     }
