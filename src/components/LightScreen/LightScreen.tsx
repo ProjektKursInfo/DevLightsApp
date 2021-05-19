@@ -19,7 +19,7 @@ import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
 import BrightnessSlider from "../BrightnessSlider";
 import CountComponent from "../CountComponent";
-import NameComponent from "../NameComponent";
+import LightName from "../LightName";
 import PatternComponent from "../PatternComponent";
 import PatternPicker from "../PatternPicker";
 import Powerbulb from "../Powerbulb";
@@ -180,7 +180,7 @@ export default function LightScreen(): JSX.Element {
         style={styles.container}
         contentContainerStyle={{ paddingBottom: theme.spacing(4) }}
       >
-        <NameComponent light={light} />
+        <LightName light={light} />
 
         <View style={styles.numberContainer}>
           <Text style={styles.title}>LEDs</Text>
