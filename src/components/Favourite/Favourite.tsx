@@ -54,7 +54,7 @@ export function Color(props: {
           snackbar.makeSnackbar(res.data.message, theme.colors.success);
         }).catch((err: AxiosError) =>
           snackbar.makeSnackbar(
-            err.response?.data.message ?? "Nothing changed",
+            err.response?.data.message ?? "Nothing changed!",
             theme.colors.error,
           ),
         );

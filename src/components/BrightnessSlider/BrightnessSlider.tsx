@@ -38,7 +38,7 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
       return Math.round(mean(map(realLights, "brightness")));
     }
 
-    return realLights[0].brightness;
+    return realLights[0]?.brightness ?? 1;
   };
 
   const [brightness, setBrightness] = React.useState<number>(

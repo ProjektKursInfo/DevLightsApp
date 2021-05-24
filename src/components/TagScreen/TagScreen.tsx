@@ -1,22 +1,14 @@
 import { Light, Pattern, Response } from "@devlights/types";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { map } from "lodash";
 import React from "react";
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Divider, List, Text, useTheme } from "react-native-paper";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { Divider, Text, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import useSnackbar from "../../hooks/useSnackbar";
-import { LightResponse, TagsStackParamList } from "../../interfaces/types";
+import { TagsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
 import { removeTag } from "../../store/actions/tags";
@@ -25,6 +17,7 @@ import BrightnessSlider from "../BrightnessSlider";
 import PatternComponent from "../PatternComponent";
 import PatternPicker from "../PatternPicker";
 import Powerbulb from "../Powerbulb";
+import LightsList from "../TagLightsList";
 
 export type TagScreenNavigationProp = StackNavigationProp<
   TagsStackParamList,
@@ -55,12 +48,17 @@ export default function TagScreen(): JSX.Element {
   );
 
   React.useEffect(() => {
-    navigation.setOptions({
-      headerTitle: params.tag,
-      headerRight: () => (
-        <Powerbulb type="tag" tag={tag} ids={map(lights, "id")} />
-      ),
-    });
+    if (lights.length < 1) {
+      dispatch(removeTag(params.tag));
+      navigation.goBack();
+    } else {
+      navigation.setOptions({
+        headerTitle: params.tag,
+        headerRight: () => (
+          <Powerbulb type="tag" tag={tag} ids={map(lights, "id")} />
+        ),
+      });
+    }
   }, [params.tag]);
 
   const changeColor = async (
@@ -90,41 +88,12 @@ export default function TagScreen(): JSX.Element {
     return await ax;
   };
 
-  const removeTags = (id: string, tags: string[]) => {
-    const ax = axios.delete(`/lights/${id}/tags`, {
-      data: { tags },
-    });
-    ax.then((res: LightResponse) => {
-      dispatch(setLight(id, res.data.object));
-      if (lights.length <= 1) {
-        navigation.goBack();
-        dispatch(removeTag(params.tag));
-      }
-    });
-  };
-
   const styles = StyleSheet.create({
     container: {
       height: Dimensions.get("window").height,
       width: "100%",
       marginTop: 0,
     },
-    title: { fontSize: 18, textAlignVertical: "top" },
-    item_container: {
-      borderRadius: 12,
-      backgroundColor: theme.colors.grey,
-      width: "90%",
-      alignSelf: "center",
-      zIndex: -1,
-    },
-    item_headline: {
-      marginLeft: theme.spacing(2),
-      marginTop: theme.spacing(2),
-      fontWeight: "bold",
-    },
-    item_divider: { margin: theme.spacing(2), marginBottom: 0 },
-    list_item: { margin: 0 },
-    list_icon: { alignSelf: "center" },
     slider_container: {
       width: "90%",
       margin: theme.spacing(6),
@@ -197,36 +166,7 @@ export default function TagScreen(): JSX.Element {
           <BrightnessSlider color="#1de9b6" ids={map(lights, "id")} />
         </View>
 
-        <View style={styles.item_container}>
-          <Text style={styles.item_headline}>
-            Lights with tag
-            {` ${tag}`}
-          </Text>
-
-          <Divider style={styles.item_divider} />
-          {lights.map((l: Light) => (
-            <List.Item
-              key={l.id}
-              onPress={() => navigation.navigate("light", { id: l.id })}
-              style={styles.list_item}
-              titleStyle={styles.title}
-              title={l.name}
-              right={() => (
-                <TouchableOpacity
-                  style={styles.list_icon}
-                  onPress={() => removeTags(l.id, [params.tag])}
-                >
-                  <FontAwesomeIcon
-                    color={theme.colors.accent}
-                    icon={faTrashAlt}
-                    size={24}
-                  />
-                </TouchableOpacity>
-              )}
-            />
-          ))}
-          <Divider style={styles.item_divider} />
-        </View>
+        <LightsList lights={lights} tag={tag} />
       </ScrollView>
     </View>
   );

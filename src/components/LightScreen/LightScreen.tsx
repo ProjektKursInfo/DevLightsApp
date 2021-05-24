@@ -105,12 +105,12 @@ export default function LightScreen(): JSX.Element {
     ax.then((res: LightResponse) => {
       dispatch(setLight(light.id, res.data.object));
       snackbar.makeSnackbar(res.data.message, theme.colors.success);
-    }).catch((err: AxiosError) =>
+    }).catch((err: AxiosError) => {
       snackbar.makeSnackbar(
-        err.response?.data.message ?? "Nothing changed",
+        err.response?.data.message ?? "Nothing changed!",
         theme.colors.error,
-      ),
-    );
+      );
+    });
     return ax;
   };
 
@@ -154,11 +154,11 @@ export default function LightScreen(): JSX.Element {
       fontFamily: "TitilliumWeb-Regular",
     },
     item_container: {
-      marginTop: theme.spacing(3),
       borderRadius: 12,
       backgroundColor: theme.colors.grey,
       width: "90%",
       alignSelf: "center",
+      zIndex: -1,
     },
   });
   return (
@@ -194,7 +194,9 @@ export default function LightScreen(): JSX.Element {
             pickerOpen={pickerOpen}
             onOpen={() => setPickerOpen(true)}
             onClose={() => setPickerOpen(false)}
-            changePattern={(pattern: Pattern) => changePattern(pattern)}
+            changePattern={(pattern: Pattern | string) => {
+              changePattern(pattern as Pattern);
+            }}
           />
         </View>
 
