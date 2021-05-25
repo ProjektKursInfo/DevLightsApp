@@ -155,7 +155,7 @@ export default function Home(): JSX.Element {
     contentContainerStyle: {
       alignItems: "center",
       height:
-        loading || error
+        loading || error || lights.length < 1
           ? "100%"
           : Dimensions.get("window").height * 0.2 + lights.length * 140,
     },
@@ -187,14 +187,14 @@ export default function Home(): JSX.Element {
 
         <Spinner visible={loading} />
 
-        {lights.length > 0 && !error && !loading ? (
+        {lights.length && !error && !loading ? (
           lights.map((light: Light) => (
             <LightCard key={light.id} light={light} />
           ))
         ) : (
           <>
-            {loading ? (
-              <Text> </Text>
+            {loading && !error ? (
+              <Text></Text>
             ) : (
               <>
                 <Lottie

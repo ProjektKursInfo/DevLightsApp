@@ -79,11 +79,10 @@ export default function TagsList(props: TagsListProps): JSX.Element {
       zIndex: -1,
     },
     item_headline: {
-      marginLeft: theme.spacing(2),
-      marginTop: theme.spacing(2),
+      margin: theme.spacing(2),
       fontWeight: "bold",
     },
-    item_divider: { margin: theme.spacing(2), marginBottom: 0 },
+    item_divider: { margin: 0 },
     list_item: { margin: 0 },
     list_icon: { alignSelf: "center" },
     changeableItem: {

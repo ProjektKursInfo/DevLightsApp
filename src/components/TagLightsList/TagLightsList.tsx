@@ -73,7 +73,8 @@ export default function LightsList(props: LightListProps): JSX.Element {
           })
           .then((res: LightResponse) => dispatch(setLight(v, res.data.object)))
           .catch((err: AxiosError) => {
-            error = err.response?.data.message ?? "Tag could not be added to light";
+            error =
+              err.response?.data.message ?? "Tag could not be added to light";
           });
       });
       if (error == null) {
@@ -91,11 +92,10 @@ export default function LightsList(props: LightListProps): JSX.Element {
 
   const styles = StyleSheet.create({
     item_headline: {
-      marginLeft: theme.spacing(2),
-      marginTop: theme.spacing(2),
+      margin: theme.spacing(2),
       fontWeight: "bold",
     },
-    item_divider: { margin: theme.spacing(2), marginBottom: 0 },
+    item_divider: { margin: 0 },
     list_item: { margin: 0 },
     list_icon: { alignSelf: "center" },
 
