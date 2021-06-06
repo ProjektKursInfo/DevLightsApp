@@ -122,6 +122,8 @@ export default function TagCard(props: TagCardProps): JSX.Element {
           <Powerbulb
             onBulbPress={() => swipeableRef.current?.close()}
             ids={map(lights, "id")}
+            type="tag"
+            tag={tag}
           />
         </Animated.View>
       </View>

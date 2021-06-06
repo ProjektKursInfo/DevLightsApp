@@ -122,6 +122,11 @@ export default function Alarms(): JSX.Element {
       });
   };
 
+  const getVisibility = (): boolean => {
+    if (!network || !avaible) return false;
+    return true;
+  };
+
   const handleFooterPress = (isActive: boolean, index: number) => {
     if (isActive) {
       setActiveSections([index]);
@@ -177,7 +182,7 @@ export default function Alarms(): JSX.Element {
         )}
       </ScrollView>
       <FAB
-        visible={network && avaible}
+        visible={getVisibility()}
         style={styles.fab}
         onPress={() => setVisible(true)}
         icon="plus"

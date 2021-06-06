@@ -170,6 +170,7 @@ export default function LightCard(props: CardProps): JSX.Element {
           <Powerbulb
             onBulbPress={() => swipeableRef.current?.close()}
             ids={[light.id]}
+            type="light"
           />
         </Animated.View>
       </View>
