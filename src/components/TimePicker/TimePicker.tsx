@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Button, Platform, TimePickerAndroid } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useTheme } from "react-native-paper";
 import moment from "moment";
+import React from "react";
+import { View } from "react-native";
+import { useTheme } from "react-native-paper";
 
 export interface TimePickerProps {
   visible: boolean;
@@ -13,7 +13,6 @@ export interface TimePickerProps {
 
 export default function TimePicker(props: TimePickerProps): JSX.Element {
   const { visible, time } = props;
-  const theme = useTheme();
   const timeArr: string[] = time.split(":");
   const oldDate: Date = new Date();
   oldDate.setHours(parseInt(timeArr[0], 10));
@@ -34,6 +33,7 @@ export default function TimePicker(props: TimePickerProps): JSX.Element {
           value={oldDate}
           mode="time"
           is24Hour
+          themeVariant="dark"
           display="default"
           dateFormat="longdate"
           onChange={onChange}

@@ -15,9 +15,8 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
-import { LightResponse } from "../../interfaces/types";
+import { LightResponse, Theme } from "../../interfaces/types";
 import useNetwork from "../../hooks/useNetwork";
-import { Theme } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setAlarms } from "../../store/actions/alarms";
 import {
@@ -194,7 +193,7 @@ export default function Home(): JSX.Element {
         ) : (
           <>
             {loading && !error ? (
-              <Text></Text>
+              <Text />
             ) : (
               <>
                 <Lottie

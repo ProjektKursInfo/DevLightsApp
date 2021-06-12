@@ -5,6 +5,7 @@ import { faLightbulb, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import axios, { AxiosResponse } from "axios";
 import { map } from "lodash";
 import React from "react";
+import { PressableProps } from "react-native";
 import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import useSnackbar from "../../hooks/useSnackbar";
@@ -13,7 +14,7 @@ import { setLight } from "../../store/actions/lights";
 import { isOnEquality } from "../../utils";
 import Icon from "../Icon";
 
-interface PowerBulbProps {
+interface PowerBulbProps extends PressableProps {
   ids: string[];
   tag?: string;
   onBulbPress?: () => void;
@@ -21,7 +22,7 @@ interface PowerBulbProps {
 }
 
 export default function PowerBulb(props: PowerBulbProps): JSX.Element {
-  const { ids, onBulbPress, type, tag } = props;
+  const { ids, onBulbPress, type, tag, ...rest } = props;
   const lights = useSelector(
     (state: Store) => state.lights.filter((l) => ids.includes(l.id)),
     (l: Light[], r: Light[]) => isOnEquality(l, r),
@@ -30,18 +31,18 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
   const snackbar = useSnackbar();
   const theme = useTheme();
 
-  const getSwitchedOns = (): boolean => {
+  const areAllOn = (): boolean => {
     const ons = map(lights, "isOn");
     if (ons.includes(false)) return false;
     return true;
   };
   const [icon, setIcon] = React.useState<IconDefinition>(
-    getSwitchedOns() ? faLightbulb : regular,
+    areAllOn() ? faLightbulb : regular,
   );
 
   React.useEffect(() => {
-    setIcon(getSwitchedOns() ? faLightbulb : regular);
-  }, [getSwitchedOns()]);
+    setIcon(areAllOn() ? faLightbulb : regular);
+  }, [areAllOn()]);
 
   const onPress = (status: boolean) => {
     setIcon(status ? faLightbulb : regular);
@@ -76,7 +77,8 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
       position="right"
       color={theme.colors.accent}
       icon={icon}
-      onPress={() => onPress(!getSwitchedOns())}
+      onPress={() => onPress(!areAllOn())}
+      {...rest}
     />
   );
 }

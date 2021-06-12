@@ -67,7 +67,7 @@ export default function TagCard(props: TagCardProps): JSX.Element {
     },
   });
 
-  const deleteTag = async (tag: string) => {
+  const deleteTag = async () => {
     await lights.forEach(
       async (l: Light): Promise<void> => {
         const ax = await axios.delete(`/lights/${l.id}/tags`, {
@@ -98,7 +98,7 @@ export default function TagCard(props: TagCardProps): JSX.Element {
             },
           ]}
         >
-          <TouchableOpacity onPress={() => deleteTag(tag)}>
+          <TouchableOpacity onPress={deleteTag}>
             <FontAwesomeIcon icon={faTrash} size={30} color="#fff" />
           </TouchableOpacity>
         </Animated.View>

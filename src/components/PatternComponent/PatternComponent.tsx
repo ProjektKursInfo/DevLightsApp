@@ -46,7 +46,7 @@ export default function PatternComponent(
         : newColor;
     const as = props.onSubmit(
       newColors,
-      newTimeout <= 0 ? timeout : newTimeout,
+      newTimeout && newTimeout <= 0 ? timeout : newTimeout,
     );
     as.then((res: AxiosResponse) => {
       if (res.status === 304) success = false;
@@ -96,8 +96,7 @@ export default function PatternComponent(
       default:
         return (
           <Text style={styles.text}>
-            Changing color is not supported withing pattern
-            {pattern}
+            Changing color is not supported withing pattern {pattern}
           </Text>
         );
     }

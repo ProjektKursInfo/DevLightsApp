@@ -31,18 +31,22 @@ export const ApplyDialog = React.forwardRef(
 
     React.useEffect(() => {
       setValues(ids);
-    }, [ids]);
+
+      return () => {
+        setValues(ids);
+      };
+    }, []);
 
     const snapPoint = 150 + lights.length * 40;
 
     const onPress = (id: string) => {
-      if (!values.includes(id)) {
-        setValues([...values, id]);
-      } else {
+      if (values.includes(id)) {
         const index: number = values.indexOf(id);
         const old = [...values];
         old.splice(index, 1);
         setValues(old);
+      } else {
+        setValues([...values, id]);
       }
     };
 

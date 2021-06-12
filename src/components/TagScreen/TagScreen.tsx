@@ -42,15 +42,23 @@ export default function TagScreen(): JSX.Element {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const theme = useTheme();
+  const tags = useSelector((state: Store) =>
+    state.tags.find((t: string) => t === tag),
+  );
+
   const lights: Light[] = useSelector(
     (state: Store) => state.lights.filter((l) => l.tags?.includes(tag)),
     (l: Light[], r: Light[]) => tagsEquality(l, r, lights.length, tag),
   );
 
   React.useEffect(() => {
-    if (lights.length < 1) {
+    if (!lights || lights.length < 1) {
       dispatch(removeTag(params.tag));
       navigation.goBack();
+      snackbar.makeSnackbar(
+        "Tag does not exist anymore in this application!",
+        theme.colors.error,
+      );
     } else {
       navigation.setOptions({
         headerTitle: params.tag,
@@ -59,7 +67,7 @@ export default function TagScreen(): JSX.Element {
         ),
       });
     }
-  }, [params.tag]);
+  }, [tags]);
 
   const changeColor = async (
     pColors: string[],

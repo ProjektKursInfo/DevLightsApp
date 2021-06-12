@@ -2,15 +2,15 @@ import * as React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 
-export interface RunnerComponentProps {
+export interface RainbowComponentProps {
   colors: string[];
   timeout: number;
   disabled: boolean;
   onSubmit: (colors: string | string[], timeout: number) => Promise<boolean>;
 }
 
-export default function RunnerComponent(
-  props: RunnerComponentProps,
+export default function RainbowComponent(
+  props: RainbowComponentProps,
 ): JSX.Element {
   const { colors, timeout, disabled } = props;
   const theme = useTheme();

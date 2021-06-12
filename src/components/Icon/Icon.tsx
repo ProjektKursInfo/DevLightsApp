@@ -1,17 +1,16 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { StackHeaderLeftButtonProps } from "@react-navigation/stack";
 import React from "react";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, PressableProps, StyleSheet } from "react-native";
 
-export default function Icon(
-  props: StackHeaderLeftButtonProps & {
-    icon: IconProp;
-    color: string;
-    position: "left" | "right";
-  },
-): JSX.Element {
-  const { onPress, icon, color, position } = props;
+export interface IconProps extends PressableProps {
+  icon: IconProp;
+  color: string;
+  position: "left" | "right";
+}
+
+export default function Icon(props: IconProps): JSX.Element {
+  const { onPress, icon, color, position, ...rest } = props;
   const styles = StyleSheet.create({
     icon: {
       marginLeft: position === "left" ? 30 : 0,
@@ -19,7 +18,7 @@ export default function Icon(
     },
   });
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} {...rest}>
       <FontAwesomeIcon
         style={styles.icon}
         color={color}

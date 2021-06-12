@@ -23,6 +23,7 @@ import LightName from "../LightName";
 import PatternComponent from "../PatternComponent";
 import PatternPicker from "../PatternPicker";
 import Powerbulb from "../Powerbulb";
+import SleepTimer from "../SleepTimer";
 import TagsList from "../TagsList/TagsList";
 
 export type LightScreenNavigationProp = StackNavigationProp<
@@ -33,8 +34,9 @@ export type LightScreenRouteProp = RouteProp<LightsStackParamList, "light">;
 
 export default function LightScreen(): JSX.Element {
   const route = useRoute<LightScreenRouteProp>();
-  const { params } = route;
-  const { id } = params;
+  const {
+    params: { id },
+  } = route;
   const theme = useTheme();
   const snackbar = useSnackbar();
   const { colors } = theme;
@@ -42,22 +44,53 @@ export default function LightScreen(): JSX.Element {
   const light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
     (l: Light, r: Light) =>
-      isEqual(l.isOn, r.isOn) &&
-      isEqual(l.leds.colors, r.leds.colors) &&
-      isEqual(l.leds.pattern, r.leds.pattern) &&
-      isEqual(l.tags, r.tags),
+      isEqual(l?.isOn, r?.isOn) &&
+      isEqual(l?.leds.colors, r?.leds.colors) &&
+      isEqual(l?.leds.pattern, r?.leds.pattern) &&
+      isEqual(l?.tags, r?.tags),
   );
   const navigation = useNavigation();
+
+  const fallBacklight: Light = {
+    name: "DevLight",
+    brightness: 255,
+    count: 150,
+    id: "0.0",
+    isOn: false,
+    leds: {
+      colors: ["#1de9b6"],
+      pattern: "plain",
+      timeout: undefined,
+    },
+    tags: [""],
+  };
 
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
   const [pickerOpen, setPickerOpen] = React.useState<boolean>(false);
+  const [timer, setTimer] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Powerbulb type="light" ids={[light.id]} />,
+      headerRight: () => (
+        <Powerbulb
+          type="light"
+          ids={[light.id]}
+          onLongPress={light.isOn ? () => setTimer(true) : undefined}
+        />
+      ),
     });
   }, []);
+
+  React.useEffect(() => {
+    if (!light) {
+      navigation.goBack();
+      snackbar.makeSnackbar(
+        "Light does not exist anymore in this application!",
+        theme.colors.error,
+      );
+    }
+  }, [light]);
 
   const fetch = async () => {
     setRefresh(true);
@@ -73,10 +106,8 @@ export default function LightScreen(): JSX.Element {
       newColors.push(light.leds.colors[0]);
     }
     const ax = axios.patch(`/lights/${id}/color`, {
-      colors:
-        newPattern === "rainbow" || newPattern === "fading" ? [] : newColors,
+      colors: ["rainbow", "fading"].includes(newPattern) ? [] : newColors,
       pattern: newPattern as Pattern,
-      // man muss die zahl an 2 stellen ändern
       timeout: ["runner", "rainbow", "fading"].includes(newPattern)
         ? 1000
         : undefined,
@@ -180,17 +211,23 @@ export default function LightScreen(): JSX.Element {
         style={styles.container}
         contentContainerStyle={{ paddingBottom: theme.spacing(4) }}
       >
-        <LightName light={light} />
-
+        <LightName light={light ?? fallBacklight} />
+        <SleepTimer
+          id={light?.id ?? "0.0"}
+          visible={timer}
+          onConfirm={() => setTimer(false)}
+        />
         <View style={styles.numberContainer}>
           <Text style={styles.title}>LEDs</Text>
-          <CountComponent light={light} />
+          <CountComponent light={light ?? fallBacklight} />
         </View>
         <View style={styles.selectContainer}>
           <Text style={styles.selectLabel}>Pattern</Text>
           <PatternPicker
-            disabled={!light.isOn || light.leds.pattern === "waking"}
-            pattern={light.leds.pattern}
+            disabled={
+              !light || !light?.isOn || light?.leds.pattern === "waking"
+            }
+            pattern={light?.leds.pattern ?? fallBacklight.leds.pattern}
             pickerOpen={pickerOpen}
             onOpen={() => setPickerOpen(true)}
             onClose={() => setPickerOpen(false)}
@@ -202,16 +239,19 @@ export default function LightScreen(): JSX.Element {
 
         <View style={styles.slider_container}>
           <Text style={styles.slider_text}> Brightness</Text>
-          <BrightnessSlider color={light.leds.colors[0]} ids={[light.id]} />
+          <BrightnessSlider
+            color={light?.leds.colors[0] ?? fallBacklight.leds.colors[0]}
+            ids={[light?.id ?? fallBacklight.id]}
+          />
         </View>
 
         <Divider style={styles.divider} />
         <View style={styles.pattern}>
           <PatternComponent
-            disabled={!light.isOn}
-            pattern={light.leds.pattern}
-            timeout={light.leds.timeout}
-            colors={light.leds.colors}
+            disabled={!light?.isOn ?? true}
+            pattern={light?.leds.pattern ?? fallBacklight.leds.pattern}
+            timeout={light?.leds.timeout ?? undefined}
+            colors={light?.leds.colors ?? fallBacklight.leds.colors}
             onSubmit={changeColor}
           />
         </View>
@@ -219,7 +259,11 @@ export default function LightScreen(): JSX.Element {
         <Divider style={styles.divider} />
 
         <View style={styles.item_container}>
-          <TagsList enabled={enabled} setEnabled={setEnabled} light={light} />
+          <TagsList
+            enabled={enabled}
+            setEnabled={setEnabled}
+            light={light ?? fallBacklight}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
