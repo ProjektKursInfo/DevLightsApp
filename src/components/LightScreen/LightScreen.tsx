@@ -19,11 +19,10 @@ import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
 import BrightnessSlider from "../BrightnessSlider";
 import CountComponent from "../CountComponent";
+import LightControl from "../LightControl";
 import LightName from "../LightName";
 import PatternComponent from "../PatternComponent";
 import PatternPicker from "../PatternPicker";
-import Powerbulb from "../Powerbulb";
-import SleepTimer from "../SleepTimer";
 import TagsList from "../TagsList/TagsList";
 
 export type LightScreenNavigationProp = StackNavigationProp<
@@ -68,16 +67,11 @@ export default function LightScreen(): JSX.Element {
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
   const [pickerOpen, setPickerOpen] = React.useState<boolean>(false);
-  const [timer, setTimer] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Powerbulb
-          type="light"
-          ids={[light.id]}
-          onLongPress={light.isOn ? () => setTimer(true) : undefined}
-        />
+        <LightControl ids={[light.id]} type="light" isOn={light.isOn} />
       ),
     });
   }, []);
@@ -212,11 +206,6 @@ export default function LightScreen(): JSX.Element {
         contentContainerStyle={{ paddingBottom: theme.spacing(4) }}
       >
         <LightName light={light ?? fallBacklight} />
-        <SleepTimer
-          id={light?.id ?? "0.0"}
-          visible={timer}
-          onConfirm={() => setTimer(false)}
-        />
         <View style={styles.numberContainer}>
           <Text style={styles.title}>LEDs</Text>
           <CountComponent light={light ?? fallBacklight} />

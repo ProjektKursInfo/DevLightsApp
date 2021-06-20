@@ -11,7 +11,6 @@ import ChangeableText from "../ChangeableText";
 export interface LightNameProps {
   light: Light;
 }
-// TODO better name for this component
 export default function LightName(props: LightNameProps): JSX.Element {
   const { light } = props;
   const theme = useTheme();

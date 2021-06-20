@@ -3,7 +3,6 @@ import { StyleSheet, TextInput, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 
 export interface RainbowComponentProps {
-  colors: string[];
   timeout: number;
   disabled: boolean;
   onSubmit: (colors: string | string[], timeout: number) => Promise<boolean>;
@@ -12,13 +11,13 @@ export interface RainbowComponentProps {
 export default function RainbowComponent(
   props: RainbowComponentProps,
 ): JSX.Element {
-  const { colors, timeout, disabled } = props;
+  const { timeout, disabled } = props;
   const theme = useTheme();
   const ref = React.useRef<TextInput>();
 
   const submit = (pTimeout: string) => {
     const newTimeout = parseInt(pTimeout, 10);
-    props.onSubmit(colors, newTimeout).catch(() => {
+    props.onSubmit([], newTimeout).catch(() => {
       ref.current?.setNativeProps({ text: timeout.toString() });
     });
   };

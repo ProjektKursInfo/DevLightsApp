@@ -36,14 +36,13 @@ export default function PatternComponent(
     index?: number,
   ): Promise<boolean> => {
     let success = true;
-    const newColors =
-      typeof newColor === "string"
-        ? makeValidColorArray(
-            typeof newColor === "string" ? newColor : "",
-            colors,
-            index ?? 0,
-          )
-        : newColor;
+    const newColors = typeof newColor === "string"
+      ? makeValidColorArray(
+        typeof newColor === "string" ? newColor : "",
+        colors,
+        index ?? 0,
+      )
+      : newColor;
     const as = props.onSubmit(
       newColors,
       newTimeout && newTimeout <= 0 ? timeout : newTimeout,
@@ -89,14 +88,15 @@ export default function PatternComponent(
           <RainbowComponent
             disabled={disabled}
             onSubmit={onSubmit}
-            colors={colors}
             timeout={timeout ?? 100}
           />
         );
       default:
         return (
           <Text style={styles.text}>
-            Changing color is not supported withing pattern {pattern}
+            Changing color is not supported withing pattern
+            {" "}
+            {pattern}
           </Text>
         );
     }

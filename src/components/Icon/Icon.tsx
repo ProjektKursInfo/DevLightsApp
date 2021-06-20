@@ -6,7 +6,7 @@ import { Pressable, PressableProps, StyleSheet } from "react-native";
 export interface IconProps extends PressableProps {
   icon: IconProp;
   color: string;
-  position: "left" | "right";
+  position?: "left" | "right";
 }
 
 export default function Icon(props: IconProps): JSX.Element {

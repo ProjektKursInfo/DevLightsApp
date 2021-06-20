@@ -2,7 +2,7 @@ import { Light, Pattern, Response } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { map } from "lodash";
+import { every, map } from "lodash";
 import React from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { Divider, Text, useTheme } from "react-native-paper";
@@ -14,9 +14,9 @@ import { setLight } from "../../store/actions/lights";
 import { removeTag } from "../../store/actions/tags";
 import { tagsEquality } from "../../utils";
 import BrightnessSlider from "../BrightnessSlider";
+import LightControl from "../LightControl";
 import PatternComponent from "../PatternComponent";
 import PatternPicker from "../PatternPicker";
-import Powerbulb from "../Powerbulb";
 import LightsList from "../TagLightsList";
 
 export type TagScreenNavigationProp = StackNavigationProp<
@@ -63,7 +63,12 @@ export default function TagScreen(): JSX.Element {
       navigation.setOptions({
         headerTitle: params.tag,
         headerRight: () => (
-          <Powerbulb type="tag" tag={tag} ids={map(lights, "id")} />
+          <LightControl
+            type="tag"
+            tag={tag}
+            ids={map(lights, "id")}
+            isOn={!every(lights, { isOn: false })}
+          />
         ),
       });
     }
