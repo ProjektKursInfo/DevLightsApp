@@ -4,6 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import * as SplashScreen from "expo-splash-screen";
 import axios from "axios";
+import { StyleSheet, View } from "react-native";
 import Navigation from "./components/Navigation/Navigation";
 import SafeAreaView from "./components/SafeAreaView";
 import ThemeProvider from "./components/ThemeDialog/ThemeProvider";
@@ -17,19 +18,22 @@ export default function App(): JSX.Element {
   React.useEffect(() => {
     SplashScreen.preventAutoHideAsync();
   }, []);
+  const styles = StyleSheet.create({
+    root: { backgroundColor: "#000", height: "100%", width: "100%" },
+  });
   return (
-    <>
+    <View style={styles.root}>
       <Provider store={store}>
-        <ThemeProvider>
-          <SnackbarProvider>
-              <SafeAreaProvider>
-                <SafeAreaView>
-                  <Navigation />
-                </SafeAreaView>
-              </SafeAreaProvider>
-          </SnackbarProvider>
-        </ThemeProvider>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <SafeAreaView>
+                <Navigation />
+              </SafeAreaView>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </SafeAreaProvider>
       </Provider>
-    </>
+    </View>
   );
 }

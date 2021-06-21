@@ -55,12 +55,14 @@ export default function Alarms(): JSX.Element {
   }, []);
 
   const getavailable = async () => {
-    const ax = await axios.get("/ping");
-    if (ax.data === "Pong") {
-      setAvaible(true);
-    } else {
+    const ax = axios.get("/ping", { timeout: 1000 });
+    ax.then((res: AxiosResponse) => {
+      if (res.data === "Pong") {
+        setAvaible(true);
+      }
+    }).catch(() => {
       setAvaible(false);
-    }
+    });
   };
 
   React.useEffect(() => {

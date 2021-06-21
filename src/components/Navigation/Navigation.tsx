@@ -9,6 +9,13 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
+import {
+  AppState,
+  Dimensions,
+  Platform,
+  StatusBar,
+  StyleSheet,
+} from "react-native";
 import { useTheme } from "react-native-paper";
 import Settings from "../Settings";
 import AlarmNavigator from "./AlarmNavigator";
@@ -37,10 +44,39 @@ function SettingsNavigator() {
 export default function Navigation(): JSX.Element {
   const theme = useTheme();
   const Tab = createMaterialBottomTabNavigator();
+
+  /* const [marginBottom, setMarginBottom] = React.useState<number>();
+  const getMarginBottom = (): void => {
+    if (Platform.OS === "android") {
+      const deviceHeight = Dimensions.get("screen").height;
+      const windowHeight = Dimensions.get("window").height;
+      setMarginBottom(
+        deviceHeight - windowHeight - (StatusBar.currentHeight ?? 0),
+      );
+    } else {
+      setMarginBottom(0);
+    }
+  };
+
+  React.useEffect(() => {
+    getMarginBottom();
+    AppState.addEventListener("focus", () => {
+      getMarginBottom();
+    });
+  }, []); */
+
+  const styles = StyleSheet.create({
+    barStyle: {
+      backgroundColor: theme.colors.accent,
+      display: "flex",
+    },
+    rootStyle: { backgroundColor: "#000", elevation: 0 },
+  });
   return (
     <NavigationContainer theme={theme}>
       <Tab.Navigator
-        barStyle={{ backgroundColor: theme.colors.accent }}
+        barStyle={styles.barStyle}
+        style={styles.rootStyle}
         labeled={false}
         initialRouteName="home"
       >

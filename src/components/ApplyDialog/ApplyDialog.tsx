@@ -11,6 +11,7 @@ import {
 } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { Light } from "@devlights/types";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Store } from "../../store";
 
 interface ApplyDialogProps {
@@ -24,10 +25,12 @@ interface ApplyDialogProps {
 export const ApplyDialog = React.forwardRef(
   (props: ApplyDialogProps, ref: React.ForwardedRef<Modalize>) => {
     const lights = useSelector((state: Store) => state.lights);
+    const insets = useSafeAreaInsets();
     const theme = useTheme();
     const { title, confirmText, ids, ignoreLightOff } = props;
 
     const [values, setValues] = React.useState<string[]>(ids);
+    const [bottom, setBottom] = React.useState<number>(insets.bottom);
 
     React.useEffect(() => {
       setValues(ids);
@@ -57,6 +60,7 @@ export const ApplyDialog = React.forwardRef(
     const styles = StyleSheet.create({
       modal: {
         backgroundColor: theme.colors.background,
+        marginBottom: bottom,
       },
       title: {
         marginTop: theme.spacing(2),
@@ -73,7 +77,10 @@ export const ApplyDialog = React.forwardRef(
           useNativeDriver
           modalStyle={styles.modal}
           ref={ref}
-          onClose={() => setValues(ids ?? [])}
+          onClose={() => {
+            setValues(ids ?? []);
+            setBottom(0);
+          }}
         >
           <Title style={styles.title}>{title}</Title>
           {lights.length > 0 ? (
