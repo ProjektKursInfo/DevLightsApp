@@ -4,13 +4,15 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 import { makeValidColorArray } from "../../utils";
+import CustomComponent from "../CustomComponent";
 import GradientComponent from "../GradientComponent";
 import PlainComponent from "../PlainComponent";
 import RainbowComponent from "../RainbowComponent";
 import RunnerComponent from "../RunnerComponent";
 
 export interface PatternComponentProps {
-  pattern: Pattern;
+  oldPattern?: Pattern | string | undefined;
+  newPattern: Pattern;
   colors: string[];
   timeout: number | undefined;
   disabled: boolean;
@@ -18,31 +20,33 @@ export interface PatternComponentProps {
     colors: string[],
     timeout: number | undefined,
   ) => Promise<AxiosResponse>;
+  id: string;
+  type: "light" | "tag";
 }
 
 export default function PatternComponent(
   props: PatternComponentProps,
 ): JSX.Element {
-  const { pattern, colors, disabled, timeout } = props;
+  const { newPattern, oldPattern, colors, disabled, timeout, id, type } = props;
   const styles = StyleSheet.create({
     text: {
       textAlign: "center",
     },
   });
-
   const onSubmit = async (
     newColor: string | string[],
     newTimeout?: number,
     index?: number,
   ): Promise<boolean> => {
     let success = true;
-    const newColors = typeof newColor === "string"
-      ? makeValidColorArray(
-        typeof newColor === "string" ? newColor : "",
-        colors,
-        index ?? 0,
-      )
-      : newColor;
+    const newColors =
+      typeof newColor === "string"
+        ? makeValidColorArray(
+            typeof newColor === "string" ? newColor : "",
+            colors,
+            index ?? 0,
+          )
+        : newColor;
     const as = props.onSubmit(
       newColors,
       newTimeout && newTimeout <= 0 ? timeout : newTimeout,
@@ -56,7 +60,7 @@ export default function PatternComponent(
   };
 
   const getComponent = () => {
-    switch (pattern) {
+    switch (newPattern) {
       case "gradient":
         return (
           <GradientComponent
@@ -91,12 +95,21 @@ export default function PatternComponent(
             timeout={timeout ?? 100}
           />
         );
+      case "custom":
+        return (
+          <CustomComponent
+            oldPattern={oldPattern}
+            colors={colors}
+            id={id}
+            type={type}
+            onSubmit={onSubmit}
+          />
+        );
+
       default:
         return (
           <Text style={styles.text}>
-            Changing color is not supported withing pattern
-            {" "}
-            {pattern}
+            Changing color is not supported withing pattern {newPattern}
           </Text>
         );
     }

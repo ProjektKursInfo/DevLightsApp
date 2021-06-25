@@ -17,6 +17,7 @@ import Favourite from "../Favourite";
 import Home from "../Home";
 import Icon from "../Icon";
 import LightScreens from "../LightScreen";
+import CustomScreen from "../CustomScreen";
 
 export default function LightsNavigator(): JSX.Element {
   const Stack = createStackNavigator<LightsStackParamList>();
@@ -79,6 +80,22 @@ export default function LightsNavigator(): JSX.Element {
         }}
         component={ColorPicker}
       />
+      <Stack.Screen
+        name="custom"
+        component={CustomScreen}
+        options={{
+          headerTitle: "Create Custom Pattern",
+          headerLeft: (props: StackHeaderLeftButtonProps) => (
+            <Icon
+              color={theme.colors.accent}
+              position="left"
+              icon={faChevronLeft}
+              {...props}
+            />
+          ),
+        }}
+      />
+
       <Stack.Screen
         options={{
           headerTitle: "Favourites",

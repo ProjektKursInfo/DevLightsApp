@@ -4,7 +4,6 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { max, min } from "lodash";
 import * as React from "react";
-import { render } from "react-dom";
 import {
   Animated,
   Dimensions,
@@ -224,7 +223,9 @@ export default function LightCard(props: CardProps): JSX.Element {
                     return (
                       <View
                         style={{
-                          backgroundColor: light.leds.colors[curIndex],
+                          backgroundColor: light.isOn
+                            ? light.leds.colors[curIndex]
+                            : "#000",
                           flex: amount,
                         }}
                       />

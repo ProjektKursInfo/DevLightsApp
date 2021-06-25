@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
+import { isEqual } from "lodash";
 import { LightResponse, Theme } from "../../interfaces/types";
 import useNetwork from "../../hooks/useNetwork";
 import { Store } from "../../store";
@@ -64,7 +65,10 @@ export function Spinner(props: SpinnerProps): JSX.Element {
 export default function Home(): JSX.Element {
   const theme = useTheme();
   const store = useStore();
-  const lights: Light[] = useSelector((state: Store) => state.lights);
+  const lights: Light[] = useSelector(
+    (state: Store) => state.lights,
+    (l: Light[], r: Light[]) => isEqual(l, r),
+  );
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
 
@@ -172,14 +176,14 @@ export default function Home(): JSX.Element {
 
       <ScrollView
         style={styles.container}
-        refreshControl={
+        refreshControl={(
           <RefreshControl
             refreshing={false}
             onRefresh={() => fetch()}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
           />
-        }
+        )}
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Title style={styles.title}>Lights</Title>

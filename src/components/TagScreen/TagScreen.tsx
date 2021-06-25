@@ -145,7 +145,7 @@ export default function TagScreen(): JSX.Element {
       <ScrollView style={styles.container}>
         <View style={[styles.selectContainer, { flex: 1 }]}>
           <View style={styles.pattern}>
-            <Text style={[styles.selectLabel]}>Choose pattern for tag</Text>
+            <Text style={styles.selectLabel}>Choose pattern for tag</Text>
             <PatternPicker
               changePattern={(p: Pattern | string) =>
                 setLeds({ ...leds, pattern: p })
@@ -161,7 +161,9 @@ export default function TagScreen(): JSX.Element {
             <View style={{ zIndex: -1 }}>
               <Divider style={styles.divider} />
               <PatternComponent
-                pattern={leds.pattern as Pattern}
+                id={tag}
+                type="tag"
+                newPattern={leds.pattern as Pattern}
                 timeout={100}
                 colors={leds.colors}
                 disabled={false}

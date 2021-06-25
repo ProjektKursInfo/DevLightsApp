@@ -8,6 +8,7 @@ import React from "react";
 import { useTheme } from "react-native-paper";
 import { TagsStackParamList } from "../../interfaces/types";
 import ColorPicker from "../ColorPicker";
+import CustomScreen from "../CustomScreen";
 import Icon from "../Icon/Icon";
 import Tags from "../Tags";
 import TagScreen from "../TagScreen/TagScreen";
@@ -61,6 +62,22 @@ export default function TagsNavigator(): JSX.Element {
           ...TransitionPresets.ModalSlideFromBottomIOS,
         }}
         component={ColorPicker}
+      />
+
+      <Stack.Screen
+        name="custom"
+        component={CustomScreen}
+        options={{
+          headerTitle: "Create Custom Pattern",
+          headerLeft: (props: StackHeaderLeftButtonProps) => (
+            <Icon
+              color={theme.colors.accent}
+              position="left"
+              icon={faChevronLeft}
+              {...props}
+            />
+          ),
+        }}
       />
     </Stack.Navigator>
   );

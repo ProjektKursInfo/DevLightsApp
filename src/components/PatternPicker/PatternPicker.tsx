@@ -61,12 +61,16 @@ export default function UniversalPicker(
       label: "Fading",
       value: "fading",
     },
+    {
+      label: "Custom",
+      value: "custom",
+    },
   ];
 
   const getDropDownItems = (
     newPattern?: Pattern | string,
   ): DropDownPickerProps["items"] => {
-    const patterns = concat(USER_PATTERNS, "fading");
+    const patterns = concat(USER_PATTERNS, ["fading", "custom"]);
 
     if (patterns.includes(newPattern || pattern)) {
       return defaultItems;
@@ -88,7 +92,9 @@ export default function UniversalPicker(
 
   React.useEffect(() => {
     dropdown.selectItem(
-      [...USER_PATTERNS, "fading"].includes(pattern) ? pattern : "unkown",
+      [...USER_PATTERNS, "fading", "custom"].includes(pattern)
+        ? pattern
+        : "unkown",
     );
   }, [items]);
 

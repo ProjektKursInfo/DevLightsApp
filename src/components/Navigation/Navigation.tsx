@@ -9,13 +9,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
-import {
-  AppState,
-  Dimensions,
-  Platform,
-  StatusBar,
-  StyleSheet,
-} from "react-native";
+import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 import Settings from "../Settings";
 import AlarmNavigator from "./AlarmNavigator";

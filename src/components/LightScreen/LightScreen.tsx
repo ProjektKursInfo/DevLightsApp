@@ -1,7 +1,7 @@
 import { Light, Pattern } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -48,6 +48,7 @@ export default function LightScreen(): JSX.Element {
       isEqual(l?.leds.pattern, r?.leds.pattern) &&
       isEqual(l?.tags, r?.tags),
   );
+
   const navigation = useNavigation();
 
   const fallBacklight: Light = {
@@ -67,8 +68,12 @@ export default function LightScreen(): JSX.Element {
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const [enabled, setEnabled] = React.useState<boolean>(false);
   const [pickerOpen, setPickerOpen] = React.useState<boolean>(false);
+  const [oldPattern, setOldPattern] = React.useState<Pattern | string>(
+    light.leds.pattern,
+  );
 
   React.useEffect(() => {
+    setOldPattern(light.leds.pattern);
     navigation.setOptions({
       headerRight: () => (
         <LightControl ids={[light.id]} type="light" isOn={light.isOn} />
@@ -90,38 +95,55 @@ export default function LightScreen(): JSX.Element {
     setRefresh(true);
     const res: LightResponse = await axios.get(`/lights/${id}`);
     dispatch(setLight(light.id, res.data.object));
+
     setRefresh(false);
   };
 
   const changePattern = async (newPattern: Pattern): Promise<Pattern> => {
     let success = true;
-    const newColors: string[] = [light.leds.colors[0]];
-    if (newPattern === "gradient") {
-      newColors.push(light.leds.colors[0]);
+
+    if (newPattern !== "custom") {
+      setOldPattern(light.leds.pattern);
+      const newColors: string[] = [light.leds.colors[0]];
+      if (newPattern === "gradient") {
+        newColors.push(light.leds.colors[0]);
+      }
+      const ax = axios.patch(`/lights/${id}/color`, {
+        colors: ["rainbow", "fading"].includes(newPattern) ? [] : newColors,
+        pattern: newPattern as Pattern,
+        timeout: ["runner", "rainbow", "fading"].includes(newPattern)
+          ? 1000
+          : undefined,
+      });
+      ax.then((res: LightResponse) => {
+        success = true;
+        dispatch(setLight(light.id, res.data.object));
+        snackbar.makeSnackbar(res.data.message, theme.colors.success);
+      });
+      ax.catch((err: AxiosError) => {
+        snackbar.makeSnackbar(err.response?.data.message, theme.colors.error);
+        success = false;
+      });
+    } else {
+      dispatch(
+        setLight(light.id, {
+          ...light,
+          leds: { colors: light.leds.colors, pattern: "custom" },
+        }),
+      );
+      setOldPattern(light.leds.pattern);
     }
-    const ax = axios.patch(`/lights/${id}/color`, {
-      colors: ["rainbow", "fading"].includes(newPattern) ? [] : newColors,
-      pattern: newPattern as Pattern,
-      timeout: ["runner", "rainbow", "fading"].includes(newPattern)
-        ? 1000
-        : undefined,
-    });
-    ax.then((res: LightResponse) => {
-      success = true;
-      dispatch(setLight(light.id, res.data.object));
-      snackbar.makeSnackbar(res.data.message, theme.colors.success);
-    });
-    ax.catch((err: AxiosError) => {
-      snackbar.makeSnackbar(err.response?.data.message, theme.colors.error);
-      success = false;
-    });
     return success ? newPattern : light.leds.pattern;
   };
 
   const changeColor = async (
     pColors: string[],
     timeout: number | undefined,
-  ) => {
+  ): Promise<AxiosResponse<Light>> => {
+    if (light.leds.pattern === "custom") {
+      setOldPattern("custom");
+      return;
+    }
     const ax = axios.patch(`/lights/${id}/color`, {
       colors: ["fading", "rainbow"].includes(light.leds.pattern) ? [] : pColors,
       pattern: light.leds.pattern,
@@ -237,8 +259,11 @@ export default function LightScreen(): JSX.Element {
         <Divider style={styles.divider} />
         <View style={styles.pattern}>
           <PatternComponent
+            id={light.id}
+            type="light"
             disabled={!light?.isOn ?? true}
-            pattern={light?.leds.pattern ?? fallBacklight.leds.pattern}
+            newPattern={light?.leds.pattern ?? fallBacklight.leds.pattern}
+            oldPattern={oldPattern}
             timeout={light?.leds.timeout ?? undefined}
             colors={light?.leds.colors ?? fallBacklight.leds.colors}
             onSubmit={changeColor}

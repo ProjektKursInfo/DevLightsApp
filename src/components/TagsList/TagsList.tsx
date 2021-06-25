@@ -99,29 +99,29 @@ export default function TagsList(props: TagsListProps): JSX.Element {
       <Divider style={styles.item_divider} />
       {light.tags?.length
         ? light.tags?.map((tag: string) => (
-            <>
-              <List.Item
-                key={tag}
-                onPress={() => navigateToTag(tag)}
-                style={styles.list_item}
-                titleStyle={styles.title}
-                title={tag}
-                right={() => (
-                  <TouchableOpacity
-                    style={styles.list_icon}
-                    onPress={() => removeTag(light.id, tag)}
-                  >
-                    <FontAwesomeIcon
-                      color={theme.colors.accent}
-                      icon={faTrashAlt}
-                      size={24}
-                    />
-                  </TouchableOpacity>
-                )}
-              />
-              <Divider style={styles.item_divider} />
-            </>
-          ))
+          <>
+            <List.Item
+              key={tag}
+              onPress={() => navigateToTag(tag)}
+              style={styles.list_item}
+              titleStyle={styles.title}
+              title={tag}
+              right={() => (
+                <TouchableOpacity
+                  style={styles.list_icon}
+                  onPress={() => removeTag(light.id, tag)}
+                >
+                  <FontAwesomeIcon
+                    color={theme.colors.accent}
+                    icon={faTrashAlt}
+                    size={24}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+            <Divider style={styles.item_divider} />
+          </>
+        ))
         : undefined}
 
       <ChangeableText
