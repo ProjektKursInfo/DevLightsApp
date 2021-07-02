@@ -1052,10 +1052,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@devlights/types@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@devlights/types/-/types-0.0.8.tgz#fc45d3e28f5c351d5115d9bf65640e76c85e941c"
-  integrity sha512-FcTgQNBgi27GcXaKtKz7xyr6uCoDLI4r7j/aSe/ZKs1a5viDjis3TgBCts+NZDa9cJVXVPCExzRS5pR32nZahw==
+"@devlights/types@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@devlights/types/-/types-0.0.11.tgz#18b4895e346c5b5b0c564aa96ac9f2c837d1cd18"
+  integrity sha512-1b13JNrFttOdkHfHoeUDWsml17pwCo25LzIWrpTV/ENhQCnS1/jKNlXbP5B2E3yJ4igLgvpfBwPlFQEDaqHzWg==
 
 "@egjs/hammerjs@^2.0.17":
   version "2.0.17"
@@ -8372,6 +8372,11 @@ react-native-collapsible@^1.5.3:
   integrity sha512-Ciuy3yF8wcHeLxXFtx9vxoyrq8l+9EJqLM/ADw54gVwzTQc1/e2ojhQbVFPlxhDA+Pba2qezkaKfv5ifxg8hoQ==
   dependencies:
     prop-types "^15.6.2"
+
+react-native-draggable-flatlist@^2.6.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-2.6.2.tgz#d1445fd52e75bc4f4ebbd832a8bc4525cebb8302"
+  integrity sha512-0IBS1lgw137FDaDLccUidHXYu/6PbnIO1R0IXYVfxtNOvhFLfJyGOY526vmO72Sf/ch9yayED4+DaQWGBOqNyw==
 
 react-native-dropdown-picker@^4.0.2:
   version "4.0.2"

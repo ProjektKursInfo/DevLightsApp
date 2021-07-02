@@ -18,6 +18,7 @@ import getContrastTextColor from "../textContrast";
 
 export interface CardProps {
   light: Light;
+  onLongPress?: () => void;
 }
 
 export default function LightCard(props: CardProps): JSX.Element {
@@ -184,7 +185,11 @@ export default function LightCard(props: CardProps): JSX.Element {
       containerStyle={styles.swipeable}
       renderRightActions={(p) => renderAction(80, p)}
     >
-      <TouchableOpacity style={styles.touchable} onPress={onPress}>
+      <TouchableOpacity
+        onLongPress={props.onLongPress}
+        style={styles.touchable}
+        onPress={onPress}
+      >
         <Headline style={styles.headline}>
           {light.name ?? "Name not avaible"}
         </Headline>

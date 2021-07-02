@@ -3,9 +3,7 @@ import Snackbar from "./SnackBar";
 
 const SnackbarContext = React.createContext<{
   makeSnackbar(pMessage: string, pColor: string): void;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-}>(undefined);
+}>({ makeSnackbar: () => {} });
 
 export interface ProviderProps {
   children?: JSX.Element;

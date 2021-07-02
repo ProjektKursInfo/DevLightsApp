@@ -2,22 +2,25 @@ import { Alarm, Light, Response } from "@devlights/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosResponse } from "axios";
 import * as SplashScreen from "expo-splash-screen";
-import Lottie from "lottie-react-native";
+import { orderBy } from "lodash";
 import allSettled from "promise.allsettled";
 import * as React from "react";
 import {
   Dimensions,
   RefreshControl,
-  ScrollView,
   StatusBar,
   StyleSheet,
   View,
 } from "react-native";
-import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
+import DraggableFlatList, {
+  DragEndParams,
+  RenderItemParams,
+} from "react-native-draggable-flatlist";
+import { ScrollView } from "react-native-gesture-handler";
+import { ActivityIndicator, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
-import { isEqual } from "lodash";
-import { LightResponse, Theme } from "../../interfaces/types";
 import useNetwork from "../../hooks/useNetwork";
+import { LightResponse, Theme } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setAlarms } from "../../store/actions/alarms";
 import {
@@ -26,6 +29,7 @@ import {
 } from "../../store/actions/favourites";
 import { setAllLights } from "../../store/actions/lights";
 import { setTags } from "../../store/actions/tags";
+import { lightsEquality } from "../../utils";
 import LightCard from "../LightCard";
 import { useThemeChange } from "../ThemeDialog";
 
@@ -67,7 +71,7 @@ export default function Home(): JSX.Element {
   const store = useStore();
   const lights: Light[] = useSelector(
     (state: Store) => state.lights,
-    (l: Light[], r: Light[]) => isEqual(l, r),
+    (l: Light[], r: Light[]) => lightsEquality(l, r),
   );
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<boolean>(false);
@@ -80,6 +84,11 @@ export default function Home(): JSX.Element {
     const type: Theme = (storage as Theme) ?? "Dark";
     await themeChange.changeTheme(type);
     return theme;
+  };
+
+  const sortLights = (pLights: Light[]) => {
+    const orderLights = orderBy(pLights, (l: Light) => l.position);
+    store.dispatch(setAllLights(orderLights));
   };
 
   const fetch = async () => {
@@ -101,8 +110,7 @@ export default function Home(): JSX.Element {
     allSettled(promises).then((val: any[]) => {
       try {
         if (val[1]) {
-          const newLights = val[1].value.data.object;
-          store.dispatch(setAllLights(newLights));
+          sortLights(val[1].value.data.object);
         } else {
           store.dispatch(setAllLights([]));
           setError(true);
@@ -143,6 +151,16 @@ export default function Home(): JSX.Element {
     }
   };
 
+  const updatePos = (params: DragEndParams<Light>) => {
+    axios
+      .patch(`/lights/${lights[params.from].id}/position`, {
+        position: params.to,
+      })
+      .then((res: AxiosResponse<Response<Light[]>>) => {
+        sortLights(res.data.object);
+      });
+  };
+
   React.useEffect(() => {
     fetch();
   }, [network]);
@@ -154,6 +172,7 @@ export default function Home(): JSX.Element {
       paddingTop: 30,
       marginBottom: 10,
       fontSize: 40,
+      textAlign: "center",
     },
     contentContainerStyle: {
       alignItems: "center",
@@ -167,6 +186,7 @@ export default function Home(): JSX.Element {
       fontSize: 16,
     },
   });
+  // TODO find solution for scrollview, draggablelist has a bug with refreshcontrols
   return (
     <View style={styles.container}>
       <StatusBar
@@ -175,6 +195,35 @@ export default function Home(): JSX.Element {
       />
 
       <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => fetch()}
+            tintColor={colors.accent}
+            colors={[colors.primary, colors.accent]}
+          />
+        }
+      >
+        <DraggableFlatList
+          data={lights}
+          onRefresh={fetch}
+          refreshing={loading}
+          ListHeaderComponent={<Title style={styles.title}>Lights</Title>}
+          style={{ height: Dimensions.get("window").height * 0.8 }}
+          contentContainerStyle={styles.contentContainerStyle}
+          onDragEnd={(params: DragEndParams<Light>) => updatePos(params)}
+          keyExtractor={(item: Light, index: number) => `light_card_${index}`}
+          renderItem={(params: RenderItemParams<Light>) => (
+            <LightCard
+              onLongPress={params.drag}
+              key={`light_card_${params.index}`}
+              light={params.item}
+            />
+          )}
+        />
+      </ScrollView>
+      {/* <ScrollView
         style={styles.container}
         refreshControl={(
           <RefreshControl
@@ -186,8 +235,7 @@ export default function Home(): JSX.Element {
         )}
         contentContainerStyle={styles.contentContainerStyle}
       >
-        <Title style={styles.title}>Lights</Title>
-
+       
         <Spinner visible={loading} />
 
         {lights.length && !error && !loading ? (
@@ -218,7 +266,7 @@ export default function Home(): JSX.Element {
             )}
           </>
         )}
-      </ScrollView>
+      </ScrollView> */}
     </View>
   );
 }

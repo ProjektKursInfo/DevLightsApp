@@ -17,6 +17,14 @@ export const tagArrayEquality = (l: string[], r: string[]) => {
   return true;
 };
 
+export const lightsEquality = (l: Light[], r: Light[]): boolean => {
+  if (l.length !== r.length) return false;
+  for (let i = 0; i < l.length; i++) {
+    if (!isEqual(l[i], r[i])) return false;
+  }
+  return true;
+};
+
 export const checkAlarmEquality = (l: Alarm, r: Alarm): boolean => {
   return (
     isEqual(l.color, r.color) &&
