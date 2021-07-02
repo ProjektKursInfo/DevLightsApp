@@ -17,7 +17,7 @@ import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import { ScrollView } from "react-native-gesture-handler";
-import { ActivityIndicator, Title, useTheme } from "react-native-paper";
+import { ActivityIndicator, Text, Title, useTheme } from "react-native-paper";
 import { useSelector, useStore } from "react-redux";
 import useNetwork from "../../hooks/useNetwork";
 import { LightResponse, Theme } from "../../interfaces/types";
@@ -31,6 +31,8 @@ import { setAllLights } from "../../store/actions/lights";
 import { setTags } from "../../store/actions/tags";
 import { lightsEquality } from "../../utils";
 import LightCard from "../LightCard";
+
+import Lottie from "lottie-react-native";
 import { useThemeChange } from "../ThemeDialog";
 
 interface SpinnerProps {
@@ -198,7 +200,7 @@ export default function Home(): JSX.Element {
         style={styles.container}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
+            refreshing={false}
             onRefresh={() => fetch()}
             tintColor={colors.accent}
             colors={[colors.primary, colors.accent]}
@@ -212,6 +214,28 @@ export default function Home(): JSX.Element {
           ListHeaderComponent={<Title style={styles.title}>Lights</Title>}
           style={{ height: Dimensions.get("window").height * 0.8 }}
           contentContainerStyle={styles.contentContainerStyle}
+          ListEmptyComponent={
+            loading && !error ? (
+              <Spinner visible={loading} />
+            ) : (
+              <>
+                <Lottie
+                  duration={4000}
+                  autoPlay
+                  hardwareAccelerationAndroid
+                  loop={false}
+                  autoSize
+                  // eslint-disable-next-line global-require
+                  source={require("../../../assets/animations/bulb.json")}
+                />
+                <Text style={styles.error_text}>
+                  Sorry! We couldn`t find any lights in your Network.
+                  {"\n"}
+                  Plug some in and they will appear here.
+                </Text>
+              </>
+            )
+          }
           onDragEnd={(params: DragEndParams<Light>) => updatePos(params)}
           keyExtractor={(item: Light, index: number) => `light_card_${index}`}
           renderItem={(params: RenderItemParams<Light>) => (
@@ -244,28 +268,7 @@ export default function Home(): JSX.Element {
           ))
         ) : (
           <>
-            {loading && !error ? (
-              <Text />
-            ) : (
-              <>
-                <Lottie
-                  duration={4000}
-                  autoPlay
-                  hardwareAccelerationAndroid
-                  loop={false}
-                  autoSize
-                  // eslint-disable-next-line global-require
-                  source={require("../../../assets/animations/bulb.json")}
-                />
-                <Text style={styles.error_text}>
-                  Sorry! We couldn`t find any lights in your Network.
-                  {"\n"}
-                  Plug some in and they will appear here.
-                </Text>
-              </>
-            )}
-          </>
-        )}
+            
       </ScrollView> */}
     </View>
   );
