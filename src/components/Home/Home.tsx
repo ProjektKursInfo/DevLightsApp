@@ -247,29 +247,6 @@ export default function Home(): JSX.Element {
           )}
         />
       </ScrollView>
-      {/* <ScrollView
-        style={styles.container}
-        refreshControl={(
-          <RefreshControl
-            refreshing={false}
-            onRefresh={() => fetch()}
-            tintColor={colors.accent}
-            colors={[colors.primary, colors.accent]}
-          />
-        )}
-        contentContainerStyle={styles.contentContainerStyle}
-      >
-       
-        <Spinner visible={loading} />
-
-        {lights.length && !error && !loading ? (
-          lights.map((light: Light) => (
-            <LightCard key={light.id} light={light} />
-          ))
-        ) : (
-          <>
-            
-      </ScrollView> */}
     </View>
   );
 }
