@@ -4,7 +4,7 @@ on:
     branches:
       - development
 jobs:
-  install-and-test:
+  build-android-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,11 +14,6 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install
-
-  build-android-release:
-    needs: install-and-test
-    runs-on: ubuntu-latest
-    steps:
       - name: Build Android Release
         run: |
           cd android && ./gradlew assembleRelease
@@ -29,9 +24,15 @@ jobs:
           forms: '{"chat_id": ${{secrets.chat_id}}, "caption": "A new DevLights mobile app release build for Android is ready. Try it out now!"}'
           fileForms: '{"document": "android/app/build/outputs/apk/release/app-release.apk"}'
   build-android-debug:
-    needs: install-and-test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: |
+          yarn install
       - name: Build Android Debug
         run: |
           cd android && ./gradlew assembleDebug
