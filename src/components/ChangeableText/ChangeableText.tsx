@@ -52,6 +52,15 @@ export default function ChangeableText(
     if (editable) inputRef?.current?.focus();
   }, [editable]);
 
+  React.useEffect(() => {
+    if (props.value) {
+      if (props.value !== "" && props.value !== text) {
+        setText(props.value);
+      }
+    }
+    // eslint-disable-next-line react/destructuring-assignment
+  }, [props.value]);
+
   const handleSave = (): void => {
     // TODO remove underline on button press
     onSave(text);
@@ -94,7 +103,7 @@ export default function ChangeableText(
         editable={editable}
         textBreakStrategy="highQuality"
         onSubmitEditing={handleSave}
-        onChangeText={(text: string) => setText(text.replace("\n", ""))}
+        onChangeText={(pText: string) => setText(pText.replace("\n", ""))}
         multiline
         ref={inputRef}
         textAlign="center"

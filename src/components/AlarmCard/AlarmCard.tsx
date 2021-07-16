@@ -28,7 +28,6 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   );
   const dispatch = useDispatch();
   const [days, setDays] = React.useState<number[]>(alarm.days);
-  const [color, setColor] = React.useState<string>(alarm.color);
   const modalizeRef = React.useRef<Modalize>(null);
   const navigation = useNavigation();
   const theme: ReactNativePaper.Theme = useTheme();
@@ -55,7 +54,6 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
           [key]: data,
         },
       );
-      setColor(res.data.object.color);
       dispatch(editAlarm(res.data.object));
       return true;
     } catch {
@@ -63,8 +61,10 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     }
   };
 
-  const onSubmit = async (c: string): Promise<boolean> =>
-    handleEdit(c, "color");
+  const onSubmit = async (c: string): Promise<boolean> => {
+    const response = handleEdit(c, "color");
+    return response;
+  };
 
   const handleCheckedChange = async (
     day: number,
@@ -168,7 +168,6 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
         />
       </View>
       <View style={styles.day_chip_container}>
-        {days.for}
         <DayChip
           day={1}
           selected={days.includes(1)}
@@ -256,7 +255,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
           mode="contained"
           onPress={handleColorChange}
         >
-          {color}
+          {alarm.color}
         </Button>
         <IconButton
           size={30}

@@ -45,9 +45,11 @@ export default function LightCard(props: CardProps): JSX.Element {
         case "runner":
         case "waking":
         case "blinking":
-          return [light.leds.colors[0], light.leds.colors[0]];
+          return light.leds.colors
+            ? [light.leds.colors[0], light.leds.colors[0]]
+            : ["#000", "#000"];
         default:
-          return light.leds.colors;
+          return light.leds.colors ?? ["#000", "#000"];
       }
     } else {
       return ["#000000", "#000000"];
@@ -107,7 +109,9 @@ export default function LightCard(props: CardProps): JSX.Element {
       color:
         pattern === "rainbow" && light.isOn
           ? "#000"
-          : getContrastTextColor(light.isOn ? colors[0] : "#000"),
+          : getContrastTextColor(
+              light.isOn ? (colors ? colors[0] : "#000") : "#000",
+            ),
     },
     touchable: {
       width: "100%",
@@ -220,25 +224,28 @@ export default function LightCard(props: CardProps): JSX.Element {
           </>
         ) : (
           <View style={styles.custom_container}>
-            {getFlexAmounts(light.leds.colors.length).map(
-              (counts: number[]) => (
-                <View style={styles.custom_container_inner}>
-                  {counts.map((amount: number) => {
-                    curIndex++;
-                    return (
-                      <View
-                        style={{
-                          backgroundColor: light.isOn
-                            ? light.leds.colors[curIndex]
-                            : "#000",
-                          flex: amount,
-                        }}
-                      />
-                    );
-                  })}
-                </View>
-              ),
-            )}
+            {
+              // @ts-ignore
+              getFlexAmounts(light.leds.colors.length).map(
+                (counts: number[]) => (
+                  <View style={styles.custom_container_inner}>
+                    {counts.map((amount: number) => {
+                      curIndex++;
+                      return (
+                        <View
+                          style={{
+                            backgroundColor: light.isOn
+                              ? light.leds.colors[curIndex]
+                              : "#000",
+                            flex: amount,
+                          }}
+                        />
+                      );
+                    })}
+                  </View>
+                ),
+              )
+            }
           </View>
         )}
       </TouchableOpacity>

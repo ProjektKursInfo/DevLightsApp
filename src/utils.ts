@@ -2,6 +2,16 @@ import { isEqual } from "lodash";
 import { Alarm, Leds, Light } from "@devlights/types";
 import { Gradient } from "./store/types/favouriteGradients";
 
+export const lightEquality = (l: Light, r: Light): boolean => {
+  return (
+    isEqual(l?.isOn, r?.isOn) &&
+    ledsEquality(l.leds, r.leds) &&
+    isEqual(l?.tags, r?.tags) &&
+    isEqual(l.count, r.count) &&
+    isEqual(l.name, r.name)
+  );
+};
+
 export const ledsEquality = (left: Leds, right: Leds): boolean =>
   isEqual(left.colors, right.colors) || isEqual(left.pattern, right.pattern);
 

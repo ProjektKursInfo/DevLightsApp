@@ -28,6 +28,12 @@ export default function AlarmHeader(props: {
   );
   const [isOn, setIsOn] = React.useState<boolean>(alarm.isOn);
   const [visible, setVisible] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (isOn !== alarm.isOn) {
+      setIsOn(alarm.isOn);
+    }
+  }, [alarm]);
   const handleValueChange = (value: boolean) => {
     const old = alarm.isOn;
     setIsOn(value);

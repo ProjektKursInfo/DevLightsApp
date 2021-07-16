@@ -2,7 +2,6 @@ import { Light, Pattern } from "@devlights/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { isEqual } from "lodash";
 import * as React from "react";
 import {
   KeyboardAvoidingView,
@@ -17,6 +16,7 @@ import useSnackbar from "../../hooks/useSnackbar";
 import { LightResponse, LightsStackParamList } from "../../interfaces/types";
 import { Store } from "../../store";
 import { setLight } from "../../store/actions/lights";
+import { lightEquality } from "../../utils";
 import BrightnessSlider from "../BrightnessSlider";
 import CountComponent from "../CountComponent";
 import LightControl from "../LightControl";
@@ -42,11 +42,7 @@ export default function LightScreen(): JSX.Element {
   const dispatch = useDispatch();
   const light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === id) as Light,
-    (l: Light, r: Light) =>
-      isEqual(l?.isOn, r?.isOn) &&
-      isEqual(l?.leds.colors, r?.leds.colors) &&
-      isEqual(l?.leds.pattern, r?.leds.pattern) &&
-      isEqual(l?.tags, r?.tags),
+    (l: Light, r: Light) => lightEquality(l, r),
   );
 
   const navigation = useNavigation();
@@ -63,6 +59,7 @@ export default function LightScreen(): JSX.Element {
       timeout: undefined,
     },
     tags: [""],
+    position: 0,
   };
 
   const [refresh, setRefresh] = React.useState<boolean>(false);
