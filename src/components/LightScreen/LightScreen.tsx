@@ -66,7 +66,7 @@ export default function LightScreen(): JSX.Element {
   const [enabled, setEnabled] = React.useState<boolean>(false);
   const [pickerOpen, setPickerOpen] = React.useState<boolean>(false);
   const [oldPattern, setOldPattern] = React.useState<Pattern | string>(
-    light.leds.pattern,
+    light?.leds.pattern ?? "plain",
   );
 
   React.useEffect(() => {
@@ -82,7 +82,7 @@ export default function LightScreen(): JSX.Element {
     if (!light) {
       navigation.goBack();
       snackbar.makeSnackbar(
-        "Light does not exist anymore in this application!",
+        "Light has been removed or is not avaible in this application!",
         theme.colors.error,
       );
     }
@@ -256,7 +256,7 @@ export default function LightScreen(): JSX.Element {
         <Divider style={styles.divider} />
         <View style={styles.pattern}>
           <PatternComponent
-            id={light.id}
+            id={light?.id ?? fallBacklight.id}
             type="light"
             disabled={!light?.isOn ?? true}
             newPattern={light?.leds.pattern ?? fallBacklight.leds.pattern}

@@ -13,7 +13,9 @@ export const lightEquality = (l: Light, r: Light): boolean => {
 };
 
 export const ledsEquality = (left: Leds, right: Leds): boolean =>
-  isEqual(left.colors, right.colors) || isEqual(left.pattern, right.pattern);
+  isEqual(left.colors, right.colors) &&
+  isEqual(left.pattern, right.pattern) &&
+  isEqual(left.timeout, right.timeout);
 
 export const tagArrayEquality = (l: string[], r: string[]) => {
   try {

@@ -1,6 +1,7 @@
 import {
   EditLedCountAction,
   EditLightNameAction,
+  RemoveLightAction,
   SetLightAction,
   SetLightBrightnessAction,
   SetLightColorAction,
@@ -22,6 +23,10 @@ export function setAllLights(lights: Light[]): SetLightsAction {
 
 export function setLight(id: string, light: Light): SetLightAction {
   return { type: "SET_LIGHT", id, light };
+}
+
+export function removeLight(id: string): RemoveLightAction {
+  return { type: "REMOVE_LIGHT", id };
 }
 
 export function setLightStatus(

@@ -26,7 +26,7 @@ export default function alarmsReducer(
       return [...alarms];
     case "REMOVE_ALARM":
       alarms = [...state];
-      index = alarms.findIndex((f) => f === action.alarm);
+      index = alarms.findIndex((a: Alarm) => a.id === action.alarm.id);
       if (index !== undefined) alarms.splice(index, 1);
       return alarms;
     default:

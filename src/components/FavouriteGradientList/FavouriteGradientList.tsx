@@ -44,6 +44,7 @@ export default function FavouriteGradientList(
       <ScrollView contentContainerStyle={styles.container}>
         {favouriteGradients.map((g: Gradient) => (
           <Pressable
+            key={`${g.start + g.end}_press`}
             style={styles.pressable}
             onPress={() => props.onPress([g.start, g.end])}
           >

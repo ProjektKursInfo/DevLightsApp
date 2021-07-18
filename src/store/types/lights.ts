@@ -3,6 +3,7 @@ import {
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,
   EDIT_LIGHT_NAME,
+  REMOVE_LIGHT,
   SET_ALL_LIGHTS,
   SET_BRIGHTNESS,
   SET_LIGHT,
@@ -18,6 +19,11 @@ export interface SetLightAction {
   type: typeof SET_LIGHT;
   id: string;
   light: Light;
+}
+
+export interface RemoveLightAction {
+  type: typeof REMOVE_LIGHT;
+  id: string;
 }
 
 export interface SetLightStatusAction {
@@ -55,6 +61,7 @@ export interface SetLightColorAction {
 export type LightActionTypes =
   | SetLightsAction
   | SetLightAction
+  | RemoveLightAction
   | SetLightStatusAction
   | SetLightBrightnessAction
   | SetLightColorAction

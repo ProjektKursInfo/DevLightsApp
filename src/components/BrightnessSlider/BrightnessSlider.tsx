@@ -28,7 +28,8 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   );
 
   const realLights: Light[] = useSelector(
-    (state: Store) => filter(state.lights, (l: Light) => ids.includes(l.id)) as Light[],
+    (state: Store) =>
+      filter(state.lights, (l: Light) => ids.includes(l.id)) as Light[],
     (left: Light[], right: Light[]) => isEqual(left, right),
   );
 
@@ -55,7 +56,9 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const styles = StyleSheet.create({
     trackStyle: { height: 5 },
     thumbStyle: {
-      backgroundColor: tinycolor(light.leds.colors ? light.leds.colors[0] : "#000")
+      backgroundColor: tinycolor(
+        light?.leds?.colors ? light.leds.colors[0] : "#000",
+      )
         .spin(180)
         .toHexString(),
       borderRadius: 20,
@@ -64,7 +67,9 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
     },
   });
 
-  const disabled = some(realLights, (l: Light) => l.leds.pattern === "custom") || some(realLights, (l: Light) => !l.isOn);
+  const disabled =
+    some(realLights, (l: Light) => l.leds.pattern === "custom") ||
+    some(realLights, (l: Light) => !l.isOn);
 
   const updateBrightness = (b: number) => {
     realLights.forEach((l: Light) => {
@@ -87,7 +92,11 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
     <Slider
       minimumTrackTintColor={
         // eslint-disable-next-line no-nested-ternary
-        !disabled ? light?.leds.colors ? light.leds.colors[0] : "#fff" : theme.colors.disabled
+        !disabled
+          ? light?.leds?.colors
+            ? light.leds.colors[0]
+            : "#fff"
+          : theme.colors.disabled
       }
       disabled={disabled}
       minimumValue={1}

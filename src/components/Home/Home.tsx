@@ -27,7 +27,11 @@ import {
   setFavouriteColors,
   setFavouriteGradients,
 } from "../../store/actions/favourites";
-import { setAllLights, setLight } from "../../store/actions/lights";
+import {
+  removeLight,
+  setAllLights,
+  setLight,
+} from "../../store/actions/lights";
 import { setTags } from "../../store/actions/tags";
 import { lightsEquality } from "../../utils";
 import LightCard from "../LightCard";
@@ -94,8 +98,8 @@ export default function Home(): JSX.Element {
     s.on("light_add", (light: Light) => {
       store.dispatch(setLight(light.id, light));
     });
-    s.on("light_remove", (alarm: Alarm) => {
-      store.dispatch(removeAlarm(alarm));
+    s.on("light_remove", (light: Light) => {
+      store.dispatch(removeLight(light.id));
     });
     s.on("alarm_change", (alarm: Alarm) => {
       store.dispatch(editAlarm(alarm));

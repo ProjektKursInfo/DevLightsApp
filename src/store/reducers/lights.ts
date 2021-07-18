@@ -6,6 +6,7 @@ import {
   EDIT_LED_COUNT,
   EDIT_LIGHT_COLOR,
   EDIT_LIGHT_NAME,
+  REMOVE_LIGHT,
   SET_ALL_LIGHTS,
   SET_BRIGHTNESS,
   SET_LIGHT,
@@ -33,6 +34,11 @@ function lightsReducer(
       } else {
         lights = [...state, action.light];
       }
+      return lights;
+    case REMOVE_LIGHT:
+      lights = [...state];
+      index = lights.findIndex((f) => f.id === action.id);
+      if (index !== undefined) lights.splice(index, 1);
       return lights;
     case EDIT_LIGHT_NAME:
       lights = [...state];

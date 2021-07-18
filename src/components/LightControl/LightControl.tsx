@@ -1,11 +1,12 @@
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import React from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
 import { Menu, useTheme } from "react-native-paper";
 import useSnackbar from "../../hooks/useSnackbar";
 import Icon from "../Icon";
+import LightDelete from "../LightDelete";
 import Powerbulb from "../Powerbulb";
 import SleepTimer from "../SleepTimer";
 
@@ -20,6 +21,7 @@ export default function LightControl(props: LightControlProps): JSX.Element {
   const theme = useTheme();
   const [visible, setVisible] = React.useState<boolean>(false);
   const [timerVisible, setTimerVisible] = React.useState<boolean>(false);
+  const [deleteVisible, setDeleteVisible] = React.useState<boolean>(false);
   const snackbar = useSnackbar();
 
   const styles = StyleSheet.create({
@@ -64,13 +66,39 @@ export default function LightControl(props: LightControlProps): JSX.Element {
             setVisible(false);
           }}
         />
+        {type === "light" ? (
+          <>
+            <Menu.Item
+              icon={() => (
+                <FontAwesomeIcon
+                  style={styles.menu_icon}
+                  icon={faTrash}
+                  size={20}
+                  color={theme.colors.accent}
+                />
+              )}
+              title="Delete"
+              onPress={() => {
+                setVisible(false);
+                setDeleteVisible(true);
+              }}
+            />
+          </>
+        ) : undefined}
       </Menu>
+      <LightDelete
+        id={ids[0]}
+        visible={deleteVisible}
+        onConfirm={() => setDeleteVisible(false)}
+        onDismiss={() => setDeleteVisible(false)}
+      />
       <SleepTimer
         onConfirm={() => setTimerVisible(false)}
         visible={timerVisible}
         id={type === "tag" ? tag ?? "tag" : ids[0]}
         {...props}
       />
+
       <Powerbulb {...props} />
     </View>
   );
