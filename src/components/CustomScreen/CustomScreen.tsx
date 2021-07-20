@@ -8,15 +8,13 @@ import { isArray } from "lodash";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Divider, List, useTheme } from "react-native-paper";
-import { useDispatch } from "react-redux";
 import useSnackbar from "../../hooks/useSnackbar";
 import { Custom, LightsStackParamList } from "../../interfaces/types";
-import { setLight } from "../../store/actions/lights";
 import CustomData from "../CustomData";
 
 export type CustomScreenNavigationProp = StackNavigationProp<
-LightsStackParamList,
-"custom"
+  LightsStackParamList,
+  "custom"
 >;
 
 export type CustomScreenRouteProp = RouteProp<LightsStackParamList, "custom">;
@@ -30,26 +28,11 @@ export default function CustomScreen(): JSX.Element {
   ]);
   const theme = useTheme();
   const snackbar = useSnackbar();
-  const dispatch = useDispatch();
 
   const onChange = (c: Custom, index: number) => {
     const cus = [...custom];
     cus[index] = c;
     setCustom(cus);
-  };
-
-  const fetchLight = () => {
-    axios
-      .get(`/${type}s/${id}`)
-      .then((res: AxiosResponse<Response<Light[] | Light>>) => {
-        if (type === "light" && !isArray(res.data.object)) {
-          dispatch(setLight(id, res.data.object as Light));
-          onSubmit();
-        } else {
-          const lights = res.data.object as Light[];
-          lights.forEach((l: Light) => dispatch(setLight(id, l)));
-        }
-      });
   };
 
   const onSave = () => {
@@ -60,7 +43,9 @@ export default function CustomScreen(): JSX.Element {
       })
       .then((res: AxiosResponse<Response<PartialLight | PartialLight[]>>) => {
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
-        fetchLight();
+        if (type === "light") {
+          onSubmit();
+        }
         navigation.goBack();
       })
       .catch((err: AxiosError) => {

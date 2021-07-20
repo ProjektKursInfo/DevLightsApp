@@ -1,17 +1,16 @@
-import { Alarm, PartialLight, Response } from "@devlights/types";
+import { Alarm, PartialLight } from "@devlights/types";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/core";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { filter, map, remove } from "lodash";
 import * as React from "react";
 import { Dimensions, StyleSheet, TextInput, View } from "react-native";
 import { Modalize } from "react-native-modalize";
 import { Button, Chip, IconButton, useTheme } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import useSnackbar from "../../hooks/useSnackbar";
 import { Store } from "../../store";
-import { editAlarm, removeAlarm } from "../../store/actions/alarms";
 import { checkAlarmEquality } from "../../utils";
 import ApplyDialog from "../ApplyDialog";
 import DayChip from "../DayChip";
@@ -26,7 +25,6 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
     (state: Store) => state.alarms.find((a: Alarm) => a.id === id) as Alarm,
     (l: Alarm, r: Alarm) => checkAlarmEquality(l, r),
   );
-  const dispatch = useDispatch();
   const [days, setDays] = React.useState<number[]>(alarm.days);
   const modalizeRef = React.useRef<Modalize>(null);
   const navigation = useNavigation();
@@ -35,9 +33,7 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
   const ref = React.useRef<TextInput>(null);
 
   const handleDelete = () => {
-    axios.delete(`/alarm/${alarm.id}`).then(() => {
-      dispatch(removeAlarm(alarm));
-    });
+    axios.delete(`/alarm/${alarm.id}`);
   };
 
   /**
@@ -48,13 +44,9 @@ export default function AlarmCard(props: AlarmCardProps): JSX.Element {
    */
   const handleEdit = async (data: any, key: string): Promise<boolean> => {
     try {
-      const res: AxiosResponse<Response<Alarm>> = await axios.patch(
-        `/alarm/${alarm.id}`,
-        {
-          [key]: data,
-        },
-      );
-      dispatch(editAlarm(res.data.object));
+      await axios.patch(`/alarm/${alarm.id}`, {
+        [key]: data,
+      });
       return true;
     } catch {
       return false;

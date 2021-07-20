@@ -7,9 +7,7 @@ import {
   Portal,
   useTheme,
 } from "react-native-paper";
-import { useDispatch } from "react-redux";
 import useSnackbar from "../../hooks/useSnackbar";
-import { removeLight } from "../../store/actions/lights";
 
 export interface LightDeleteProps {
   visible: boolean;
@@ -19,7 +17,6 @@ export interface LightDeleteProps {
 }
 export default function LightDelete(props: LightDeleteProps): JSX.Element {
   const { visible, id, onDismiss } = props;
-  const dispatch = useDispatch();
   const theme = useTheme();
   const snackbar = useSnackbar();
 
@@ -27,7 +24,6 @@ export default function LightDelete(props: LightDeleteProps): JSX.Element {
     axios
       .delete(`/lights/${id}`)
       .then(() => {
-        dispatch(removeLight(id));
         props.onConfirm();
       })
       .catch(() => {

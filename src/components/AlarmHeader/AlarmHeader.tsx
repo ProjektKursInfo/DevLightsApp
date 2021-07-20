@@ -1,5 +1,5 @@
-import { Alarm, Response } from "@devlights/types";
-import axios, { AxiosResponse } from "axios";
+import { Alarm } from "@devlights/types";
+import axios from "axios";
 import { isEqual } from "lodash";
 import React from "react";
 import { StyleSheet, View } from "react-native";
@@ -10,9 +10,8 @@ import {
   TouchableRipple,
   useTheme,
 } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Store } from "../../store";
-import { editAlarm } from "../../store/actions/alarms";
 import TimePicker from "../TimePicker";
 
 export default function AlarmHeader(props: {
@@ -21,7 +20,6 @@ export default function AlarmHeader(props: {
 }): JSX.Element {
   const { id, index } = props;
   const theme = useTheme();
-  const dispatch = useDispatch();
   const alarm = useSelector(
     (state: Store) => state.alarms.find((a: Alarm) => a.id === id) as Alarm,
     (l: Alarm, r: Alarm) => isEqual(l.isOn, r.isOn) && isEqual(l.time, r.time),
@@ -41,22 +39,15 @@ export default function AlarmHeader(props: {
       .patch(`/alarm/${id}`, {
         isOn: value,
       })
-      .then((res: AxiosResponse<Response<Alarm>>) => {
-        dispatch(editAlarm(res.data.object));
-      })
       .catch(() => {
         setIsOn(old);
       });
   };
 
   const handleTimeChange = (time: string) => {
-    axios
-      .patch(`/alarm/${id}`, {
-        time,
-      })
-      .then((res: AxiosResponse<Response<Alarm>>) => {
-        dispatch(editAlarm(res.data.object));
-      });
+    axios.patch(`/alarm/${id}`, {
+      time,
+    });
   };
 
   const styles = StyleSheet.create({

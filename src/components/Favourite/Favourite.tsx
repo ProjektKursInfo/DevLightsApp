@@ -39,7 +39,6 @@ export function Color(props: {
     container: { width: "100%" },
     pressable: { alignSelf: "center" },
   });
-  const dispatch = useDispatch();
   const modalizeRef = React.useRef<Modalize>(null);
   const onConfirm = (ids: string[]) => {
     modalizeRef.current?.close();
@@ -50,7 +49,6 @@ export function Color(props: {
           pattern: colors.length > 1 ? "gradient" : "plain",
         });
         ax.then((res: LightResponse) => {
-          dispatch(setLight(id, res.data.object));
           snackbar.makeSnackbar(res.data.message, theme.colors.success);
         }).catch((err: AxiosError) =>
           snackbar.makeSnackbar(

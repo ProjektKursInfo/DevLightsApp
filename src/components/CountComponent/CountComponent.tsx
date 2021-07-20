@@ -3,10 +3,8 @@ import axios from "axios";
 import React from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { useTheme } from "react-native-paper";
-import { useDispatch } from "react-redux";
-import { LightResponse } from "../../interfaces/types";
 import useSnackbar from "../../hooks/useSnackbar";
-import { setLight } from "../../store/actions/lights";
+import { LightResponse } from "../../interfaces/types";
 
 export interface CountComponentProps {
   light: Light;
@@ -17,7 +15,6 @@ export default function CountComponent(
   const { light } = props;
   const ref = React.useRef<TextInput>();
   const snackbar = useSnackbar();
-  const dispatch = useDispatch();
   const theme = useTheme();
   const changeLedCount = (count: string) => {
     if (!/^\d+$/.test(count) || parseInt(count, 10) > 1000) {
@@ -34,7 +31,6 @@ export default function CountComponent(
           count: parseInt(count, 10),
         })
         .then((res: LightResponse) => {
-          dispatch(setLight(light.id, res.data.object));
           snackbar.makeSnackbar(res.data.message, theme.colors.success);
         });
     }

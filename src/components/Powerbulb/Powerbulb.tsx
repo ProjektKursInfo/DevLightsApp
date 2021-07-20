@@ -7,10 +7,9 @@ import { map } from "lodash";
 import React from "react";
 import { PressableProps } from "react-native";
 import { useTheme } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import useSnackbar from "../../hooks/useSnackbar";
 import { Store } from "../../store";
-import { setLight } from "../../store/actions/lights";
 import { isOnEquality } from "../../utils";
 import Icon from "../Icon";
 
@@ -27,7 +26,6 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
     (state: Store) => state.lights.filter((l) => ids.includes(l.id)),
     (l: Light[], r: Light[]) => isOnEquality(l, r),
   );
-  const dispatch = useDispatch();
   const snackbar = useSnackbar();
   const theme = useTheme();
 
@@ -53,7 +51,6 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
         `/lights/${lights[0].id}/${status ? "on" : "off"}`,
       );
       ax.then((res) => {
-        dispatch(setLight(lights[0].id, res.data.object));
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
       }).catch((err) => {
         snackbar.makeSnackbar(err.response.data.message, theme.colors.error);
@@ -63,9 +60,6 @@ export default function PowerBulb(props: PowerBulbProps): JSX.Element {
       const ax = axios.patch(`/tags/${tag}/${status ? "on" : "off"}`);
       ax.then((res: AxiosResponse<Response<Light[]>>) => {
         snackbar.makeSnackbar(res.data.message, theme.colors.success);
-        res.data.object.forEach((l: Light) => {
-          dispatch(setLight(l.id, { ...l, isOn: status }));
-        });
       }).catch((err) => {
         setIcon(status ? regular : faLightbulb);
         snackbar.makeSnackbar(err.response.data.message, theme.colors.error);

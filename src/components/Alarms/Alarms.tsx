@@ -97,9 +97,11 @@ export default function Alarms(): JSX.Element {
 
   const fetchAlarms = async () => {
     await getavailable();
-    axios.get("/alarm").then((res: AxiosResponse) => {
-      dispatch(setAlarms(res.data.object));
-    });
+    if (avaible) {
+      axios.get("/alarm").then((res: AxiosResponse) => {
+        dispatch(setAlarms(res.data.object));
+      });
+    }
   };
 
   const handleAlarmCreation = (ids: string[]) => {
@@ -111,8 +113,7 @@ export default function Alarms(): JSX.Element {
         time: newAlarm.time,
         ids,
       })
-      .then((res: AxiosResponse<Response<Alarm>>) => {
-        dispatch(addAlarm(res.data.object));
+      .then(() => {
         setNewAlarm({ time: "00:00", days: [0, 1, 2, 3, 4, 5, 6], ids: [] });
       })
       .catch((err: AxiosError) => {

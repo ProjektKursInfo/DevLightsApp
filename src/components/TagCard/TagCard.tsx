@@ -70,10 +70,9 @@ export default function TagCard(props: TagCardProps): JSX.Element {
   const deleteTag = async () => {
     await lights.forEach(
       async (l: Light): Promise<void> => {
-        const ax = await axios.delete(`/lights/${l.id}/tags`, {
+        await axios.delete(`/lights/${l.id}/tags`, {
           data: { tags: [tag] },
         });
-        dispatch(setLight(l.id, ax.data.object));
       },
     );
     dispatch(removeTag(tag));

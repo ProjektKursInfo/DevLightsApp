@@ -38,8 +38,7 @@ export default function LightsList(props: LightListProps): JSX.Element {
     const ax = axios.delete(`/lights/${id}/tags`, {
       data: { tags },
     });
-    ax.then((res: LightResponse) => {
-      dispatch(setLight(id, res.data.object));
+    ax.then(() => {
       if (lights.length <= 1 && !silent) {
         navigation.goBack();
         dispatch(removeTag(tag));
@@ -71,7 +70,6 @@ export default function LightsList(props: LightListProps): JSX.Element {
           .put(`/lights/${v}/tags`, {
             tags: [tag],
           })
-          .then((res: LightResponse) => dispatch(setLight(v, res.data.object)))
           .catch((err: AxiosError) => {
             error =
               err.response?.data.message ?? "Tag could not be added to light";

@@ -6,12 +6,10 @@ import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 // @ts-ignore
 import Slider from "react-native-slider";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import tinycolor from "tinycolor2";
 import useSnackbar from "../../hooks/useSnackbar";
-import { LightResponse } from "../../interfaces/types";
 import { Store } from "../../store";
-import { setLight } from "../../store/actions/lights";
 
 export interface SliderProps {
   color: string;
@@ -20,7 +18,6 @@ export interface SliderProps {
 
 export default function BrightnessSlider(props: SliderProps): JSX.Element {
   const { ids } = props;
-  const dispatch = useDispatch();
   const snackbar = useSnackbar();
   const light: Light = useSelector(
     (state: Store) => state.lights.find((l: Light) => l.id === ids[0]) as Light,
@@ -75,9 +72,6 @@ export default function BrightnessSlider(props: SliderProps): JSX.Element {
     realLights.forEach((l: Light) => {
       const ax = axios.patch(`/lights/${l.id}/brightness`, {
         brightness: Math.round(b),
-      });
-      ax.then((res: LightResponse) => {
-        dispatch(setLight(l.id, res.data.object));
       });
       ax.catch((err: AxiosError) => {
         setBrightness(l.brightness);

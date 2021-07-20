@@ -87,7 +87,6 @@ export default function TagScreen(): JSX.Element {
         : timeout ?? 100,
     });
     ax.then((res: AxiosResponse<Response<Light[]>>) => {
-      res.data.object.forEach((l: Light) => dispatch(setLight(l.id, l)));
       snackbar.makeSnackbar(res.data.message, theme.colors.success);
     }).catch((err: AxiosError) => {
       snackbar.makeSnackbar(

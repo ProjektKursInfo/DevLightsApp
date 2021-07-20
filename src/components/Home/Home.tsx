@@ -101,6 +101,11 @@ export default function Home(): JSX.Element {
     s.on("light_remove", (light: Light) => {
       store.dispatch(removeLight(light.id));
     });
+    s.on("light_change_multiple", (pLights: Light[]) => {
+      pLights.forEach((light: Light) => {
+        store.dispatch(setLight(light.id, light));
+      });
+    });
     s.on("alarm_change", (alarm: Alarm) => {
       store.dispatch(editAlarm(alarm));
     });
